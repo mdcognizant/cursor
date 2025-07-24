@@ -1,43 +1,25 @@
 # Getting Started with Development Automation Suite
 
-Welcome to the **Development Automation Suite** - your comprehensive tool for automating development workflows! This guide will help you get up and running quickly.
+## 📁 **Project Location**
+Your Development Automation Suite is located at: `C:\Projects\Cursor`
 
-## 🚀 Quick Start (5 Minutes)
+## 🚀 **Quick Start**
 
-### Step 1: Installation
-
-#### Option A: From Source (Recommended for now)
+### **Step 1: Navigate to Project Directory**
 ```bash
-# Clone or download the project
-# If you have the files, navigate to the project directory
-cd development-automation-suite
-
-# Install dependencies
-pip install -r requirements.txt
+cd C:\Projects\Cursor
 ```
 
-#### Option B: Via pip (Future release)
+### **Step 2: Launch the Application**
 ```bash
-# This will be available when published to PyPI
-pip install development-automation-suite
-```
+# Option 1: Direct Python launch
+python main.py
 
-### Step 2: Launch the Application
+# Option 2: Corporate-friendly launcher (recommended)
+start_corporate.bat
 
-#### Windows
-```batch
-# Double-click start.bat or run in Command Prompt:
-start.bat
-```
-
-#### Linux/macOS
-```bash
-# Make the script executable and run:
-chmod +x start.sh
-./start.sh
-
-# Or use Python directly:
-python3 run.py
+# Option 3: Universal launcher
+python run.py
 ```
 
 ### Step 3: First-Time Setup
