@@ -875,8 +875,8 @@ APP_VERSION=1.0.0
 DEBUG=false
 
 # Database settings
-DATABASE_URL=sqlite:///./app.db
-# DATABASE_URL=postgresql://user:password@localhost/dbname
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dev_automation_db
+# DATABASE_URL=sqlite:///./app.db
 
 # Security
 SECRET_KEY=your-secret-key-here
@@ -918,7 +918,7 @@ APP_VERSION = get_env_var("APP_VERSION", "1.0.0")
 DEBUG = get_env_var("DEBUG", "false").lower() == "true"
 
 # Database settings
-DATABASE_URL = get_env_var("DATABASE_URL", "sqlite:///./app.db")
+DATABASE_URL = get_env_var("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/dev_automation_db")
 
 # Security
 SECRET_KEY = get_env_var("SECRET_KEY")

@@ -48,12 +48,12 @@ class CICDConfig:
 @dataclass
 class DatabaseConfig:
     """Configuration for database settings."""
-    type: str = "sqlite"  # sqlite, postgresql, mysql, mongodb
+    type: str = "postgresql"  # postgresql, sqlite, mysql, mongodb
     host: str = "localhost"
     port: int = 5432
-    name: str = "app_db"
-    username: str = ""
-    password: str = ""
+    name: str = "dev_automation_db"
+    username: str = "postgres"
+    password: str = "postgres"
     auto_migration: bool = True
     backup_schedule: str = "daily"  # daily, weekly, monthly
 

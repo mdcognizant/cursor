@@ -419,8 +419,8 @@ class DatabaseConfigForm(BaseConfigForm):
         )
         
         self.add_combobox(type_section, "Database Type", "type",
-                         ["sqlite", "postgresql", "mysql", "mongodb"],
-                         "SQLite is simplest for small projects, PostgreSQL for larger ones")
+                         ["postgresql", "sqlite", "mysql", "mongodb"],
+                         "PostgreSQL is recommended for robust applications, SQLite for simple projects")
         
         # Connection Settings
         conn_section = self.create_section(

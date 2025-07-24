@@ -1,0 +1,26 @@
+# Shell Monitor - Requirements
+# Minimal dependencies for the shell command monitoring utility
+
+# Core Python packages (most are built-in)
+# The shell monitor is designed to work with just the Python standard library
+# to ensure maximum compatibility and minimal installation overhead
+
+# Optional: Enhanced logging and formatting
+# colorama>=0.4.4  # Cross-platform colored terminal output (optional)
+# rich>=10.0.0     # Rich text and beautiful formatting (optional)
+
+# Note: This utility is designed to work with just the Python standard library
+# All required modules are included in Python 3.7+:
+# - subprocess (command execution)
+# - threading (background timers)
+# - signal (process control)
+# - pathlib (file operations)
+# - json (configuration storage)
+# - argparse (command line interface)
+# - logging (diagnostic logging)
+# - time, datetime (timing)
+# - os, sys, platform (system information)
+
+# For development and testing (optional):
+# pytest>=6.0.0
+# pytest-cov>=2.0.0 
