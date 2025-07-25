@@ -1,0 +1,132 @@
+{
+  "test_summary": {
+    "total_scenarios": 7,
+    "total_requests": 390000,
+    "total_successful": 389565,
+    "total_failed": 435,
+    "overall_success_rate": 99.88846153846154,
+    "max_qps_achieved": 7012.488126368469,
+    "avg_qps_achieved": 2796.015304530999,
+    "test_timestamp": 1753452962.002765
+  },
+  "qps_scalability": {
+    "500_qps": 2399.9420941920766,
+    "1000_qps": 441.6595005940435,
+    "5000_qps": 2221.0663003482987,
+    "10000_qps": 7012.488126368469,
+    "25000_qps": 4421.398324238559
+  },
+  "latency_analysis": {
+    "best_avg_latency_ms": 7.105215275,
+    "worst_p99_latency_ms": 274.9455,
+    "sub_5ms_scenarios": 0,
+    "sub_50ms_p99_scenarios": 2
+  },
+  "resource_analysis": {
+    "peak_memory_mb": 366.9765625,
+    "avg_cpu_percent": 16.59725238087409,
+    "memory_efficient_scenarios": 0
+  },
+  "scenario_details": [
+    {
+      "name": "Baseline_500_QPS",
+      "target_qps": 500,
+      "achieved_qps": 2399.9420941920766,
+      "efficiency_percent": 479.9884188384153,
+      "success_rate_percent": 100.0,
+      "avg_latency_ms": 9.170995213333333,
+      "p99_latency_ms": 24.8401,
+      "peak_memory_mb": 49.52734375,
+      "avg_cpu_percent": 13.5375
+    },
+    {
+      "name": "Sustained_1000_QPS",
+      "target_qps": 1000,
+      "achieved_qps": 441.6595005940435,
+      "efficiency_percent": 44.16595005940435,
+      "success_rate_percent": 100.0,
+      "avg_latency_ms": 99.504941665,
+      "p99_latency_ms": 274.9455,
+      "peak_memory_mb": 78.5390625,
+      "avg_cpu_percent": 21.620512820512822
+    },
+    {
+      "name": "High_Load_5000_QPS",
+      "target_qps": 5000,
+      "achieved_qps": 2221.0663003482987,
+      "efficiency_percent": 44.42132600696597,
+      "success_rate_percent": 100.0,
+      "avg_latency_ms": 25.749419758666665,
+      "p99_latency_ms": 59.1859,
+      "peak_memory_mb": 163.73828125,
+      "avg_cpu_percent": 23.763636363636365
+    },
+    {
+      "name": "Maximum_10000_QPS",
+      "target_qps": 10000,
+      "achieved_qps": 7012.488126368469,
+      "efficiency_percent": 70.12488126368468,
+      "success_rate_percent": 100.0,
+      "avg_latency_ms": 7.105215275,
+      "p99_latency_ms": 13.9192,
+      "peak_memory_mb": 202.6328125,
+      "avg_cpu_percent": 14.50612244897959
+    },
+    {
+      "name": "Burst_25000_QPS",
+      "target_qps": 25000,
+      "achieved_qps": 4421.398324238559,
+      "efficiency_percent": 17.685593296954238,
+      "success_rate_percent": 100.0,
+      "avg_latency_ms": 38.4530761,
+      "p99_latency_ms": 112.55,
+      "peak_memory_mb": 366.9765625,
+      "avg_cpu_percent": 14.835714285714285
+    },
+    {
+      "name": "Mixed_Workload_2000_QPS",
+      "target_qps": 2000,
+      "achieved_qps": 914.3015217755811,
+      "efficiency_percent": 45.71507608877906,
+      "success_rate_percent": 100.0,
+      "avg_latency_ms": 72.1146615275,
+      "p99_latency_ms": 226.4126,
+      "peak_memory_mb": 119.4296875,
+      "avg_cpu_percent": 11.585365853658537
+    },
+    {
+      "name": "Error_Resilience_1500_QPS",
+      "target_qps": 1500,
+      "achieved_qps": 2161.251264199963,
+      "efficiency_percent": 144.08341761333085,
+      "success_rate_percent": 98.06666666666666,
+      "avg_latency_ms": 23.485249580784046,
+      "p99_latency_ms": 72.5759,
+      "peak_memory_mb": 96.71484375,
+      "avg_cpu_percent": 16.33191489361702
+    }
+  ],
+  "performance_assessment": {
+    "overall_score": 25.0,
+    "performance_rating": "NEEDS_IMPROVEMENT",
+    "summary": "Significant performance improvements required",
+    "component_scores": {
+      "qps_performance": 40,
+      "latency_performance": 0,
+      "reliability": 30
+    },
+    "recommendations": [
+      "Optimize for higher QPS throughput",
+      "Reduce request processing latency"
+    ]
+  },
+  "system_info": {
+    "cpu_count": 12,
+    "memory_total_gb": 15.66519546508789,
+    "python_version": [
+      3,
+      13
+    ],
+    "platform": "win32"
+  }
+}
