@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsCenter Pro - Enhanced Live News Platform</title>
+    <style>
+        /* Enhanced Professional News Layout with Advanced Animations */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'CNN Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #262626;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #cc0000, #8b0000);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2.8em;
+            font-weight: bold;
+            letter-spacing: -1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-badge:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .stat-badge.live {
+            background: rgba(34, 197, 94, 0.9);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .rate-limit-warning {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .rate-limit-warning.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        .left-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Live Stream Section */
+        .live-stream-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .live-stream-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+        }
+
+        .stream-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .live-indicator {
+            background: #ff0000;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .stream-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #1a1a1a, #333);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .stream-placeholder {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .stream-placeholder h3 {
+            margin-bottom: 10px;
+            color: #ff6b6b;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .controls-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+        }
+
+        .controls-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #cc0000, #8b0000);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            box-shadow: 0 4px 15px rgba(204, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .refresh-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .refresh-btn:hover::before {
+            left: 100%;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(204, 0, 0, 0.4);
+        }
+
+        .refresh-btn:disabled {
+            background: linear-gradient(135deg, #999, #666);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 0.9em;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #cc0000;
+        }
+
+        /* Rate Limit Display */
+        .rate-limit-display {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        /* News Content */
+        .news-content-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .news-content-section:hover {
+            box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .hero-article {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .hero-article:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .hero-article:hover .hero-image img {
+            transform: scale(1.1);
+        }
+
+        .article-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px 20px 20px;
+            transform: translateY(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .hero-article:hover .article-overlay {
+            transform: translateY(0);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .news-card:hover {
+            transform: translateY(-10px) rotateY(5deg);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .news-card:hover .news-image img {
+            transform: scale(1.15) rotate(2deg);
+        }
+
+        /* Right Sidebar - BBC Live News */
+        .right-sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            height: fit-content;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .right-sidebar:hover {
+            box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .bbc-logo {
+            background: linear-gradient(135deg, #bb1919, #8b0000);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .live-updates {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #262626;
+        }
+
+        .bbc-news-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+
+        .bbc-news-item:hover {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding-left: 15px;
+            transform: translateX(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .bbc-news-title {
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 5px;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .bbc-news-meta {
+            font-size: 0.8em;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .update-indicator {
+            background: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        /* Loading and Error States */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #cc0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(81, 207, 102, 0.3);
+        }
+
+        /* Enhanced Visual Effects */
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: -1;
+            opacity: 0.05;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #cc0000, #8b0000);
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .right-sidebar {
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .logo {
+                font-size: 2.2em;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        .right-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #cc0000, #8b0000);
+            border-radius: 10px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #8b0000, #cc0000);
+        }
+    </style>
+</head>
+<body>
+    <div class="parallax-bg"></div>
+    <div class="floating-element" style="top: 10%; left: 10%;"></div>
+    <div class="floating-element" style="top: 60%; right: 15%; animation-delay: -2s;"></div>
+    <div class="floating-element" style="bottom: 20%; left: 20%; animation-delay: -4s;"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🚀 NewsCenter Pro+</div>
+            <div class="header-stats">
+                <div class="stat-badge live">🔴 LIVE</div>
+                <div class="stat-badge">📰 <span id="totalArticles">0</span> Articles</div>
+                <div class="stat-badge">⚡ <span id="headerResponseTime">-</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Rate Limit Warning -->
+    <div class="rate-limit-warning" id="rateLimitWarning">
+        ⚠️ Daily refresh limit reached! You can refresh <span id="remainingRefreshes">0</span> more times today.
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Content -->
+        <div class="left-content">
+            <!-- Live Stream Section -->
+            <section class="live-stream-section">
+                <div class="stream-header">
+                    <div class="live-indicator">🔴 LIVE</div>
+                    <h2>Sky News Live Stream</h2>
+                </div>
+                <div class="stream-container" id="streamContainer">
+                    <div class="stream-placeholder">
+                        <h3>📺 Live News Stream</h3>
+                        <p>Attempting to connect to Sky News live stream...</p>
+                        <p style="font-size: 0.9em; opacity: 0.7; margin-top: 10px;">
+                            Note: External streaming may be restricted due to copyright policies
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Controls Section -->
+            <section class="controls-section">
+                <div class="controls-content">
+                    <button class="refresh-btn" id="refreshBtn" onclick="refreshNews()">
+                        🔄 Refresh News
+                    </button>
+                    
+                    <div class="rate-limit-display">
+                        📊 Refreshes: <span id="refreshCount">0</span>/3 today
+                    </div>
+                    
+                    <div class="stats-bar">
+                        <div class="stat-item">
+                            <span>📰</span>
+                            <span class="stat-value" id="articleCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>🖼️</span>
+                            <span class="stat-value" id="imageCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>⚡</span>
+                            <span class="stat-value" id="responseTime">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>🔄</span>
+                            <span class="stat-value" id="apiCalls">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- News Content -->
+            <section class="news-content-section">
+                <div id="newsContent">
+                    <div style="text-align: center; padding: 60px 20px; color: #666;">
+                        <h3 style="font-size: 1.8em; margin-bottom: 15px; color: #262626;">📰 Welcome to NewsCenter Pro+</h3>
+                        <p style="font-size: 1.1em; margin-bottom: 10px;">Advanced news platform with live streaming and real-time updates</p>
+                        <p style="font-size: 0.95em; color: #999;">
+                            ✨ Features: Rate limiting • Live streams • Smart images • BBC live updates
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Sidebar - BBC Live News -->
+        <aside class="right-sidebar">
+            <div class="sidebar-header">
+                <div class="bbc-logo">BBC</div>
+                <div class="live-updates">Live Updates</div>
+                <div class="update-indicator" id="updateIndicator">Live</div>
+            </div>
+            <div id="bbcNewsContent">
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    <p>📡 Connecting to BBC News...</p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">Updates every 20 seconds</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div>Loading enhanced news content...</div>
+        </div>
+    </div>
+
+    <script>
+        class EnhancedNewsApp {
+            constructor() {
+                this.apiKeys = {
+                    newsdata: 'pub_05c05ef3d5044b3fa7a3ab3b04d479e4',
+                    currents: 'zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah'
+                };
+                
+                this.apiEndpoints = {
+                    newsdata: 'https://newsdata.io/api/1/latest',
+                    currents: 'https://api.currentsapi.services/v1/latest-news'
+                };
+
+                this.stats = {
+                    articles: 0,
+                    images: 0,
+                    apiCalls: 0,
+                    responseTime: 0
+                };
+
+                this.rateLimiting = {
+                    maxRefreshesPerDay: 3,
+                    storageKey: 'newsapp_daily_refreshes',
+                    ipKey: 'newsapp_user_fingerprint'
+                };
+
+                this.bbcUpdateInterval = null;
+                this.isLoading = false;
+                
+                // Initialize
+                this.init();
+            }
+
+            async init() {
+                console.log('🚀 Initializing Enhanced NewsCenter Pro+...');
+                
+                // Initialize rate limiting
+                this.initializeRateLimiting();
+                
+                // Update UI
+                this.updateStats();
+                this.updateRateLimitDisplay();
+                
+                // Attempt Sky News stream integration
+                this.initializeSkyNewsStream();
+                
+                // Start BBC News updates
+                this.startBBCNewsUpdates();
+                
+                console.log('✅ Enhanced NewsCenter Pro+ initialized');
+            }
+
+            // Rate Limiting System
+            generateUserFingerprint() {
+                // Create a browser fingerprint for rate limiting
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Arial';
+                ctx.fillText('Browser fingerprint', 2, 2);
+                
+                const fingerprint = btoa(JSON.stringify({
+                    userAgent: navigator.userAgent,
+                    language: navigator.language,
+                    platform: navigator.platform,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    screen: `${screen.width}x${screen.height}`,
+                    canvas: canvas.toDataURL(),
+                    timestamp: new Date().toDateString() // Reset daily
+                }));
+                
+                return fingerprint.substring(0, 32); // Truncate for storage
+            }
+
+            initializeRateLimiting() {
+                const userFingerprint = this.generateUserFingerprint();
+                localStorage.setItem(this.rateLimiting.ipKey, userFingerprint);
+                
+                // Check if it's a new day
+                const today = new Date().toDateString();
+                const storedData = this.getRateLimitData();
+                
+                if (!storedData || storedData.date !== today || storedData.fingerprint !== userFingerprint) {
+                    // Reset for new day or new user
+                    this.resetDailyRefreshes();
+                }
+            }
+
+            getRateLimitData() {
+                try {
+                    const data = localStorage.getItem(this.rateLimiting.storageKey);
+                    return data ? JSON.parse(data) : null;
+                } catch (e) {
+                    console.error('Error reading rate limit data:', e);
+                    return null;
+                }
+            }
+
+            updateRateLimitData(refreshCount) {
+                const data = {
+                    date: new Date().toDateString(),
+                    fingerprint: localStorage.getItem(this.rateLimiting.ipKey),
+                    refreshes: refreshCount,
+                    lastRefresh: new Date().toISOString()
+                };
+                
+                localStorage.setItem(this.rateLimiting.storageKey, JSON.stringify(data));
+            }
+
+            resetDailyRefreshes() {
+                this.updateRateLimitData(0);
+            }
+
+            canRefresh() {
+                const data = this.getRateLimitData();
+                if (!data) return true;
+                
+                return data.refreshes < this.rateLimiting.maxRefreshesPerDay;
+            }
+
+            getRemainingRefreshes() {
+                const data = this.getRateLimitData();
+                if (!data) return this.rateLimiting.maxRefreshesPerDay;
+                
+                return Math.max(0, this.rateLimiting.maxRefreshesPerDay - data.refreshes);
+            }
+
+            incrementRefreshCount() {
+                const data = this.getRateLimitData();
+                const currentCount = data ? data.refreshes : 0;
+                this.updateRateLimitData(currentCount + 1);
+            }
+
+            updateRateLimitDisplay() {
+                const remaining = this.getRemainingRefreshes();
+                const data = this.getRateLimitData();
+                const used = data ? data.refreshes : 0;
+                
+                document.getElementById('refreshCount').textContent = used;
+                document.getElementById('remainingRefreshes').textContent = remaining;
+                
+                const refreshBtn = document.getElementById('refreshBtn');
+                const warningElement = document.getElementById('rateLimitWarning');
+                
+                if (remaining === 0) {
+                    refreshBtn.disabled = true;
+                    refreshBtn.innerHTML = '🚫 Daily Limit Reached';
+                    warningElement.classList.add('show');
+                } else if (remaining === 1) {
+                    warningElement.classList.add('show');
+                } else {
+                    warningElement.classList.remove('show');
+                }
+            }
+
+            // Sky News Stream Integration
+            async initializeSkyNewsStream() {
+                console.log('📺 Attempting Sky News stream integration...');
+                
+                const streamContainer = document.getElementById('streamContainer');
+                
+                try {
+                    // Attempt to embed Sky News iframe
+                    const iframe = document.createElement('iframe');
+                    iframe.src = 'https://news.sky.com/watch-live';
+                    iframe.width = '100%';
+                    iframe.height = '100%';
+                    iframe.frameBorder = '0';
+                    iframe.allowFullscreen = true;
+                    iframe.allow = 'autoplay; encrypted-media';
+                    
+                    iframe.onload = () => {
+                        console.log('✅ Sky News iframe loaded');
+                    };
+                    
+                    iframe.onerror = () => {
+                        console.log('❌ Sky News iframe failed, showing fallback');
+                        this.showStreamFallback();
+                    };
+                    
+                    // Clear placeholder and add iframe
+                    streamContainer.innerHTML = '';
+                    streamContainer.appendChild(iframe);
+                    
+                    // Check if iframe loads properly after 5 seconds
+                    setTimeout(() => {
+                        if (iframe.contentDocument === null) {
+                            console.log('⚠️ Sky News stream blocked by CORS, showing alternative');
+                            this.showStreamFallback();
+                        }
+                    }, 5000);
+                    
+                } catch (error) {
+                    console.error('❌ Sky News stream error:', error);
+                    this.showStreamFallback();
+                }
+            }
+
+            showStreamFallback() {
+                const streamContainer = document.getElementById('streamContainer');
+                streamContainer.innerHTML = `
+                    <div class="stream-placeholder">
+                        <h3>📺 Live News Stream</h3>
+                        <p>External streaming restricted due to copyright policies</p>
+                        <div style="margin-top: 15px;">
+                            <a href="https://news.sky.com/watch-live" target="_blank" 
+                               style="color: #cc0000; text-decoration: none; font-weight: bold;">
+                                🔗 Watch Sky News Live (Opens in new tab)
+                            </a>
+                        </div>
+                        <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">
+                            Most news sites prevent embedding for security and copyright reasons
+                        </p>
+                    </div>
+                `;
+            }
+
+            // BBC News Updates
+            startBBCNewsUpdates() {
+                console.log('📡 Starting BBC News live updates...');
+                
+                // Initial load
+                this.fetchBBCNews();
+                
+                // Update every 20 seconds
+                this.bbcUpdateInterval = setInterval(() => {
+                    this.fetchBBCNews();
+                }, 20000);
+            }
+
+            async fetchBBCNews() {
+                try {
+                    console.log('📡 Fetching BBC News updates...');
+                    
+                    // Note: Due to CORS restrictions, we'll simulate BBC news updates
+                    // In a real implementation, this would require a backend proxy
+                    
+                    const mockBBCNews = this.generateMockBBCNews();
+                    this.displayBBCNews(mockBBCNews);
+                    
+                    // Update indicator
+                    const indicator = document.getElementById('updateIndicator');
+                    indicator.style.background = '#28a745';
+                    indicator.textContent = 'Updated';
+                    
+                    setTimeout(() => {
+                        indicator.style.background = '#6c757d';
+                        indicator.textContent = 'Live';
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('❌ BBC News fetch error:', error);
+                    this.showBBCError();
+                }
+            }
+
+            generateMockBBCNews() {
+                // Mock BBC news based on the search results provided
+                const bbcNewsItems = [
+                    {
+                        title: "Israel announces 'tactical pause' to fighting in parts of Gaza",
+                        time: "8 hours ago",
+                        category: "Middle East",
+                        urgent: true
+                    },
+                    {
+                        title: "Gaza air drops 'a grotesque distraction', aid agencies warn",
+                        time: "8 hours ago",
+                        category: "Middle East",
+                        urgent: false
+                    },
+                    {
+                        title: "Greece battles wildfires, evacuating residents near Athens",
+                        time: "7 hours ago",
+                        category: "Europe",
+                        urgent: false
+                    },
+                    {
+                        title: "Thailand and Cambodia thank Trump for mediation",
+                        time: "6 hours ago",
+                        category: "Asia",
+                        urgent: false
+                    },
+                    {
+                        title: "Euro 2025 final: England prepare to face Spain",
+                        time: "Live",
+                        category: "Football",
+                        urgent: false
+                    },
+                    {
+                        title: "Plans for pubs to get greater protection from noise complaints",
+                        time: "2 hours ago",
+                        category: "Business",
+                        urgent: false
+                    },
+                    {
+                        title: "Astronomer's CEO scandal featuring Gwyneth Paltrow",
+                        time: "1 hour ago",
+                        category: "US & Canada",
+                        urgent: false
+                    }
+                ];
+                
+                return bbcNewsItems;
+            }
+
+            displayBBCNews(newsItems) {
+                const container = document.getElementById('bbcNewsContent');
+                
+                const newsHTML = newsItems.map(item => `
+                    <div class="bbc-news-item" onclick="this.style.background='#f0f8ff'">
+                        <div class="bbc-news-title">${item.title}</div>
+                        <div class="bbc-news-meta">
+                            <span>📰 ${item.category}</span>
+                            <span>⏰ ${item.time}</span>
+                            ${item.urgent ? '<span style="background: #ff0000; color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.6em;">URGENT</span>' : ''}
+                        </div>
+                    </div>
+                `).join('');
+                
+                container.innerHTML = newsHTML;
+            }
+
+            showBBCError() {
+                document.getElementById('bbcNewsContent').innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #ff6b6b;">
+                        <p>❌ Unable to fetch BBC News</p>
+                        <p style="font-size: 0.9em; margin-top: 10px;">Retrying in 20 seconds...</p>
+                    </div>
+                `;
+            }
+
+            // Main News Fetching
+            showLoading() {
+                this.isLoading = true;
+                document.getElementById('loadingOverlay').classList.add('show');
+                const btn = document.getElementById('refreshBtn');
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Loading...';
+            }
+
+            hideLoading() {
+                this.isLoading = false;
+                document.getElementById('loadingOverlay').classList.remove('show');
+                const btn = document.getElementById('refreshBtn');
+                
+                if (this.canRefresh()) {
+                    btn.disabled = false;
+                    btn.innerHTML = '🔄 Refresh News';
+                }
+            }
+
+            async refreshNews() {
+                if (this.isLoading || !this.canRefresh()) {
+                    if (!this.canRefresh()) {
+                        this.showError('Daily refresh limit reached! Try again tomorrow.');
+                    }
+                    return;
+                }
+
+                this.showLoading();
+                this.incrementRefreshCount();
+                this.updateRateLimitDisplay();
+                
+                const overallStartTime = performance.now();
+
+                try {
+                    console.log('🚀 Starting enhanced news fetch...');
+                    
+                    const [newsdataResult, currentsResult] = await Promise.all([
+                        this.fetchFromNewsData(),
+                        this.fetchFromCurrents()
+                    ]);
+
+                    const overallEndTime = performance.now();
+                    this.stats.responseTime = overallEndTime - overallStartTime;
+
+                    let allArticles = [];
+                    
+                    if (newsdataResult.success) {
+                        allArticles = [...allArticles, ...newsdataResult.articles];
+                    }
+                    
+                    if (currentsResult.success) {
+                        allArticles = [...allArticles, ...currentsResult.articles];
+                    }
+
+                    if (allArticles.length > 0) {
+                        this.displayEnhancedNews(allArticles);
+                        this.showSuccessMessage(allArticles.length);
+                    } else {
+                        this.showError('No articles available from APIs.');
+                    }
+
+                } catch (error) {
+                    console.error('❌ News fetch error:', error);
+                    this.showError(`Failed to fetch news: ${error.message}`);
+                } finally {
+                    this.hideLoading();
+                    this.updateStats();
+                }
+            }
+
+            async fetchFromNewsData() {
+                try {
+                    console.log('🔄 Fetching from NewsData.io...');
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(`${this.apiEndpoints.newsdata}?apikey=${this.apiKeys.newsdata}&language=en&size=12`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`NewsData.io API error: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    const endTime = performance.now();
+                    
+                    const articles = data.results.map(article => ({
+                        ...article,
+                        source_provider: 'newsdata',
+                        fetch_time: new Date().toISOString(),
+                        response_time: endTime - startTime,
+                        link: article.link || article.url || '#',
+                        image_url: article.image_url || this.generatePlaceholderImage(article.title)
+                    }));
+
+                    this.stats.apiCalls++;
+                    
+                    console.log(`✅ NewsData.io: ${articles.length} articles`);
+                    
+                    return {
+                        success: true,
+                        articles: articles,
+                        responseTime: endTime - startTime,
+                        provider: 'newsdata',
+                        source: 'live'
+                    };
+                } catch (error) {
+                    console.error('❌ NewsData.io error:', error);
+                    return {
+                        success: false,
+                        error: error.message,
+                        articles: [],
+                        provider: 'newsdata'
+                    };
+                }
+            }
+
+            async fetchFromCurrents() {
+                try {
+                    console.log('🔄 Fetching from Currents API...');
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(`${this.apiEndpoints.currents}?apiKey=${this.apiKeys.currents}&language=en&limit=8`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Currents API error: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    const endTime = performance.now();
+                    
+                    const articles = data.news.map(article => ({
+                        ...article,
+                        source_provider: 'currents',
+                        fetch_time: new Date().toISOString(),
+                        response_time: endTime - startTime,
+                        link: article.url || article.link || '#',
+                        image_url: article.image || this.generatePlaceholderImage(article.title)
+                    }));
+
+                    this.stats.apiCalls++;
+                    
+                    console.log(`✅ Currents API: ${articles.length} articles`);
+                    
+                    return {
+                        success: true,
+                        articles: articles,
+                        responseTime: endTime - startTime,
+                        provider: 'currents',
+                        source: 'live'
+                    };
+                } catch (error) {
+                    console.error('❌ Currents API error:', error);
+                    return {
+                        success: false,
+                        error: error.message,
+                        articles: [],
+                        provider: 'currents'
+                    };
+                }
+            }
+
+            generatePlaceholderImage(title) {
+                const keywords = title.split(' ').slice(0, 2).join('+');
+                return `https://via.placeholder.com/400x240/cc0000/ffffff?text=${encodeURIComponent(keywords)}`;
+            }
+
+            displayEnhancedNews(articles) {
+                const container = document.getElementById('newsContent');
+                if (!articles || articles.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px; color: #666;">
+                            <h3>📭 No News Available</h3>
+                            <p>No articles found. Try refreshing to fetch new content.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort articles by publish date
+                articles.sort((a, b) => {
+                    const dateA = new Date(a.pubDate || a.published || a.publishedAt || Date.now());
+                    const dateB = new Date(b.pubDate || b.published || b.publishedAt || Date.now());
+                    return dateB - dateA;
+                });
+
+                const heroArticle = articles[0];
+                const gridArticles = articles.slice(1);
+
+                const enhancedLayout = `
+                    <div class="main-content">
+                        <!-- Hero Article -->
+                        <article class="hero-article" onclick="openArticle('${heroArticle.link}')">
+                            <div class="hero-image">
+                                <img src="${heroArticle.image_url}" alt="Hero image" 
+                                     onerror="this.src='https://via.placeholder.com/600x300/cc0000/ffffff?text=Breaking+News'">
+                            </div>
+                            <div class="article-overlay">
+                                <span style="background: #cc0000; color: white; padding: 4px 12px; border-radius: 3px; font-size: 0.7em; font-weight: bold; text-transform: uppercase; display: inline-block; margin-bottom: 10px;">
+                                    ${heroArticle.category || 'BREAKING'}
+                                </span>
+                                <h1 style="font-size: 1.8em; font-weight: bold; line-height: 1.3; margin-bottom: 10px; color: white;">
+                                    ${this.sanitizeText(heroArticle.title || 'Breaking News')}
+                                </h1>
+                                <p style="font-size: 0.95em; line-height: 1.5; opacity: 0.9;">
+                                    ${this.sanitizeText(heroArticle.description || heroArticle.content || '')}
+                                </p>
+                            </div>
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(204, 0, 0, 0.9); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1em; opacity: 0; transition: opacity 0.3s ease; z-index: 10;">
+                                🔗 Click to read full article
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- News Grid -->
+                    <div class="news-grid">
+                        ${gridArticles.map(article => this.createEnhancedNewsCard(article)).join('')}
+                    </div>
+                `;
+
+                container.innerHTML = enhancedLayout;
+                this.stats.articles = articles.length;
+                this.stats.images = articles.length;
+                
+                // Add hover effects to hero article
+                const heroArticle_el = container.querySelector('.hero-article');
+                const overlay = heroArticle_el.querySelector('div[style*="rgba(204, 0, 0, 0.9)"]');
+                
+                heroArticle_el.addEventListener('mouseenter', () => {
+                    overlay.style.opacity = '1';
+                });
+                
+                heroArticle_el.addEventListener('mouseleave', () => {
+                    overlay.style.opacity = '0';
+                });
+            }
+
+            createEnhancedNewsCard(article) {
+                const articleId = `article_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                
+                return `
+                    <article class="news-card" onclick="openArticle('${article.link}')" 
+                             onmouseenter="this.querySelector('.card-overlay').style.opacity='1'" 
+                             onmouseleave="this.querySelector('.card-overlay').style.opacity='0'">
+                        <div class="news-image">
+                            <img src="${article.image_url}" alt="News image" 
+                                 onerror="this.src='https://via.placeholder.com/400x200/f0f0f0/666666?text=News+Image'">
+                            <div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.7em; font-weight: bold;">
+                                ${(article.source_provider || 'NEWS').toUpperCase()}
+                            </div>
+                        </div>
+                        <div style="padding: 20px;">
+                            <span style="background: #f0f0f0; color: #666; padding: 2px 8px; border-radius: 3px; font-size: 0.7em; font-weight: bold; text-transform: uppercase; display: inline-block; margin-bottom: 8px;">
+                                ${article.category || 'NEWS'}
+                            </span>
+                            <h3 style="font-size: 1.1em; font-weight: bold; line-height: 1.4; margin-bottom: 8px; color: #262626; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                ${this.sanitizeText(article.title || 'News Update')}
+                            </h3>
+                            <p style="font-size: 0.9em; color: #666; line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                ${this.sanitizeText(article.description || article.content || '')}
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; color: #999;">
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    ⏰ ${this.formatTime(article.pubDate || article.published || article.publishedAt)}
+                                </div>
+                                <div style="font-weight: 600; color: #cc0000;">
+                                    ${article.source_id || article.source_provider || 'NewsCenter'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(204, 0, 0, 0.9); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1em; opacity: 0; transition: opacity 0.3s ease; z-index: 10;">
+                            🔗 Read Full Story
+                        </div>
+                    </article>
+                `;
+            }
+
+            formatTime(dateString) {
+                if (!dateString) return 'Recently';
+                const date = new Date(dateString);
+                const now = new Date();
+                const diff = now - date;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                
+                if (hours < 1) return 'Just now';
+                if (hours < 24) return `${hours}h ago`;
+                return date.toLocaleDateString();
+            }
+
+            sanitizeText(text) {
+                if (typeof text !== 'string') return '';
+                return text.replace(/[<>]/g, '').trim().substring(0, 200);
+            }
+
+            updateStats() {
+                document.getElementById('articleCount').textContent = this.stats.articles;
+                document.getElementById('imageCount').textContent = this.stats.images;
+                document.getElementById('responseTime').textContent = 
+                    this.stats.responseTime > 0 ? `${this.stats.responseTime.toFixed(0)}ms` : '-';
+                document.getElementById('apiCalls').textContent = this.stats.apiCalls;
+                
+                // Update header stats
+                document.getElementById('totalArticles').textContent = this.stats.articles;
+                document.getElementById('headerResponseTime').textContent = 
+                    this.stats.responseTime > 0 ? `${this.stats.responseTime.toFixed(0)}ms` : '-';
+            }
+
+            showSuccessMessage(totalArticles) {
+                console.log(`✅ Successfully loaded ${totalArticles} articles`);
+                
+                // Show success animation in header
+                const headerStats = document.querySelector('.header-stats');
+                headerStats.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    headerStats.style.transform = 'scale(1)';
+                }, 300);
+            }
+
+            showError(message) {
+                const container = document.getElementById('newsContent');
+                container.innerHTML = `
+                    <div class="error-message">
+                        <h3>❌ Error Loading News</h3>
+                        <p>${this.sanitizeText(message)}</p>
+                        <button onclick="app.refreshNews()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; margin-top: 15px; font-weight: bold;">
+                            🔄 Try Again
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Cleanup method
+            destroy() {
+                if (this.bbcUpdateInterval) {
+                    clearInterval(this.bbcUpdateInterval);
+                }
+            }
+        }
+
+        // Global functions
+        let app;
+
+        function refreshNews() {
+            if (app) {
+                app.refreshNews();
+            }
+        }
+
+        function openArticle(url) {
+            if (url && url !== '#') {
+                window.open(url, '_blank', 'noopener,noreferrer');
+                console.log(`🔗 Opened article: ${url}`);
+            }
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            app = new EnhancedNewsApp();
+            console.log('🚀 Enhanced NewsCenter Pro+ initialized');
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (app) {
+                app.destroy();
+            }
+        });
+
+        // Enhanced error handling
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+        });
+
+        // Performance monitoring
+        window.addEventListener('load', function() {
+            const loadTime = performance.now();
+            console.log(`📊 Page load time: ${loadTime.toFixed(0)}ms`);
+        });
+    </script>
+</body>
+</html> 

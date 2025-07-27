@@ -285,6 +285,7 @@ class UniversalGateway:
                     resource_id = path_parts[-1]
                     grpc_request["resource_id"] = resource_id
                 except:
+                    logger.exception("Unhandled exception occurred")
                     pass
                     
         elif context.method in ["POST", "PUT", "PATCH"]:

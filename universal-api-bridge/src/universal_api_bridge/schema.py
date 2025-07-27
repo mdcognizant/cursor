@@ -1,3 +1,4 @@
+import asyncio
 """Schema translator for converting between REST and gRPC formats."""
 
 import json

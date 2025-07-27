@@ -32,7 +32,7 @@ from urllib.parse import urlparse
 from google.protobuf.message import Message
 import google.protobuf.json_format as json_format
 
-from .exceptions import GRPCConnectionError, TimeoutError, ServiceUnavailableError
+from .exceptions import GRPCConnectionError, BridgeTimeoutError, ServiceUnavailableError
 from .config import ServiceEndpoint
 
 logger = logging.getLogger(__name__)
@@ -337,6 +337,7 @@ class OptimizedGRPCChannel:
             )
             
         except Exception:
+            logger.exception("Unhandled exception occurred")
             # Fallback: try to create a simple stub and test
             # This is a basic connectivity test
             await asyncio.wait_for(
@@ -396,7 +397,7 @@ class OptimizedGRPCChannel:
             return response
             
         except asyncio.TimeoutError:
-            raise TimeoutError(f"gRPC call timed out after {timeout}s")
+            raise BridgeTimeoutError(f"gRPC call timed out after {timeout}s")
         except grpc.RpcError as e:
             if e.code() == grpc.StatusCode.UNAVAILABLE:
                 raise ServiceUnavailableError(f"Service unavailable: {e.details()}")
@@ -425,7 +426,7 @@ class OptimizedGRPCChannel:
                 yield response
                 
         except asyncio.TimeoutError:
-            raise TimeoutError(f"Streaming call timed out after {timeout}s")
+            raise BridgeTimeoutError(f"Streaming call timed out after {timeout}s")
         except grpc.RpcError as e:
             raise GRPCConnectionError(f"Streaming error: {e.details()}")
     
@@ -600,6 +601,7 @@ class OptimizedGRPCBackend:
         try:
             return json_format.MessageToDict(message)
         except Exception:
+            logger.exception("Unhandled exception occurred")
             # Fallback for mock messages
             return {"data": str(message)}
     
@@ -609,6 +611,7 @@ class OptimizedGRPCBackend:
             channel = await self.channel_pool.get_channel(endpoint)
             return channel.is_healthy
         except Exception:
+            logger.exception("Unhandled exception occurred")
             return False
     
     def get_performance_metrics(self) -> Dict[str, Any]:

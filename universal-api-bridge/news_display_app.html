@@ -759,7 +759,8 @@
                 const container = document.getElementById('newsContainer');
                 
                 if (!articles || articles.length === 0) {
-                    container.innerHTML = `
+                    // Security: Consider using textContent or proper sanitization
+                container.innerHTML = `
                         <div class="error-message">
                             No news articles found. Try adjusting your search criteria.
                         </div>
@@ -775,6 +776,7 @@
                     newsGrid.appendChild(newsCard);
                 });
 
+                // Security: Consider using textContent or proper sanitization
                 container.innerHTML = '';
                 container.appendChild(newsGrid);
             }
@@ -786,6 +788,7 @@
                 const publishDate = new Date(article.published);
                 const timeAgo = this.getTimeAgo(publishDate);
 
+                // Security: Consider using textContent or proper sanitization
                 card.innerHTML = `
                     <div class="news-image ${!article.image ? 'no-image' : ''}" 
                          ${article.image ? `style="background-image: url('${article.image}')"` : ''}>
@@ -872,6 +875,7 @@
 
             showLoading() {
                 const container = document.getElementById('newsContainer');
+                // Security: Consider using textContent or proper sanitization
                 container.innerHTML = `
                     <div class="loading-spinner">
                         <div class="spinner"></div>
@@ -885,6 +889,7 @@
 
             showError(message) {
                 const container = document.getElementById('newsContainer');
+                // Security: Consider using textContent or proper sanitization
                 container.innerHTML = `
                     <div class="error-message">
                         <h3>⚠️ Error Loading News</h3>
@@ -901,11 +906,13 @@
                 if (loading) {
                     btn.disabled = true;
                     btn.classList.add('loading');
-                    btn.innerHTML = '⏳ Loading...';
+                    // Security: Consider using textContent or proper sanitization
+                btn.innerHTML = '⏳ Loading...';
                 } else {
                     btn.disabled = false;
                     btn.classList.remove('loading');
-                    btn.innerHTML = '🔄 Refresh News';
+                    // Security: Consider using textContent or proper sanitization
+                btn.innerHTML = '🔄 Refresh News';
                 }
             }
 

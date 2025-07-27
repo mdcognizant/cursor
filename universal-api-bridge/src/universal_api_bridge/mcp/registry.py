@@ -25,7 +25,12 @@ import random
 
 import etcd3
 import consul
-import redis.asyncio as aioredis
+try:
+    import redis.asyncio as aioredis
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
+    logger.warning('redis.asyncio not available, some features disabled')
 from kubernetes import client, config as k8s_config, watch
 import aiohttp
 

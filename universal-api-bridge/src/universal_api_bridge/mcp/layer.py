@@ -8,7 +8,12 @@ import asyncio
 import logging
 import time
 from typing import Dict, List, Any, Optional
-import redis.asyncio as aioredis
+try:
+    import redis.asyncio as aioredis
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
+    logger.warning('redis.asyncio not available, some features disabled')
 
 from ..config import MCPConfig
 from ..exceptions import (

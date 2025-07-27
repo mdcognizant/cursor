@@ -126,9 +126,13 @@ class InputValidationError(BridgeError):
         super().__init__(message, "INPUT_VALIDATION_ERROR")
 
 
-class TimeoutError(BridgeError):
-    """Raised when operation times out."""
+class BridgeTimeoutError(BridgeError):
+    """Raised when operation times out. Renamed to avoid conflict with built-in TimeoutError."""
     
     def __init__(self, message: str = "Operation timed out", timeout_seconds: float = None):
         super().__init__(message, "TIMEOUT_ERROR")
-        self.timeout_seconds = timeout_seconds 
+        self.timeout_seconds = timeout_seconds
+
+
+# Backward compatibility alias
+TimeoutError = BridgeTimeoutError 

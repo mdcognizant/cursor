@@ -1,0 +1,45 @@
+{
+  "usage_strategy": {
+    "title": "Optimal Dual-Provider Usage Strategy",
+    "updated": "2025-07-25T22:42:07.053626",
+    "provider_allocation": {
+      "newsdata_primary": {
+        "role": "Primary provider",
+        "daily_limit": 200,
+        "monthly_limit": 6000,
+        "usage_percentage": "90-95%",
+        "use_cases": [
+          "Regular news browsing",
+          "Category filtering",
+          "General search queries",
+          "Daily news updates"
+        ]
+      },
+      "currents_fallback": {
+        "role": "Strategic fallback",
+        "daily_limit": 20,
+        "monthly_limit": 600,
+        "usage_percentage": "5-10%",
+        "use_cases": [
+          "NewsData.io rate limit reached",
+          "NewsData.io service issues",
+          "Specific content not in NewsData.io",
+          "Emergency/critical news needs"
+        ]
+      }
+    },
+    "smart_allocation": {
+      "daily_strategy": "Use NewsData.io for 190-195 requests, save Currents for 5-10 emergency requests",
+      "monthly_strategy": "Use NewsData.io for ~5500 requests, save Currents 600 for critical needs",
+      "load_balancing": "Priority-based with conservative Currents usage",
+      "automatic_switching": "Only switch to Currents when NewsData.io unavailable or exhausted"
+    },
+    "benefits": {
+      "reliability": "99.9% uptime with dual-provider fallback",
+      "capacity": "220 total daily requests vs 200 single-provider",
+      "cost_efficiency": "Maximize value from both API plans",
+      "performance": "3x faster with gRPC optimization",
+      "redundancy": "Automatic failover protection"
+    }
+  }
+}

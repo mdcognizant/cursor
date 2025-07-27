@@ -1,3 +1,4 @@
+import asyncio
 """Load balancer for distributing requests across service instances."""
 
 import random

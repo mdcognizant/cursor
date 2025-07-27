@@ -57,7 +57,7 @@ from google.protobuf.message import Message
 from google.protobuf import arena
 import google.protobuf.json_format as json_format
 
-from .exceptions import GRPCConnectionError, TimeoutError, ServiceUnavailableError
+from .exceptions import GRPCConnectionError, BridgeTimeoutError, ServiceUnavailableError
 from .config import ServiceEndpoint
 from .grpc_engine import GRPCChannelConfig, GRPCMetrics
 
@@ -750,7 +750,7 @@ class UltraOptimizedGRPCChannel:
                 self.request_pool.return_object(request_ctx)
                 
         except asyncio.TimeoutError:
-            raise TimeoutError(f"Ultra-fast gRPC call timed out after {timeout}s")
+            raise BridgeTimeoutError(f"Ultra-fast gRPC call timed out after {timeout}s")
         except Exception as e:
             logger.error(f"Ultra-fast unary call failed: {e}")
             raise

@@ -398,7 +398,7 @@ class TestGRPCBackendOptimization:
         # Test timeout handling
         with patch.object(grpc_backend.channel_pool, 'get_channel') as mock_get_channel:
             mock_channel = MagicMock()
-            mock_channel.unary_call = AsyncMock(side_effect=asyncio.TimeoutError("Timeout"))
+            mock_channel.unary_call = AsyncMock(side_effect=asyncio.BridgeTimeoutError("Timeout"))
             mock_get_channel.return_value = mock_channel
             
             with pytest.raises(TimeoutError):

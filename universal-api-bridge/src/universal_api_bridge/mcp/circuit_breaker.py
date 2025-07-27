@@ -1,33 +1,26 @@
 """
-Advanced Circuit Breaker implementation for massive scale (100k+ APIs).
+Advanced Circuit Breaker implementation for Universal API Bridge.
 
-This module implements enterprise-grade circuit breaker patterns including:
-- Hystrix-style circuit breaker with distributed state
-- Adaptive failure detection and recovery
-- Bulkhead pattern for service isolation
-- Timeout and retry patterns integration
-- Health-based circuit management
-- Performance metrics and monitoring
-- Distributed coordination for cluster-wide circuit state
+Features:
+- Multi-state circuit breaker (CLOSED, OPEN, HALF_OPEN)
+- Configurable failure thresholds and timeouts
+- Request success/failure tracking
+- Automatic recovery with half-open testing
+- Thread-safe implementation
+- Performance metrics collection
 """
 
 import asyncio
-import logging
 import time
-import math
-from typing import Dict, List, Optional, Any, Callable, Union
+import threading
+import logging
+from typing import Dict, Any, Optional, Callable, Union
 from dataclasses import dataclass, field
 from enum import Enum
 from collections import deque, defaultdict
-import statistics
 import weakref
-import json
 
-import redis.asyncio as aioredis
-from prometheus_client import Counter, Histogram, Gauge
-
-from ..config import MCPConfig
-from ..exceptions import CircuitBreakerError, ServiceUnavailableError, TimeoutError
+from ..exceptions import CircuitBreakerError, ServiceUnavailableError, BridgeTimeoutError
 
 logger = logging.getLogger(__name__)
 
@@ -315,7 +308,7 @@ class AdvancedCircuitBreaker:
                 result="timeout"
             ).inc()
             
-            raise TimeoutError(f"Call to '{self.name}' timed out after {call_timeout}s")
+            raise BridgeTimeoutError(f"Call to '{self.name}' timed out after {call_timeout}s")
             
         except Exception as e:
             call_duration = time.time() - call_start
