@@ -1,0 +1,109 @@
+{
+  "timestamp": "2025-07-27T23:55:17.334260",
+  "optimization_tests": {
+    "newsdata": [
+      {
+        "size_requested": 10,
+        "articles_received": 10,
+        "response_time": 0.6334877014160156,
+        "status": "success",
+        "efficiency": 1.0
+      },
+      {
+        "size_requested": 25,
+        "articles_received": 0,
+        "status": "invalid_parameter",
+        "error": "Size limit exceeded"
+      }
+    ],
+    "currents": [
+      {
+        "limit_requested": 10,
+        "articles_received": 0,
+        "status": "error",
+        "error": "HTTPSConnectionPool(host='api.currentsapi.services', port=443): Max retries exceeded with url: /v1/latest-news?apiKey=zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah&language=en&limit=10 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))"
+      },
+      {
+        "limit_requested": 25,
+        "articles_received": 0,
+        "status": "error",
+        "error": "HTTPSConnectionPool(host='api.currentsapi.services', port=443): Max retries exceeded with url: /v1/latest-news?apiKey=zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah&language=en&limit=25 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))"
+      },
+      {
+        "limit_requested": 50,
+        "articles_received": 0,
+        "status": "error",
+        "error": "HTTPSConnectionPool(host='api.currentsapi.services', port=443): Max retries exceeded with url: /v1/latest-news?apiKey=zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah&language=en&limit=50 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))"
+      },
+      {
+        "limit_requested": 75,
+        "articles_received": 0,
+        "status": "error",
+        "error": "HTTPSConnectionPool(host='api.currentsapi.services', port=443): Max retries exceeded with url: /v1/latest-news?apiKey=zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah&language=en&limit=75 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))"
+      },
+      {
+        "limit_requested": 100,
+        "articles_received": 0,
+        "status": "error",
+        "error": "HTTPSConnectionPool(host='api.currentsapi.services', port=443): Max retries exceeded with url: /v1/latest-news?apiKey=zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah&language=en&limit=100 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))"
+      },
+      {
+        "limit_requested": 200,
+        "articles_received": 0,
+        "status": "error",
+        "error": "HTTPSConnectionPool(host='api.currentsapi.services', port=443): Max retries exceeded with url: /v1/latest-news?apiKey=zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah&language=en&limit=200 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))"
+      }
+    ]
+  },
+  "optimal_config": {
+    "newsdata_size": 10,
+    "currents_limit": 50,
+    "newsdata_categories": [
+      "top",
+      "business"
+    ],
+    "final_configuration": {
+      "strategy": "maximize_articles_per_request",
+      "daily_api_limit": 20,
+      "target_articles_per_refresh": 35,
+      "newsdata_io": {
+        "optimal_size": 10,
+        "optimal_categories": [
+          "top",
+          "business"
+        ],
+        "url_template": "https://newsdata.io/api/1/latest?apikey={API_KEY}&language=en&category={CATEGORIES}&size={SIZE}",
+        "calls_per_day": 10,
+        "expected_articles_per_call": 10
+      },
+      "currents_api": {
+        "optimal_limit": 50,
+        "url_template": "https://api.currentsapi.services/v1/latest-news?apiKey={API_KEY}&language=en&limit={LIMIT}",
+        "calls_per_day": 10,
+        "expected_articles_per_call": 50
+      },
+      "enhanced_scraper": {
+        "articles_per_request": 100,
+        "calls_per_day": "unlimited",
+        "sources": 6
+      },
+      "total_expected_articles": 160,
+      "rotation_strategy": {
+        "morning_refresh": [
+          "newsdata_io",
+          "enhanced_scraper"
+        ],
+        "afternoon_refresh": [
+          "currents_api",
+          "enhanced_scraper"
+        ],
+        "evening_refresh": [
+          "newsdata_io",
+          "currents_api",
+          "enhanced_scraper"
+        ]
+      }
+    }
+  },
+  "recommendations": []
+}

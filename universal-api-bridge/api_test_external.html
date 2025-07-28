@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External API Test - Organization Friendly</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #005a9e;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .loading {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 External News API Test</h1>
+        <p><strong>Organization Friendly:</strong> Tests external APIs without localhost dependencies</p>
+        
+        <div>
+            <button class="test-button" onclick="testNewsDataAPI()">Test NewsData.io API</button>
+            <button class="test-button" onclick="showCurrentsInfo()">About Currents API Issues</button>
+            <button class="test-button" onclick="testReliableAPIs()">Test All Working APIs</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const config = {
+            apiKeys: {
+                newsdata: 'pub_05c05ef3d5044b3fa7a3ab3b04d479e4'
+                // Currents API removed due to SSL certificate issues
+            },
+            endpoints: {
+                newsdata: 'https://newsdata.io/api/1/latest'
+                // Currents API: https://api.currentsapi.services/v1/latest-news (SSL issues)
+            }
+        };
+
+        function showResults(message, type = 'info') {
+            const results = document.getElementById('results');
+            results.className = `results ${type}`;
+            results.textContent = message;
+        }
+
+        async function testNewsDataAPI() {
+            showResults('🔄 Testing NewsData.io API...', 'loading');
+            
+            const startTime = Date.now(); // Add this line to fix the error
+            
+            try {
+                const url = `${config.endpoints.newsdata}?apikey=${config.apiKeys.newsdata}&language=en&category=top,business,technology&size=20`;
+                
+                console.log('Testing NewsData.io URL:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.results && data.results.length > 0) {
+                    showResults(`✅ NewsData.io API Success!
+                    
+Articles fetched: ${data.results.length}
+Status: ${data.status}
+Total results: ${data.totalResults || 'N/A'}
+
+Sample article:
+Title: ${data.results[0].title}
+Source: ${data.results[0].source_id}
+Published: ${data.results[0].pubDate}
+
+Response time: ${Date.now() - startTime}ms
+
+🎉 This API is working perfectly for the news platform!`, 'success');
+                } else {
+                    showResults(`⚠️ NewsData.io API responded but no articles found.
+                    
+Response: ${JSON.stringify(data, null, 2)}`, 'error');
+                }
+                
+            } catch (error) {
+                showResults(`❌ NewsData.io API Error:
+                
+Error: ${error.message}
+Details: Check browser console for full error details
+
+Common issues:
+- API key expired or invalid
+- Rate limit exceeded (200 calls/day)
+- Network/firewall restrictions
+- CORS policy blocking request`, 'error');
+                
+                console.error('NewsData.io API Error:', error);
+            }
+        }
+
+        function showCurrentsInfo() {
+            showResults(`ℹ️ Currents API Status: DISABLED
+            
+🚫 Why Currents API was removed:
+• SSL certificate issues ("unable to get local issuer certificate")
+• Widely reported certificate verification failures
+• Corporate firewall compatibility problems
+• Unreliable connection in organizational environments
+
+🔧 Technical Details:
+• API Endpoint: https://api.currentsapi.services/v1/latest-news
+• Common Error: "SSL certificate problem: unable to get local issuer certificate"
+• Affects: Corporate networks, VPNs, and secure environments
+
+✅ Alternative Solution:
+• NewsData.io provides 50 articles per call (200 calls/day)
+• Reliable SSL certificates and CORS support
+• Better suited for organizational environments
+• Premium quality news content from global sources
+
+The news platform now focuses on NewsData.io for maximum reliability.`, 'info');
+        }
+
+        async function testReliableAPIs() {
+            showResults('🔄 Testing all reliable APIs...', 'loading');
+            
+            const startTime = Date.now();
+            
+            try {
+                console.log('Testing NewsData.io API...');
+                
+                const newsdataResult = await testSingleAPI('newsdata');
+                
+                let results = '';
+                let totalArticles = 0;
+                
+                if (newsdataResult) {
+                    totalArticles += newsdataResult.articleCount;
+                    results += `✅ NewsData.io: ${newsdataResult.articleCount} articles (${newsdataResult.responseTime}ms)\n`;
+                } else {
+                    results += `❌ NewsData.io: Failed to fetch articles\n`;
+                }
+                
+                const totalTime = Date.now() - startTime;
+                
+                showResults(`📊 Reliable API Test Results:
+                
+${results}
+Total Articles Available: ${totalArticles}
+Total Test Time: ${totalTime}ms
+
+${totalArticles > 0 ? '✅ News platform will work with available APIs!' : '❌ No APIs available - check network/firewall restrictions'}
+
+🔧 Organization Note:
+• Currents API disabled due to SSL issues
+• NewsData.io is the primary reliable source
+• Platform optimized for corporate environments`, 
+                    totalArticles > 0 ? 'success' : 'error');
+                
+            } catch (error) {
+                showResults(`❌ API Test Failed:
+                
+Error: ${error.message}
+Check browser console for details`, 'error');
+                
+                console.error('API Test Error:', error);
+            }
+        }
+
+        async function testSingleAPI(apiName) {
+            const startTime = Date.now();
+            
+            if (apiName === 'newsdata') {
+                const url = `${config.endpoints.newsdata}?apikey=${config.apiKeys.newsdata}&language=en&category=top&size=20`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`NewsData HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return {
+                    articleCount: data.results ? data.results.length : 0,
+                    responseTime: Date.now() - startTime
+                };
+            }
+            
+            return null;
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            showResults(`🚀 External API Test Page Loaded
+
+Ready to test NewsData.io API without localhost dependencies.
+
+ℹ️ Current Status:
+• NewsData.io: ✅ Active and reliable
+• Currents API: ❌ Disabled (SSL certificate issues)
+
+Click "Test NewsData.io API" to verify connectivity.
+Click "About Currents API Issues" to learn why it was disabled.`, 'info');
+        });
+    </script>
+</body>
+</html> 

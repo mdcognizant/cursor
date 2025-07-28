@@ -1,0 +1,46 @@
+# Voice Agent Archive - EXCLUDED FROM GITHUB
+voice-agent-archive-MOVED-FROM-MAIN-PROJECT/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Logs and Reports
+*.log
+*.jsonl
+error_logs/
+monitoring_logs/
+error_summaries/
+error_reports/
+error_monitor_report_*.json
+error_monitoring.pid
+
+# API Keys and Sensitive Data
+*api_key*
+*secret*
+*.env
+
+# Temporary and Test Files
+*.tmp
+*.temp
+test_*.json
+startup_report.json
+smart_api_usage.json
+scraped_news.json
+
+# System Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE Files
+.vscode/
+.idea/
+*.sublime-*
+
+# Note: Voice agent files are completely isolated in the archive directory
+# and will NOT be uploaded to GitHub 

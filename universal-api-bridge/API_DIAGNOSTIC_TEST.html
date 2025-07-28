@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Diagnostic Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success { border-color: #28a745; background: #d4edda; }
+        .error { border-color: #dc3545; background: #f8d7da; }
+        .info { border-color: #17a2b8; background: #d1ecf1; }
+    </style>
+</head>
+<body>
+    <h1>🔍 API Diagnostic Test</h1>
+    <p>Testing APIs with your exact keys to find the issue...</p>
+
+    <div class="test-section">
+        <h3>1. Protocol & Environment Test</h3>
+        <button onclick="testEnvironment()">Test Environment</button>
+        <div id="envResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. NewsData.io API Test (Direct)</h3>
+        <button onclick="testNewsDataDirect()">Test Direct Call</button>
+        <div id="newsdataDirectResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. NewsData.io API Test (CORS Proxy)</h3>
+        <button onclick="testNewsDataProxy()">Test with CORS Proxy</button>
+        <div id="newsdataProxyResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Currents API Test (CORS Proxy)</h3>
+        <button onclick="testCurrentsProxy()">Test Currents with Proxy</button>
+        <div id="currentsProxyResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. Alternative CORS Proxy Test</h3>
+        <button onclick="testAlternativeProxy()">Test Alternative Proxy</button>
+        <div id="altProxyResult" class="result"></div>
+    </div>
+
+    <script>
+        // API Configuration
+        const APIs = {
+            newsdata: {
+                key: 'pub_05c05ef3d5044b3fa7a3ab3b04d479e4',
+                url: 'https://newsdata.io/api/1/latest'
+            },
+            currents: {
+                key: 'zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah',
+                url: 'https://api.currentsapi.services/v1/latest-news'
+            }
+        };
+
+        const CORS_PROXIES = [
+            'https://api.allorigins.win/raw?url=',
+            'https://cors-anywhere.herokuapp.com/',
+            'https://thingproxy.freeboard.io/fetch/'
+        ];
+
+        function addResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+            console.log(`[${elementId}] ${message}`);
+        }
+
+        function testEnvironment() {
+            const info = {
+                protocol: window.location.protocol,
+                hostname: window.location.hostname,
+                port: window.location.port,
+                pathname: window.location.pathname,
+                userAgent: navigator.userAgent.substring(0, 100),
+                timestamp: new Date().toISOString(),
+                isFileProtocol: window.location.protocol === 'file:',
+                corsRequired: window.location.protocol === 'file:'
+            };
+
+            addResult('envResult', 
+                `Environment Check:
+Protocol: ${info.protocol}
+Hostname: ${info.hostname}
+Port: ${info.port || 'default'}
+File Protocol: ${info.isFileProtocol}
+CORS Proxy Required: ${info.corsRequired}
+User Agent: ${info.userAgent}...
+Timestamp: ${info.timestamp}
+
+${info.isFileProtocol ? 
+    '⚠️ File protocol detected - CORS proxy required for external APIs' : 
+    '✅ HTTP/HTTPS protocol - direct API calls should work'}`, 
+                'info'
+            );
+        }
+
+        async function testNewsDataDirect() {
+            addResult('newsdataDirectResult', '🔄 Testing NewsData.io direct call...', 'info');
+            
+            try {
+                const url = `${APIs.newsdata.url}?apikey=${APIs.newsdata.key}&language=en&size=5`;
+                console.log('Direct URL:', url);
+                
+                const startTime = Date.now();
+                const response = await fetch(url);
+                const duration = Date.now() - startTime;
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                addResult('newsdataDirectResult', 
+                    `✅ SUCCESS - Direct NewsData.io Call
+Status: ${response.status}
+Duration: ${duration}ms
+Articles returned: ${data.results?.length || 0}
+Total available: ${data.totalResults || 'N/A'}
+Status: ${data.status}
+
+First article: ${data.results?.[0]?.title?.substring(0, 100) || 'N/A'}...
+
+✅ Direct API calls work fine!`, 
+                    'success'
+                );
+                
+            } catch (error) {
+                console.error('Direct test error:', error);
+                addResult('newsdataDirectResult', 
+                    `❌ FAILED - Direct NewsData.io Call
+Error: ${error.message}
+
+This is expected if running from file:// protocol.
+CORS proxy will be needed.`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testNewsDataProxy() {
+            addResult('newsdataProxyResult', '🔄 Testing NewsData.io with CORS proxy...', 'info');
+            
+            try {
+                const baseUrl = `${APIs.newsdata.url}?apikey=${APIs.newsdata.key}&language=en&size=5`;
+                const proxyUrl = `${CORS_PROXIES[0]}${encodeURIComponent(baseUrl)}`;
+                
+                console.log('Proxy URL:', proxyUrl);
+                
+                const startTime = Date.now();
+                const response = await fetch(proxyUrl);
+                const duration = Date.now() - startTime;
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                addResult('newsdataProxyResult', 
+                    `✅ SUCCESS - NewsData.io via CORS Proxy
+Status: ${response.status}
+Duration: ${duration}ms
+Proxy: ${CORS_PROXIES[0]}
+Articles returned: ${data.results?.length || 0}
+Status: ${data.status}
+
+First article: ${data.results?.[0]?.title?.substring(0, 100) || 'N/A'}...
+
+✅ CORS proxy works!`, 
+                    'success'
+                );
+                
+            } catch (error) {
+                console.error('Proxy test error:', error);
+                addResult('newsdataProxyResult', 
+                    `❌ FAILED - NewsData.io via CORS Proxy
+Error: ${error.message}
+Proxy: ${CORS_PROXIES[0]}
+
+Possible issues:
+- CORS proxy is down
+- API key invalid
+- Rate limit exceeded
+- Network/firewall blocking`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testCurrentsProxy() {
+            addResult('currentsProxyResult', '🔄 Testing Currents API with CORS proxy...', 'info');
+            
+            try {
+                const baseUrl = `${APIs.currents.url}?apiKey=${APIs.currents.key}&language=en&country=US`;
+                const proxyUrl = `${CORS_PROXIES[0]}${encodeURIComponent(baseUrl)}`;
+                
+                console.log('Currents Proxy URL:', proxyUrl);
+                
+                const startTime = Date.now();
+                const response = await fetch(proxyUrl);
+                const duration = Date.now() - startTime;
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                addResult('currentsProxyResult', 
+                    `✅ SUCCESS - Currents API via CORS Proxy
+Status: ${response.status}
+Duration: ${duration}ms
+Articles returned: ${data.news?.length || 0}
+Status: ${data.status}
+
+First article: ${data.news?.[0]?.title?.substring(0, 100) || 'N/A'}...
+
+✅ Currents API works!`, 
+                    'success'
+                );
+                
+            } catch (error) {
+                console.error('Currents test error:', error);
+                addResult('currentsProxyResult', 
+                    `❌ FAILED - Currents API via CORS Proxy
+Error: ${error.message}
+
+Possible issues:
+- Invalid Currents API key
+- SSL certificate issues
+- Rate limit exceeded
+- Service temporarily down`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testAlternativeProxy() {
+            addResult('altProxyResult', '🔄 Testing alternative CORS proxy...', 'info');
+            
+            try {
+                const baseUrl = `${APIs.newsdata.url}?apikey=${APIs.newsdata.key}&language=en&size=3`;
+                const altProxy = CORS_PROXIES[2]; // thingproxy
+                const proxyUrl = `${altProxy}${encodeURIComponent(baseUrl)}`;
+                
+                console.log('Alternative proxy URL:', proxyUrl);
+                
+                const startTime = Date.now();
+                const response = await fetch(proxyUrl);
+                const duration = Date.now() - startTime;
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                addResult('altProxyResult', 
+                    `✅ SUCCESS - Alternative CORS Proxy
+Proxy: ${altProxy}
+Status: ${response.status}
+Duration: ${duration}ms
+Articles: ${data.results?.length || 0}
+
+✅ Alternative proxy works as backup!`, 
+                    'success'
+                );
+                
+            } catch (error) {
+                console.error('Alternative proxy test error:', error);
+                addResult('altProxyResult', 
+                    `❌ FAILED - Alternative CORS Proxy
+Proxy: ${CORS_PROXIES[2]}
+Error: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // Auto-run environment test
+        window.addEventListener('load', () => {
+            testEnvironment();
+            console.log('🔍 API Diagnostic Test Ready');
+            console.log('Click buttons to test individual components');
+        });
+    </script>
+</body>
+</html> 
