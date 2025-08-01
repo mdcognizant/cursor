@@ -1,0 +1,25 @@
+# Voice agent archive (excluded from main project)
+voice-agent-archive-MOVED-FROM-MAIN-PROJECT/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# API keys and secrets (deploy separately)
+huggingface_config_production.js
+hf_token.js
+
+# Development overrides
+local_config.js
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cache files
+*.cache 

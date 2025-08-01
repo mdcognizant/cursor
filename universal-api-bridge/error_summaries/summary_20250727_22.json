@@ -1,0 +1,20 @@
+{
+  "report_timestamp": "2025-07-27T22:15:11.003856",
+  "period": "last_hour",
+  "total_unique_errors": 0,
+  "recent_errors": 0,
+  "aggregation_statistics": {
+    "total_errors_aggregated": 0,
+    "errors_by_severity": {},
+    "errors_by_source": {},
+    "errors_by_type": {},
+    "start_time": "2025-07-27T22:15:07.304784",
+    "last_aggregation": null
+  },
+  "error_breakdown": {
+    "by_severity": {},
+    "by_source": {},
+    "by_type": {}
+  },
+  "top_errors": []
+}

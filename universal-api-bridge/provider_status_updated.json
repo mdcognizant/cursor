@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-07-25T22:42:07.061506",
+  "system_status": "READY_FOR_DUAL_PROVIDER_UPDATED_LIMITS",
+  "newsdata_status": "OPERATIONAL",
+  "newsdata_limits": "200/day, 6000/month",
+  "currents_status": "TEMPORARILY_UNAVAILABLE_SSL_ISSUE",
+  "currents_limits": "20/day, 600/month",
+  "current_daily_capacity": 200,
+  "max_daily_capacity_when_both_work": 220,
+  "usage_strategy": "NewsData.io primary, Currents fallback",
+  "user_action_needed": false,
+  "automatic_retry_enabled": true
+}

@@ -1,0 +1,34 @@
+openapi: 3.1.0
+info:
+  version: 2.0.0-beta
+  title: Monerium API
+  description: |
+    API for developers to integrate Monerium payments, wallets, and user onboarding functionalities into their applications.
+
+    We have created new, more intuitive version 2 endpoints.
+    We are not introducing backward-breaking changes to the version 1 of the Monerium API.
+
+    <p style="background: rgba(255, 165, 0, 0.1); padding: 30px;">
+      Version 2 is in beta, you may notice changes before the final release.<br />We recommend using this version now, as it will soon become a stable release.
+    </p>
+
+    <p style="background: rgba(255, 165, 0, 0.1); padding: 30px;">
+        Endpoints or responses that have not been implemented are marked with <b>WIP</b> (Work In Progress).
+    </p>
+
+  termsOfService: "https://monerium.com/policies/business-terms-of-service/"
+  contact:
+    name: Monerium
+    url: "https://monerium.com"
+  license:
+    name: Apache 2.0
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+servers:
+  - url: "https://api.monerium.app"
+    description: "Production API - real money. Stable environment, publicly available. May be lagging behind other environments."
+  - url: "https://api.monerium.dev"
+    description: "Sandbox API - fake money. Stable environment, publicly available. Parity with production server while simulating periphery services."
+
+# SAFE BACKUP: Complete Monerium API v2 specification saved for reference
+# This file contains all endpoints, schemas, and detailed documentation
+# Use this for implementing comprehensive API integration 

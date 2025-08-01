@@ -1,0 +1,81 @@
+{
+  "timestamp": "2025-07-27T23:24:53.378146",
+  "services_started": 3,
+  "total_services": 4,
+  "running_processes": {
+    "enhanced_scraper": {
+      "pid": 10660,
+      "running": true
+    },
+    "breaking_news": {
+      "pid": 18008,
+      "running": true
+    },
+    "error_monitor": {
+      "pid": 19164,
+      "running": false
+    },
+    "http_server": {
+      "pid": 20164,
+      "running": true
+    }
+  },
+  "port_status": {
+    "8889": true,
+    "8888": true,
+    "8000": true
+  },
+  "startup_log": [
+    "[23:23:57] INFO: \ud83d\udee1\ufe0f ROBUST AUTO STARTUP SYSTEM INITIATED \ud83d\udee1\ufe0f",
+    "[23:23:57] INFO: ============================================================",
+    "[23:23:57] INFO: \ud83d\ude80 Starting all services with anti-hang protection...",
+    "[23:23:57] INFO: \ud83d\udccb Starting Enhanced News Scraper...",
+    "[23:23:57] INFO: Starting Enhanced News Scraper...",
+    "[23:23:58] INFO: \u2705 Enhanced News Scraper started (PID: 10660)",
+    "[23:24:00] INFO: \u2705 Enhanced News Scraper is running",
+    "[23:24:00] INFO: Waiting for Enhanced News Scraper to be ready...",
+    "[23:24:04] INFO: \u274c Enhanced News Scraper health check failed: HTTPConnectionPool(host='localhost', port=8889): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002AD0EB06E40>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+    "[23:24:04] INFO: \u23f3 Attempt 1/10 - waiting...",
+    "[23:24:10] INFO: \u274c Enhanced News Scraper health check failed: HTTPConnectionPool(host='localhost', port=8889): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002AD0E287610>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+    "[23:24:10] INFO: \u23f3 Attempt 2/10 - waiting...",
+    "[23:24:14] INFO: \u2705 Enhanced News Scraper health check passed",
+    "[23:24:14] INFO: \u2705 Enhanced News Scraper is ready!",
+    "[23:24:14] INFO: \u2705 Enhanced News Scraper started successfully",
+    "[23:24:14] INFO: \ud83d\udccb Starting Breaking News Scraper...",
+    "[23:24:14] INFO: Starting Breaking News Scraper...",
+    "[23:24:14] INFO: \u2705 Breaking News Scraper started (PID: 18008)",
+    "[23:24:16] INFO: \u2705 Breaking News Scraper is running",
+    "[23:24:16] INFO: Waiting for Breaking News Scraper to be ready...",
+    "[23:24:20] INFO: \u274c Breaking News Scraper health check failed: HTTPConnectionPool(host='localhost', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002AD0EBE8180>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+    "[23:24:20] INFO: \u23f3 Attempt 1/10 - waiting...",
+    "[23:24:25] INFO: \u2705 Breaking News Scraper health check passed",
+    "[23:24:25] INFO: \u2705 Breaking News Scraper is ready!",
+    "[23:24:25] INFO: \u2705 Breaking News Scraper started successfully",
+    "[23:24:25] INFO: \ud83d\udccb Starting Error Monitoring System...",
+    "[23:24:25] INFO: Starting Error Monitoring System...",
+    "[23:24:25] INFO: \u2705 Error Monitoring System started (PID: 12440)",
+    "[23:24:27] ERROR: \u274c Error Monitoring System exited immediately",
+    "[23:24:27] INFO: \u23f3 Waiting before retry...",
+    "[23:24:32] INFO: \ud83d\udd04 Retry 2/2 for Error Monitoring System",
+    "[23:24:32] INFO: Starting Error Monitoring System...",
+    "[23:24:32] INFO: \u2705 Error Monitoring System started (PID: 4512)",
+    "[23:24:34] ERROR: \u274c Error Monitoring System exited immediately",
+    "[23:24:34] WARNING: \u274c Failed to start Error Monitoring System after 2 attempts",
+    "[23:24:34] INFO: \ud83d\udccb Starting HTTP Server...",
+    "[23:24:34] INFO: Starting HTTP Server...",
+    "[23:24:35] INFO: \u2705 HTTP Server started on port 8000 (PID: 20164)",
+    "[23:24:38] INFO: Waiting for HTTP Server to be ready...",
+    "[23:24:39] INFO: \u2705 HTTP Server health check passed",
+    "[23:24:39] INFO: \u2705 HTTP Server is ready!",
+    "[23:24:39] INFO: \u2705 HTTP Server started successfully",
+    "[23:24:39] INFO: \ud83d\udcca Startup complete: 3/4 services started",
+    "[23:24:39] INFO: \u2705 Health monitoring started",
+    "[23:24:39] WARNING: \u26a0\ufe0f Error Monitoring System process died, attempting restart",
+    "[23:24:39] INFO: Starting Error Monitoring System...",
+    "[23:24:39] INFO: \u2705 Error Monitoring System started (PID: 19164)",
+    "[23:24:41] INFO: \u2705 Error Monitoring System is running",
+    "[23:24:42] INFO: \ud83c\udf10 Opening frontend applications...",
+    "[23:24:42] INFO: \ud83d\udcf1 Opening enhanced_news_platform_ultimate_v2.html",
+    "[23:24:52] INFO: \ud83d\udcf1 Opening enhanced_delta_news_platform_complete.html"
+  ]
+}

@@ -1,0 +1,170 @@
+name: News Platform CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, Beta, alpha ]
+  pull_request:
+    branches: [ main, Beta ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements_shell_monitor.txt ]; then pip install -r requirements_shell_monitor.txt; fi
+    
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # Stop build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Test shell monitor
+      run: |
+        if [ -f test_shell_monitor.py ]; then python test_shell_monitor.py; fi
+    
+    - name: Test news platform
+      run: |
+        echo "Testing news platform functionality..."
+        # Add specific tests for news platform APIs
+        
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  build-and-validate:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Validate HTML files
+      run: |
+        echo "Validating HTML files..."
+        find . -name "*.html" -type f | head -10 | while read file; do
+          echo "Checking $file"
+          if [ -s "$file" ]; then
+            echo "✅ $file is valid"
+          else
+            echo "❌ $file is empty or invalid"
+            exit 1
+          fi
+        done
+    
+    - name: Check API configurations
+      run: |
+        echo "Checking API configurations..."
+        if grep -r "api.*key" --include="*.html" --include="*.py" .; then
+          echo "✅ API configurations found"
+        else
+          echo "⚠️ No API configurations detected"
+        fi
+    
+    - name: Verify news platform files
+      run: |
+        echo "Verifying news platform files..."
+        if [ -f "universal-api-bridge/news_platform_v1.html" ]; then
+          echo "✅ News Platform V1 found"
+        fi
+        if [ -f "universal-api-bridge/news_platform_v11.html" ]; then
+          echo "✅ News Platform V11 found"
+        fi
+
+  deploy-preview:
+    runs-on: ubuntu-latest
+    needs: [test, build-and-validate]
+    if: github.ref == 'refs/heads/Beta'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to GitHub Pages (Preview)
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./universal-api-bridge
+        destination_dir: preview
+        
+    - name: Comment PR with preview link
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '🚀 Preview deployed! Check out the changes at: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/preview/'
+          })
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [test, security-scan, build-and-validate]
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: News Platform Release ${{ github.ref }}
+        body: |
+          ## Changes in this Release
+          - Enhanced news platform with multiple API integrations
+          - Improved MCP architecture
+          - Rate limiting and admin features
+          - Zero localhost dependencies
+          
+          ## Features
+          - 🌟 News Platform V1 & V11
+          - 📊 5 API Sources (NewsData.io, Currents API, NewsAPI.org, TheNewsAPI.com, Hugging Face AI)
+          - 🚫 No localhost dependencies
+          - 🔐 Admin access controls
+          - ⚡ gRPC performance optimization
+        draft: false
+        prerelease: false 

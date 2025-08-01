@@ -1,0 +1,43 @@
+{
+  "environment": "sandbox",
+  "test_time": "2025-07-30T16:31:56.545040",
+  "authentication": {
+    "client_credentials": {
+      "status": "FAILED",
+      "details": {
+        "status_code": 400,
+        "headers": {
+          "date": "Wed, 30 Jul 2025 15:31:59 GMT",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "121",
+          "connection": "keep-alive",
+          "cf-ray": "9675e7f58a41b3c0-MAN",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "expires": "Fri, 01 Jan 1990 00:00:00 GMT",
+          "pragma": "no-cache",
+          "x-correlation-id": "l0EfyAwNg",
+          "cf-cache-status": "DYNAMIC",
+          "report-to": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v4?s=h13lvbvK1COxjRjYmHUMYKdXM66tPk4wTJXMAXjD14CzWeXNLovKLeMGEZtxiwdHN%2BQqQzz7qM7iRgrRWp%2FFHg7TBHDJygljbtwVfgbhORVJtRtg5Lu7Az4XxQmS4Zidp4o%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}",
+          "nel": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}",
+          "server": "cloudflare",
+          "server-timing": "cfL4;desc=\"?proto=TCP&rtt=772&min_rtt=715&rtt_var=309&sent=4&recv=7&lost=0&retrans=0&sent_bytes=2844&recv_bytes=1058&delivery_rate=4050349&cwnd=251&unsent_bytes=0&cid=23bdb23c831a517c&ts=305&x=0\""
+        },
+        "data": {
+          "error": "unauthorized_client",
+          "error_description": "The client is not authorized to request a token using this method."
+        },
+        "success": false,
+        "url": "https://api.monerium.dev/auth/token",
+        "method": "POST"
+      },
+      "timestamp": "2025-07-30T16:31:59.158559"
+    }
+  },
+  "endpoints": {},
+  "errors": [],
+  "working_features": [],
+  "broken_features": [
+    "authentication.client_credentials"
+  ],
+  "limitations": []
+}

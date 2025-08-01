@@ -1,0 +1,14 @@
+{
+  "report_timestamp": "2025-07-27T22:15:10.799223",
+  "system_uptime": "287419.01338505745",
+  "monitoring_components": {
+    "error_monitor": true,
+    "log_aggregator": true,
+    "api_monitor": true,
+    "resource_monitor": true
+  },
+  "log_file_sizes": {
+    "monitoring_logs\\system_resources.log": "0.00MB"
+  },
+  "recent_error_count": 0
+}

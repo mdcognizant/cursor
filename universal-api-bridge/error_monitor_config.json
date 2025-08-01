@@ -1,0 +1,80 @@
+{
+  "monitor_interval": 5,
+  "review_interval": 3600,
+  "log_retention_days": 30,
+  "max_fix_attempts": 3,
+  "auto_fix_enabled": true,
+  "notification_enabled": true,
+  "performance_monitoring": true,
+  "monitored_directories": [
+    "universal-api-bridge/",
+    "llm-agent-bridge/",
+    "logs/",
+    "."
+  ],
+  "log_file_patterns": [
+    "*.log",
+    "error*.txt",
+    "debug*.txt",
+    "*.err",
+    "npm-debug.log*",
+    "yarn-debug.log*",
+    "yarn-error.log*"
+  ],
+  "excluded_patterns": [
+    "__pycache__",
+    ".git",
+    "node_modules",
+    ".vscode",
+    ".idea",
+    "*.pyc",
+    "*.pyo"
+  ],
+  "api_endpoints_to_monitor": [
+    "https://newsdata.io/api/1/latest",
+    "https://api.currentsapi.services/v1/latest-news"
+  ],
+  "critical_keywords": [
+    "CRITICAL",
+    "FATAL",
+    "ERROR",
+    "FAILED",
+    "EXCEPTION",
+    "CRASH",
+    "TIMEOUT",
+    "MEMORY",
+    "DISK",
+    "NETWORK"
+  ],
+  "notification_settings": {
+    "email_enabled": false,
+    "email_recipients": [],
+    "webhook_url": null,
+    "slack_webhook": null,
+    "discord_webhook": null
+  },
+  "auto_fix_settings": {
+    "ssl_bypass_enabled": true,
+    "dependency_install_enabled": true,
+    "cache_fallback_enabled": true,
+    "file_creation_enabled": true,
+    "config_update_enabled": true,
+    "script_injection_enabled": false
+  },
+  "performance_thresholds": {
+    "cpu_warning": 80,
+    "cpu_critical": 95,
+    "memory_warning": 80,
+    "memory_critical": 90,
+    "disk_warning": 80,
+    "disk_critical": 95,
+    "response_time_warning": 3000,
+    "response_time_critical": 10000
+  },
+  "logging_settings": {
+    "log_level": "INFO",
+    "max_log_size_mb": 100,
+    "backup_count": 5,
+    "detailed_tracing": true
+  }
+} 

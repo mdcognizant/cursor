@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏦 Monerium API Production Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding-top: 80px; /* Space for fixed status bar */
+        }
+
+        /* Fixed Status Bar at Top */
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 8px 15px;
+            z-index: 1000;
+            border-bottom: 3px solid #4CAF50;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-indicator {
+            background: #ff4444;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .copy-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        /* Response Display in Status Bar */
+        .status-response {
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: monospace;
+            background: rgba(0,0,0,0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 50px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .title {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* API Sections Grid */
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .api-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #4CAF50;
+            transition: all 0.3s;
+        }
+
+        .api-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        /* Test Buttons */
+        .test-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .test-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-btn:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .test-btn:active {
+            transform: translateY(0);
+        }
+
+        .test-btn.loading {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            cursor: not-allowed;
+        }
+
+        .test-btn.success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .test-btn.error {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+
+        .btn-method {
+            font-size: 11px;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* Configuration Panel */
+        .config-panel {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .config-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .config-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .config-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: border-color 0.3s;
+        }
+
+        .config-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        /* Response Log */
+        .response-log {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            color: #f0f0f0;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #333;
+        }
+
+        .log-title {
+            color: #4CAF50;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-entry {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid;
+        }
+
+        .log-entry.success {
+            border-left-color: #4CAF50;
+        }
+
+        .log-entry.error {
+            border-left-color: #f44336;
+        }
+
+        .log-entry.info {
+            border-left-color: #2196F3;
+        }
+
+        .log-timestamp {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        .log-content {
+            font-size: 12px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* Clear Log Button */
+        .clear-log-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .clear-log-btn:hover {
+            background: #cc3333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .api-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                padding: 8px;
+                height: auto;
+            }
+            
+            body {
+                padding-top: 100px;
+            }
+            
+            .status-left,
+            .status-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Status Bar -->
+    <div class="status-bar">
+        <div class="status-left">
+            <div class="live-indicator">🔴 LIVE</div>
+            <span>🏦 Monerium API Production Tester</span>
+            <div class="status-response" id="status-response">Ready to test API endpoints...</div>
+        </div>
+        <div class="status-right">
+            <span id="last-response-status">✅ Ready</span>
+            <button class="copy-btn" onclick="copyAllLogs()">📋 Copy All Logs</button>
+            <button class="copy-btn" onclick="copyLastResponse()">📋 Copy Last Response</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">🏦 Monerium API Production Tester</h1>
+            <p class="subtitle">Click-by-click testing for all Monerium API v2 endpoints with live production data</p>
+        </div>
+
+        <!-- Configuration Panel -->
+        <div class="config-panel">
+            <div class="config-title">⚙️ Configuration</div>
+            <div class="config-grid">
+                <div class="config-group">
+                    <label class="config-label">API Environment</label>
+                    <select class="config-input" id="api-environment">
+                        <option value="https://api.monerium.dev">Sandbox (Test Money)</option>
+                        <option value="https://api.monerium.app" selected>Production (Real Money) 💰</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label class="config-label">Access Token</label>
+                    <input type="password" class="config-input" id="access-token" placeholder="Bearer token will appear here after authentication...">
+                </div>
+                <div class="config-group">
+                    <label class="config-label">Client ID</label>
+                    <input type="text" class="config-input" id="client-id" value="54be063f-6cca-11f0-a3e6-4eb54501c717" readonly>
+                </div>
+                <div class="config-group">
+                    <label class="config-label">Client Secret</label>
+                    <input type="password" class="config-input" id="client-secret" value="71ab65b523e1651fa197ea39ecf2156ed30da3199c668053029860133e0cfdd5" readonly>
+                </div>
+                <div class="config-group">
+                    <label class="config-label">Test Address</label>
+                    <input type="text" class="config-input" id="test-address" placeholder="0x1234..." value="0x59cFC408d310697f9D3598e1BE75B0157a072407">
+                </div>
+            </div>
+        </div>
+
+        <!-- API Testing Grid -->
+        <div class="api-grid">
+            <!-- Authentication Section -->
+            <div class="api-section">
+                <div class="section-title">
+                    🔐 Authentication
+                </div>
+                <div class="section-description">
+                    Test authentication flows, token management, and user context
+                </div>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="testEndpoint('GET', '/')">
+                        <span>Welcome Message</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                    <button class="test-btn" onclick="authenticateWithMonerium()">
+                        <span>Get Access Token</span>
+                        <span class="btn-method">POST</span>
+                    </button>
+                    <button class="test-btn" onclick="testEndpoint('GET', '/auth/context', null, true)">
+                        <span>Get Auth Context</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Profiles Section -->
+            <div class="api-section">
+                <div class="section-title">
+                    👤 Profiles
+                </div>
+                <div class="section-description">
+                    Manage user profiles, retrieve profile information and states
+                </div>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="testEndpoint('GET', '/profiles', null, true)">
+                        <span>List Profiles</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                    <button class="test-btn" onclick="testProfileById()">
+                        <span>Get Profile by ID</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Addresses Section -->
+            <div class="api-section">
+                <div class="section-title">
+                    🏠 Addresses
+                </div>
+                <div class="section-description">
+                    Link blockchain addresses, retrieve address details and connections
+                </div>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="testEndpoint('GET', '/addresses', null, true)">
+                        <span>List Addresses</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                    <button class="test-btn" onclick="testAddressDetails()">
+                        <span>Get Address Details</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Balances Section -->
+            <div class="api-section">
+                <div class="section-title">
+                    💰 Balances
+                </div>
+                <div class="section-description">
+                    Check token balances across different chains and currencies
+                </div>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="testBalances('ethereum')">
+                        <span>Ethereum Balances</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                    <button class="test-btn" onclick="testBalances('gnosis')">
+                        <span>Gnosis Balances</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                    <button class="test-btn" onclick="testBalances('polygon')">
+                        <span>Polygon Balances</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- IBANs Section -->
+            <div class="api-section">
+                <div class="section-title">
+                    🏦 IBANs
+                </div>
+                <div class="section-description">
+                    Manage IBAN accounts, request new IBANs, and retrieve IBAN details
+                </div>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="testEndpoint('GET', '/ibans', null, true)">
+                        <span>List IBANs</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                    <button class="test-btn" onclick="testIbanDetails()">
+                        <span>Get IBAN Details</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Orders Section -->
+            <div class="api-section">
+                <div class="section-title">
+                    📋 Orders
+                </div>
+                <div class="section-description">
+                    Place and track orders, retrieve order history and status
+                </div>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="testEndpoint('GET', '/orders', null, true)">
+                        <span>List Orders</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                    <button class="test-btn" onclick="testOrderById()">
+                        <span>Get Order by ID</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tokens Section -->
+            <div class="api-section">
+                <div class="section-title">
+                    🪙 Tokens
+                </div>
+                <div class="section-description">
+                    Get information about supported tokens, chains, and contracts
+                </div>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="testEndpoint('GET', '/tokens', null, true)">
+                        <span>List Tokens</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Webhooks Section -->
+            <div class="api-section">
+                <div class="section-title">
+                    🔔 Webhooks
+                </div>
+                <div class="section-description">
+                    Manage webhook subscriptions for real-time event notifications
+                </div>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="testEndpoint('GET', '/webhooks', null, true)">
+                        <span>List Webhooks</span>
+                        <span class="btn-method">GET</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Log -->
+        <div class="response-log">
+            <div class="log-title">
+                <span>📋 Live Response Log</span>
+                <button class="clear-log-btn" onclick="clearLogs()">Clear Log</button>
+            </div>
+            <div id="response-log-content">
+                <div class="log-entry info">
+                    <div class="log-timestamp">${new Date().toISOString()}</div>
+                    <div class="log-content">🚀 Monerium API Tester initialized. Click any button above to start testing!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let lastResponse = null;
+        let allLogs = [];
+
+        // API Testing Functions
+        async function testEndpoint(method, endpoint, body = null, requiresAuth = false) {
+            const baseUrl = document.getElementById('api-environment').value;
+            const token = document.getElementById('access-token').value;
+            
+            // Use our test backend for proxying requests
+            const backendUrl = 'http://localhost:8006';
+            
+            if (requiresAuth && !token) {
+                logResponse('error', `❌ ${method} ${endpoint}`, 'Authentication required but no token provided');
+                updateStatusBar('❌ Auth Required', `${method} ${endpoint}: No token`);
+                return;
+            }
+
+            const url = `${baseUrl}${endpoint}`;
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.monerium.api-v2+json'
+            };
+
+            if (requiresAuth && token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const options = {
+                method,
+                headers
+            };
+
+            if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                updateStatusBar('⏳ Loading...', `${method} ${endpoint}`);
+                logResponse('info', `🚀 ${method} ${endpoint}`, `Sending request via backend proxy to: ${url}`);
+                
+                // Use our backend proxy for all requests
+                const proxyResponse = await fetch(`${backendUrl}/api/proxy`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        method: method,
+                        endpoint: endpoint,
+                        headers: requiresAuth && token ? { 'Authorization': `Bearer ${token}` } : null,
+                        data: body,
+                        environment: baseUrl.includes('monerium.app') ? 'production' : 'sandbox'
+                    })
+                });
+                
+                const responseData = await proxyResponse.json();
+                
+                lastResponse = {
+                    status: responseData.status_code || proxyResponse.status,
+                    statusText: proxyResponse.statusText,
+                    headers: responseData.headers || {},
+                    data: responseData.data || responseData,
+                    endpoint: `${method} ${endpoint}`,
+                    url: url,
+                    proxy_response: responseData
+                };
+
+                if (proxyResponse.ok && responseData.success !== false) {
+                    logResponse('success', `✅ ${method} ${endpoint}`, JSON.stringify(responseData.data || responseData, null, 2));
+                    updateStatusBar('✅ Success', `${responseData.status_code || 200} Success`);
+                } else {
+                    logResponse('error', `❌ ${method} ${endpoint}`, `Status: ${responseData.status_code || proxyResponse.status}\n${JSON.stringify(responseData, null, 2)}`);
+                    updateStatusBar('❌ Error', `${responseData.status_code || proxyResponse.status} Error`);
+                }
+            } catch (error) {
+                logResponse('error', `❌ ${method} ${endpoint}`, `Network Error: ${error.message}`);
+                updateStatusBar('❌ Network Error', error.message);
+                lastResponse = {
+                    error: error.message,
+                    endpoint: `${method} ${endpoint}`,
+                    url: url
+                };
+            }
+        }
+
+        // Authentication function using real credentials
+        async function authenticateWithMonerium() {
+            const clientId = document.getElementById('client-id').value;
+            const clientSecret = document.getElementById('client-secret').value;
+            const backendUrl = 'http://localhost:8006';
+            
+            try {
+                updateStatusBar('⏳ Authenticating...', 'Getting access token from Monerium...');
+                logResponse('info', '🔑 Monerium Authentication', `Authenticating with Client ID: ${clientId.substring(0, 8)}...`);
+                
+                // Use the backend proxy to get access token
+                const proxyResponse = await fetch(`${backendUrl}/api/proxy`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        method: 'POST',
+                        endpoint: '/auth/token',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data: {
+                            grant_type: 'client_credentials',
+                            client_id: clientId,
+                            client_secret: clientSecret
+                        },
+                        environment: document.getElementById('api-environment').value.includes('monerium.app') ? 'production' : 'sandbox'
+                    })
+                });
+                
+                const responseData = await proxyResponse.json();
+                
+                if (proxyResponse.ok && responseData.data && responseData.data.access_token) {
+                    const accessToken = responseData.data.access_token;
+                    document.getElementById('access-token').value = accessToken;
+                    logResponse('success', '✅ Authentication Successful', `Access token received: ${accessToken.substring(0, 20)}...\nToken Type: ${responseData.data.token_type}\nExpires In: ${responseData.data.expires_in} seconds`);
+                    updateStatusBar('✅ Authenticated', 'Access token ready for API calls');
+                } else {
+                    logResponse('error', '❌ Authentication Failed', `Status: ${responseData.status_code || proxyResponse.status}\n${JSON.stringify(responseData, null, 2)}`);
+                    updateStatusBar('❌ Auth Failed', `${responseData.status_code || proxyResponse.status} Error`);
+                }
+            } catch (error) {
+                logResponse('error', '❌ Authentication Error', `Network Error: ${error.message}`);
+                updateStatusBar('❌ Auth Error', error.message);
+            }
+        }
+
+        // Specialized test functions
+        async function testProfileById() {
+            const token = document.getElementById('access-token').value;
+            
+            if (!token) {
+                logResponse('error', '❌ Get Profile by ID', 'Authentication required - please get access token first');
+                return;
+            }
+
+            try {
+                // First get profiles list via proxy to find a valid profile ID
+                const backendUrl = 'http://localhost:8006';
+                const proxyResponse = await fetch(`${backendUrl}/api/proxy`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        method: 'GET',
+                        endpoint: '/profiles',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        environment: document.getElementById('api-environment').value.includes('monerium.app') ? 'production' : 'sandbox'
+                    })
+                });
+                
+                const responseData = await proxyResponse.json();
+                if (responseData.data && responseData.data.profiles && responseData.data.profiles.length > 0) {
+                    const profileId = responseData.data.profiles[0].id;
+                    await testEndpoint('GET', `/profiles/${profileId}`, null, true);
+                } else {
+                    logResponse('error', '❌ Get Profile by ID', 'No profiles found to test with');
+                }
+            } catch (error) {
+                logResponse('error', '❌ Get Profile by ID', `Error getting profiles: ${error.message}`);
+            }
+        }
+
+        async function testAddressDetails() {
+            const address = document.getElementById('test-address').value;
+            if (!address) {
+                logResponse('error', '❌ Get Address Details', 'No test address configured');
+                return;
+            }
+            await testEndpoint('GET', `/addresses/${address}`, null, true);
+        }
+
+        async function testBalances(chain) {
+            const address = document.getElementById('test-address').value;
+            if (!address) {
+                logResponse('error', `❌ Get ${chain} Balances`, 'No test address configured');
+                return;
+            }
+            await testEndpoint('GET', `/balances/${chain}/${address}`, null, true);
+        }
+
+        async function testIbanDetails() {
+            // This would need a real IBAN to test
+            logResponse('info', '💡 IBAN Details Test', 'This requires a valid IBAN. Use List IBANs first to get a valid IBAN.');
+        }
+
+        async function testOrderById() {
+            // This would need a real order ID to test
+            logResponse('info', '💡 Order Details Test', 'This requires a valid order ID. Use List Orders first to get a valid order ID.');
+        }
+
+        // Logging and UI functions
+        function logResponse(type, title, content) {
+            const timestamp = new Date().toISOString();
+            const logEntry = {
+                timestamp,
+                type,
+                title,
+                content
+            };
+            
+            allLogs.push(logEntry);
+            
+            const logContainer = document.getElementById('response-log-content');
+            const logElement = document.createElement('div');
+            logElement.className = `log-entry ${type}`;
+            logElement.innerHTML = `
+                <div class="log-timestamp">${timestamp}</div>
+                <div class="log-content"><strong>${title}</strong>\n${content}</div>
+            `;
+            
+            logContainer.appendChild(logElement);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            // Keep only last 50 entries
+            while (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+
+        function updateStatusBar(status, detail) {
+            document.getElementById('last-response-status').textContent = status;
+            document.getElementById('status-response').textContent = detail;
+        }
+
+        function clearLogs() {
+            document.getElementById('response-log-content').innerHTML = '';
+            allLogs = [];
+            logResponse('info', '🧹 Logs Cleared', 'All logs have been cleared');
+        }
+
+        function copyAllLogs() {
+            const logsText = allLogs.map(log => 
+                `[${log.timestamp}] ${log.title}\n${log.content}\n`
+            ).join('\n---\n\n');
+            
+            navigator.clipboard.writeText(logsText).then(() => {
+                updateStatusBar('📋 Copied', 'All logs copied to clipboard');
+            });
+        }
+
+        function copyLastResponse() {
+            if (lastResponse) {
+                const responseText = JSON.stringify(lastResponse, null, 2);
+                navigator.clipboard.writeText(responseText).then(() => {
+                    updateStatusBar('📋 Copied', 'Last response copied to clipboard');
+                });
+            } else {
+                updateStatusBar('❌ No Response', 'No response to copy');
+            }
+        }
+
+        // Backend connectivity test
+        async function testBackendConnectivity() {
+            const backendUrl = 'http://localhost:8006';
+            try {
+                updateStatusBar('⏳ Testing...', 'Testing backend connectivity');
+                const response = await fetch(`${backendUrl}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    logResponse('success', '✅ Backend Connected', `Backend is running on port 8006\n${JSON.stringify(data, null, 2)}`);
+                    updateStatusBar('✅ Backend Ready', `Connected to ${data.service}`);
+                    return true;
+                } else {
+                    throw new Error(`Backend returned ${response.status}`);
+                }
+            } catch (error) {
+                logResponse('error', '❌ Backend Connection Failed', `Cannot connect to backend at ${backendUrl}\nError: ${error.message}\n\nPlease ensure the backend is running:\npython universal-api-bridge/test_backend.py`);
+                updateStatusBar('❌ Backend Offline', 'Backend not accessible');
+                return false;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async function() {
+            updateStatusBar('🚀 Initializing...', 'Starting Monerium API Tester');
+            
+            // Test backend connectivity first
+            const backendConnected = await testBackendConnectivity();
+            
+            if (backendConnected) {
+                updateStatusBar('✅ Ready', 'Monerium API Tester ready for testing');
+            } else {
+                updateStatusBar('❌ Backend Required', 'Please start the backend first');
+            }
+        });
+    </script>
+</body>
+</html> 

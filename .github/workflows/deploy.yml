@@ -1,0 +1,207 @@
+name: Deploy News Platform
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'staging'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install beautifulsoup4 lxml html5lib
+        
+         - name: Validate HTML files
+       run: |
+         echo "🔍 Validating news platform HTML files..."
+         python -c "
+         import os
+         from pathlib import Path
+         
+         html_files = [
+             'universal-api-bridge/news_platform_v1.html',
+             'universal-api-bridge/news_platform_v11.html'
+         ]
+         
+         for file_path in html_files:
+             if Path(file_path).exists():
+                 with open(file_path, 'r', encoding='utf-8') as f:
+                     content = f.read()
+                     if len(content) > 1000:  # Basic validation
+                         print(f'✅ {file_path} is valid ({len(content)} chars)')
+                     else:
+                         print(f'❌ {file_path} seems too small')
+                         exit(1)
+             else:
+                 print(f'❌ {file_path} not found')
+                 exit(1)
+         print('🎉 All HTML files validated successfully!')
+         "
+         
+     - name: Configure Hugging Face token (Staging)
+       run: |
+         echo "🤖 Configuring Hugging Face token for staging deployment..."
+         if [ -f "universal-api-bridge/news_platform_v11.html" ]; then
+           # Replace token placeholder with actual token from secrets
+           sed -i "s/\${HUGGINGFACE_TOKEN}/${{ secrets.HUGGINGFACE_TOKEN }}/g" universal-api-bridge/news_platform_v11.html
+           echo "✅ Token placeholder replaced for staging"
+         else
+           echo "⚠️ News platform V11 file not found"
+         fi
+        
+    - name: Deploy to GitHub Pages (Staging)
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./universal-api-bridge
+        destination_dir: staging
+        
+    - name: Create deployment summary
+      run: |
+        echo "## 🚀 Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: Staging" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Preview URL**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/staging/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ✅ Successfully deployed" >> $GITHUB_STEP_SUMMARY
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.environment == 'production'
+    environment: production
+    needs: deploy-staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Python  
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Production readiness check
+      run: |
+        echo "🔍 Running production readiness checks..."
+        
+        # Check for any localhost references
+        if grep -r "localhost" --include="*.html" --include="*.js" universal-api-bridge/; then
+          echo "❌ Found localhost references in production code!"
+          exit 1
+        else
+          echo "✅ No localhost dependencies found"
+        fi
+        
+        # Check for placeholder API keys
+        if grep -r "your.*api.*key\|placeholder\|test.*key" --include="*.html" --include="*.js" universal-api-bridge/; then
+          echo "❌ Found placeholder API keys!"
+          exit 1
+        else
+          echo "✅ No placeholder API keys found"
+        fi
+        
+        # Verify critical files exist
+        critical_files=(
+          "universal-api-bridge/news_platform_v1.html"
+          "universal-api-bridge/news_platform_v11.html"
+          "universal-api-bridge/.gitignore"
+        )
+        
+                 for file in "${critical_files[@]}"; do
+           if [ ! -f "$file" ]; then
+             echo "❌ Critical file missing: $file"
+             exit 1
+           else
+             echo "✅ Found: $file"
+           fi
+         done
+         
+     - name: Configure Hugging Face token (Production)
+       run: |
+         echo "🤖 Configuring Hugging Face token for production deployment..."
+         if [ -f "universal-api-bridge/news_platform_v11.html" ]; then
+           # Replace token placeholder with actual token from secrets
+           sed -i "s/\${HUGGINGFACE_TOKEN}/${{ secrets.HUGGINGFACE_TOKEN }}/g" universal-api-bridge/news_platform_v11.html
+           echo "✅ Token placeholder replaced for production"
+         else
+           echo "⚠️ News platform V11 file not found"
+         fi
+        
+    - name: Deploy to GitHub Pages (Production)
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./universal-api-bridge
+        publish_branch: gh-pages
+        
+    - name: Create release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: News Platform ${{ github.ref_name }}
+        body: |
+          ## 🌟 News Platform Release ${{ github.ref_name }}
+          
+          ### Features
+          - 📰 Enhanced News Platform with 5 API integrations
+          - 🚫 Zero localhost dependencies
+          - 🔐 Rate limiting and admin controls
+          - ⚡ gRPC performance optimizations
+          - 🤖 AI-powered insights via Hugging Face
+          
+          ### API Sources
+          - 📊 NewsData.io
+          - 📡 Currents API
+          - 🌍 NewsAPI.org
+          - 🔥 TheNewsAPI.com
+          - 🤖 Hugging Face AI
+          
+          ### Access
+          - **Production**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          - **Documentation**: See README.md
+          
+          ### Installation
+          Simply open `news_platform_v11.html` in your browser - no server required!
+        draft: false
+        prerelease: false
+        
+    - name: Create production deployment summary
+      run: |
+        echo "## 🎉 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+        echo "- **Tag**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Live URL**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ✅ Successfully deployed to production" >> $GITHUB_STEP_SUMMARY
+        echo "- **Features**: 5 API sources, zero localhost dependencies" >> $GITHUB_STEP_SUMMARY 

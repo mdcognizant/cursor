@@ -1,0 +1,85 @@
+{
+  "// Cursor Shell Monitor Integration": "Configuration for shell command monitoring",
+  
+  "terminal.integrated.shell.windows": "powershell.exe",
+  "terminal.integrated.shellArgs.windows": [
+    "-NoProfile",
+    "-ExecutionPolicy", 
+    "Bypass",
+    "-Command",
+    "& { if (Test-Path '$env:USERPROFILE\\.cursor_monitor\\setup_cursor_path.bat') { & '$env:USERPROFILE\\.cursor_monitor\\setup_cursor_path.bat' }; $host.UI.RawUI.WindowTitle = 'Cursor Shell Monitor Active'; Write-Host '🔍 Shell Monitor Active - Commands will be monitored for timeouts' -ForegroundColor Green }"
+  ],
+  
+  "terminal.integrated.shell.linux": "/bin/bash",
+  "terminal.integrated.shellArgs.linux": [
+    "-c",
+    "if [ -f ~/.cursor_monitor/setup_cursor_path.sh ]; then source ~/.cursor_monitor/setup_cursor_path.sh; fi; echo '🔍 Shell Monitor Active - Commands will be monitored for timeouts'; exec bash"
+  ],
+  
+  "terminal.integrated.shell.osx": "/bin/bash", 
+  "terminal.integrated.shellArgs.osx": [
+    "-c", 
+    "if [ -f ~/.cursor_monitor/setup_cursor_path.sh ]; then source ~/.cursor_monitor/setup_cursor_path.sh; fi; echo '🔍 Shell Monitor Active - Commands will be monitored for timeouts'; exec bash"
+  ],
+  
+  "terminal.integrated.env.windows": {
+    "CURSOR_MONITOR_ENABLED": "true",
+    "CURSOR_MONITOR_TIMEOUT": "60",
+    "CURSOR_MONITOR_AUTO_DIAGNOSE": "true"
+  },
+  
+  "terminal.integrated.env.linux": {
+    "CURSOR_MONITOR_ENABLED": "true", 
+    "CURSOR_MONITOR_TIMEOUT": "60",
+    "CURSOR_MONITOR_AUTO_DIAGNOSE": "true"
+  },
+  
+  "terminal.integrated.env.osx": {
+    "CURSOR_MONITOR_ENABLED": "true",
+    "CURSOR_MONITOR_TIMEOUT": "60", 
+    "CURSOR_MONITOR_AUTO_DIAGNOSE": "true"
+  },
+  
+  "// Additional Settings": "Optimize Cursor for shell monitoring",
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass", 
+        "-Command",
+        "& { if (Test-Path '$env:USERPROFILE\\.cursor_monitor\\setup_cursor_path.bat') { & '$env:USERPROFILE\\.cursor_monitor\\setup_cursor_path.bat' }; $host.UI.RawUI.WindowTitle = 'Cursor Shell Monitor Active'; Write-Host '🔍 Shell Monitor Active' -ForegroundColor Green }"
+      ]
+    }
+  },
+  
+  "// Performance Optimizations": "Settings to improve command execution speed",
+  "terminal.integrated.fontFamily": "Consolas, 'Courier New', monospace",
+  "terminal.integrated.fontSize": 12,
+  "terminal.integrated.fastScrollSensitivity": 5,
+  "terminal.integrated.scrollback": 1000,
+  "terminal.integrated.rendererType": "dom",
+  
+  "// Git Integration": "Optimize Git operations in Cursor",
+  "git.autofetch": false,
+  "git.autofetchPeriod": 0,
+  "git.fetchOnPull": false,
+  "git.pruneOnFetch": false,
+  
+  "// Workspace Settings": "Project-specific configurations",
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.cursor_monitor/**": true
+  },
+  
+  "search.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/.cursor_monitor": true,
+    "**/cursor_integration/bin": true
+  }
+} 

@@ -1,0 +1,15 @@
+{
+  "date": "2025-07-27",
+  "calls_made": {
+    "newsdata": 0,
+    "currents": 0,
+    "enhanced_scraper": 0
+  },
+  "articles_fetched": {
+    "newsdata": 0,
+    "currents": 0,
+    "enhanced_scraper": 0
+  },
+  "total_api_calls": 0,
+  "efficiency_score": 0
+}

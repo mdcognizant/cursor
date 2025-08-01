@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-07-28T05:00:26.980432",
+  "uptime_hours": 4.690680608055556,
+  "total_errors_detected": 38,
+  "recent_errors_1h": 6,
+  "error_types": {
+    "api_error": 6,
+    "general_error": 21,
+    "critical": 11
+  },
+  "system_status": "healthy"
+}

@@ -1,0 +1,503 @@
+{
+  "environment": "production",
+  "test_time": "2025-07-30T16:31:59.170732",
+  "authentication": {
+    "client_credentials": {
+      "status": "SUCCESS",
+      "details": {
+        "token_received": true,
+        "expires_in": 3600,
+        "token_type": "Bearer"
+      },
+      "timestamp": "2025-07-30T16:32:02.357795"
+    },
+    "token_validation": {
+      "status": "SUCCESS",
+      "details": {
+        "userId": "9eff1a95-6cc6-11f0-a3e6-4eb54501c717",
+        "email": "mdadnan@gmail.com",
+        "name": "mdadnan@gmail.com",
+        "roles": [
+          "partner"
+        ],
+        "auth": {
+          "method": "bearer",
+          "subject": "5532423d-6cca-11f0-a3e6-4eb54501c717",
+          "verified": true,
+          "invited": false,
+          "partnerVerified": false,
+          "enableIbanCreation": false,
+          "enableKYCDataSubmission": false,
+          "requireCompleteKYCData": false
+        },
+        "defaultProfile": "9eff1a28-6cc6-11f0-a3e6-4eb54501c717",
+        "profiles": [
+          {
+            "id": "9eff1a28-6cc6-11f0-a3e6-4eb54501c717",
+            "kind": "personal",
+            "name": "MUHAMMAD ADNAN AFZAL",
+            "perms": [
+              "read",
+              "write"
+            ]
+          }
+        ]
+      },
+      "timestamp": "2025-07-30T16:32:04.838640"
+    }
+  },
+  "endpoints": {},
+  "errors": [],
+  "working_features": [
+    "authentication.client_credentials",
+    "authentication.token_validation",
+    "core_endpoints./profiles",
+    "core_endpoints./addresses",
+    "core_endpoints./ibans",
+    "core_endpoints./orders",
+    "core_endpoints./tokens",
+    "balance_endpoints.gnosis_balances",
+    "wallet_linking.link_endpoint",
+    "order_creation.create_order"
+  ],
+  "broken_features": [
+    "core_endpoints./webhooks"
+  ],
+  "limitations": [
+    "balance_endpoints.ethereum_balances: Address not linked to chain",
+    "balance_endpoints.polygon_balances: Address not linked to chain",
+    "balance_endpoints.arbitrum_balances: Address not linked to chain",
+    "balance_endpoints.linea_balances: Address not linked to chain",
+    "special_features./profile: Endpoint not found",
+    "special_features./me: Endpoint not found",
+    "special_features./account: Endpoint not found",
+    "special_features./currencies: Endpoint not found",
+    "special_features./chains: Endpoint not found",
+    "special_features./fees: Endpoint not found",
+    "special_features./limits: Endpoint not found"
+  ],
+  "core_endpoints": {
+    "/profiles": {
+      "status": "SUCCESS",
+      "details": {
+        "data_type": "<class 'dict'>",
+        "response": {
+          "profiles": [
+            {
+              "id": "9eff1a28-6cc6-11f0-a3e6-4eb54501c717",
+              "name": "MUHAMMAD ADNAN AFZAL",
+              "state": "created"
+            }
+          ]
+        }
+      },
+      "timestamp": "2025-07-30T16:32:07.386474"
+    },
+    "/addresses": {
+      "status": "SUCCESS",
+      "details": {
+        "data_type": "<class 'dict'>",
+        "response": {
+          "addresses": [
+            {
+              "address": "0x50E772C294f8940B97dcC872f343263c11a90dE7",
+              "profile": "9eff1a28-6cc6-11f0-a3e6-4eb54501c717",
+              "chains": [
+                "gnosis"
+              ]
+            }
+          ],
+          "total": 1
+        }
+      },
+      "timestamp": "2025-07-30T16:32:09.891900"
+    },
+    "/ibans": {
+      "status": "SUCCESS",
+      "details": {
+        "data_type": "<class 'dict'>",
+        "response": {
+          "ibans": [],
+          "total": 0
+        }
+      },
+      "timestamp": "2025-07-30T16:32:12.487802"
+    },
+    "/orders": {
+      "status": "SUCCESS",
+      "details": {
+        "data_type": "<class 'dict'>",
+        "response": {
+          "orders": [],
+          "total": 0
+        }
+      },
+      "timestamp": "2025-07-30T16:32:14.955406"
+    },
+    "/tokens": {
+      "status": "SUCCESS",
+      "details": {
+        "data_type": "<class 'list'>",
+        "response": [
+          {
+            "address": "0x39b8B6385416f4cA36a20319F70D28621895279D",
+            "chain": "ethereum",
+            "chainId": "1",
+            "currency": "eur",
+            "decimals": 18,
+            "symbol": "EURe",
+            "kind": "evm",
+            "ticker": "EUR"
+          },
+          {
+            "address": "0x7ba92741bf2a568abc6f1d3413c58c6e0244f8fd",
+            "chain": "ethereum",
+            "chainId": "1",
+            "currency": "gbp",
+            "decimals": 18,
+            "symbol": "GBPe",
+            "kind": "evm",
+            "ticker": "GBP"
+          },
+          {
+            "address": "0xbc5142e0cc5eb16b47c63b0f033d4c2480853a52",
+            "chain": "ethereum",
+            "chainId": "1",
+            "currency": "usd",
+            "decimals": 18,
+            "symbol": "USDe",
+            "kind": "evm",
+            "ticker": "USD"
+          },
+          {
+            "address": "0xc642549743a93674cf38d6431f75d6443f88e3e2",
+            "chain": "ethereum",
+            "chainId": "1",
+            "currency": "isk",
+            "decimals": 18,
+            "symbol": "ISKe",
+            "kind": "evm",
+            "ticker": "ISK"
+          },
+          {
+            "address": "0xE0aEa583266584DafBB3f9C3211d5588c73fEa8d",
+            "chain": "polygon",
+            "chainId": "137",
+            "currency": "eur",
+            "decimals": 18,
+            "symbol": "EURe",
+            "kind": "evm",
+            "ticker": "EUR"
+          },
+          {
+            "address": "0x646BEea7a02FdAdA34c8e118949fE32350aB2206",
+            "chain": "polygon",
+            "chainId": "137",
+            "currency": "gbp",
+            "decimals": 18,
+            "symbol": "GBPe",
+            "kind": "evm",
+            "ticker": "GBP"
+          },
+          {
+            "address": "0x91e2B584908C2807EFc9F846E0C2A1fe875C5141",
+            "chain": "polygon",
+            "chainId": "137",
+            "currency": "usd",
+            "decimals": 18,
+            "symbol": "USDe",
+            "kind": "evm",
+            "ticker": "USD"
+          },
+          {
+            "address": "0xd053fc09e8F05A43Da4ECC40a750559C938C8131",
+            "chain": "polygon",
+            "chainId": "137",
+            "currency": "isk",
+            "decimals": 18,
+            "symbol": "ISKe",
+            "kind": "evm",
+            "ticker": "ISK"
+          },
+          {
+            "address": "0x420CA0f9B9b604cE0fd9C18EF134C705e5Fa3430",
+            "chain": "gnosis",
+            "chainId": "100",
+            "currency": "eur",
+            "decimals": 18,
+            "symbol": "EURe",
+            "kind": "evm",
+            "ticker": "EUR"
+          },
+          {
+            "address": "0x8E34bfEC4f6Eb781f9743D9b4af99CD23F9b7053",
+            "chain": "gnosis",
+            "chainId": "100",
+            "currency": "gbp",
+            "decimals": 18,
+            "symbol": "GBPe",
+            "kind": "evm",
+            "ticker": "GBP"
+          },
+          {
+            "address": "0x50D1A74F4b6dcaCddD97fd442C0e22a4c97F2b7f",
+            "chain": "gnosis",
+            "chainId": "100",
+            "currency": "usd",
+            "decimals": 18,
+            "symbol": "USDe",
+            "kind": "evm",
+            "ticker": "USD"
+          },
+          {
+            "address": "0x614Bd419D3735C9eb51542C06e5Acc09a9953f61",
+            "chain": "gnosis",
+            "chainId": "100",
+            "currency": "isk",
+            "decimals": 18,
+            "symbol": "ISKe",
+            "kind": "evm",
+            "ticker": "ISK"
+          },
+          {
+            "address": "0x0c06cCF38114ddfc35e07427B9424adcca9F44F8",
+            "chain": "arbitrum",
+            "chainId": "42161",
+            "currency": "eur",
+            "decimals": 18,
+            "symbol": "EURe",
+            "kind": "evm",
+            "ticker": "EUR"
+          },
+          {
+            "address": "0x2D80dBf04D0802abD7A342DaFA5d7cB42bfbb52f",
+            "chain": "arbitrum",
+            "chainId": "42161",
+            "currency": "gbp",
+            "decimals": 18,
+            "symbol": "GBPe",
+            "kind": "evm",
+            "ticker": "GBP"
+          },
+          {
+            "address": "0x0Fc041a4B6a3F634445804daAFD03f202337C125",
+            "chain": "arbitrum",
+            "chainId": "42161",
+            "currency": "usd",
+            "decimals": 18,
+            "symbol": "USDe",
+            "kind": "evm",
+            "ticker": "USD"
+          },
+          {
+            "address": "0x845a96969e8d84FF32B8939934d9771005178920",
+            "chain": "arbitrum",
+            "chainId": "42161",
+            "currency": "isk",
+            "decimals": 18,
+            "symbol": "ISKe",
+            "kind": "evm",
+            "ticker": "ISK"
+          },
+          {
+            "address": "0x3ff47c5Bf409C86533FE1f4907524d304062428D",
+            "chain": "linea",
+            "chainId": "59144",
+            "currency": "eur",
+            "decimals": 18,
+            "symbol": "EURe",
+            "kind": "evm",
+            "ticker": "EUR"
+          },
+          {
+            "address": "0x3Bce82cf1A2bc357F956dd494713Fe11DC54780f",
+            "chain": "linea",
+            "chainId": "59144",
+            "currency": "gbp",
+            "decimals": 18,
+            "symbol": "GBPe",
+            "kind": "evm",
+            "ticker": "GBP"
+          },
+          {
+            "address": "0x0Ec9E243c07b752845Ba900Fe5464FE5026fF948",
+            "chain": "linea",
+            "chainId": "59144",
+            "currency": "usd",
+            "decimals": 18,
+            "symbol": "USDe",
+            "kind": "evm",
+            "ticker": "USD"
+          },
+          {
+            "address": "0x331e7481b22CA68efc28fDCBaA33f23C4504BacF",
+            "chain": "linea",
+            "chainId": "59144",
+            "currency": "isk",
+            "decimals": 18,
+            "symbol": "ISKe",
+            "kind": "evm",
+            "ticker": "ISK"
+          },
+          {
+            "address": "",
+            "chain": "noble",
+            "chainId": "noble-1",
+            "currency": "eur",
+            "decimals": 6,
+            "symbol": "EURe",
+            "kind": "cosmos",
+            "ticker": "EUR"
+          }
+        ]
+      },
+      "timestamp": "2025-07-30T16:32:17.624147"
+    },
+    "/webhooks": {
+      "status": "FAILED",
+      "details": {
+        "status_code": 403,
+        "headers": {
+          "date": "Wed, 30 Jul 2025 15:32:20 GMT",
+          "content-type": "application/json; charset=utf-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "x-correlation-id": "59OYsAQNR",
+          "cf-cache-status": "DYNAMIC",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=6uPiJGPIiFFKDLG%2Bg8ECRmgaPZ98bmCkREEVxIHWmFeo2L0z9eiGulMuOSZVr029b%2FmKbtHCc8LcdVLVK%2F%2BxDPIDye3nHcrgYgU0ZGo%3D\"}]}",
+          "content-encoding": "br",
+          "server": "cloudflare",
+          "cf-ray": "9675e878af94b0ef-MAN"
+        },
+        "data": {
+          "code": 403,
+          "status": "Forbidden",
+          "message": "Mdadnan@gmail.com has no permission to perform this action, please contact support"
+        },
+        "success": false,
+        "url": "https://api.monerium.app/webhooks",
+        "method": "GET"
+      },
+      "timestamp": "2025-07-30T16:32:20.007482"
+    }
+  },
+  "balance_endpoints": {
+    "ethereum_balances": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Address not linked to chain",
+        "error": "Address 0x50E772C294f8940B97dcC872f343263c11a90dE7 not linked on ethereum"
+      },
+      "timestamp": "2025-07-30T16:32:24.937762"
+    },
+    "gnosis_balances": {
+      "status": "SUCCESS",
+      "details": {
+        "address": "0x50E772C294f8940B97dcC872f343263c11a90dE7",
+        "balances": [
+          {
+            "currency": "eur",
+            "amount": "0"
+          }
+        ]
+      },
+      "timestamp": "2025-07-30T16:32:27.455348"
+    },
+    "polygon_balances": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Address not linked to chain",
+        "error": "Address 0x50E772C294f8940B97dcC872f343263c11a90dE7 not linked on polygon"
+      },
+      "timestamp": "2025-07-30T16:32:29.810093"
+    },
+    "arbitrum_balances": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Address not linked to chain",
+        "error": "Address 0x50E772C294f8940B97dcC872f343263c11a90dE7 not linked on arbitrum"
+      },
+      "timestamp": "2025-07-30T16:32:32.228007"
+    },
+    "linea_balances": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Address not linked to chain",
+        "error": "Address 0x50E772C294f8940B97dcC872f343263c11a90dE7 not linked on linea"
+      },
+      "timestamp": "2025-07-30T16:32:34.533945"
+    }
+  },
+  "wallet_linking": {
+    "link_endpoint": {
+      "status": "SUCCESS",
+      "details": {
+        "endpoint_accessible": true,
+        "requires_valid_data": true
+      },
+      "timestamp": "2025-07-30T16:32:36.953397"
+    }
+  },
+  "order_creation": {
+    "create_order": {
+      "status": "SUCCESS",
+      "details": {
+        "endpoint_accessible": true,
+        "requires_valid_data": true
+      },
+      "timestamp": "2025-07-30T16:32:39.272868"
+    }
+  },
+  "special_features": {
+    "/profile": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Endpoint not found"
+      },
+      "timestamp": "2025-07-30T16:32:41.654962"
+    },
+    "/me": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Endpoint not found"
+      },
+      "timestamp": "2025-07-30T16:32:44.137031"
+    },
+    "/account": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Endpoint not found"
+      },
+      "timestamp": "2025-07-30T16:32:46.548587"
+    },
+    "/currencies": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Endpoint not found"
+      },
+      "timestamp": "2025-07-30T16:32:48.913093"
+    },
+    "/chains": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Endpoint not found"
+      },
+      "timestamp": "2025-07-30T16:32:51.473965"
+    },
+    "/fees": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Endpoint not found"
+      },
+      "timestamp": "2025-07-30T16:32:53.804760"
+    },
+    "/limits": {
+      "status": "LIMITED",
+      "details": {
+        "reason": "Endpoint not found"
+      },
+      "timestamp": "2025-07-30T16:32:56.224068"
+    }
+  }
+}
