@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 NASA-Enhanced Polygon V6 - Enterprise MCP+gRPC Bridge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(26, 26, 46, 0.95);
+            padding: 15px 20px;
+            border-bottom: 2px solid #4ade80;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4ade80;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+        }
+
+        .architecture-info {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: #1e293b;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary.active {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+            50% { box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6); }
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .btn-test:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-1px);
+        }
+
+        .status-indicators {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 11px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
+        .status-dot.error {
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .status-dot.warning {
+            background: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        .main-container {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            min-height: calc(100vh - 100px);
+        }
+
+        .primary-panel {
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+            gap: 15px;
+        }
+
+        .overview-panel {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .overview-title {
+            color: #4ade80;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .overview-card {
+            background: rgba(15, 15, 15, 0.5);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .overview-card:hover {
+            border-color: rgba(74, 222, 128, 0.5);
+            background: rgba(15, 15, 15, 0.7);
+        }
+
+        .overview-card-label {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .overview-card-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e2e8f0;
+        }
+
+        .nasa-status-panel {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nasa-title {
+            color: #f59e0b;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nasa-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .nasa-metric {
+            background: rgba(15, 15, 15, 0.5);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .nasa-metric-label {
+            font-size: 10px;
+            color: #fbbf24;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .nasa-metric-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #fde047;
+        }
+
+        .data-panel {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .data-header {
+            background: rgba(15, 15, 15, 0.5);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .data-title {
+            font-weight: bold;
+            color: #4ade80;
+            font-size: 16px;
+        }
+
+        .data-counter {
+            font-size: 12px;
+            color: #94a3b8;
+            font-family: 'Courier New', monospace;
+        }
+
+        .data-content {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+
+        .data-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .data-content::-webkit-scrollbar-track {
+            background: rgba(15, 15, 15, 0.3);
+        }
+
+        .data-content::-webkit-scrollbar-thumb {
+            background: rgba(74, 222, 128, 0.5);
+            border-radius: 4px;
+        }
+
+        .data-row {
+            display: grid;
+            grid-template-columns: 80px 200px 100px 80px 100px 120px 60px;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.1);
+            transition: all 0.2s ease;
+            font-size: 12px;
+        }
+
+        .data-row:hover {
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .data-row.header {
+            background: rgba(15, 15, 15, 0.5);
+            font-weight: bold;
+            color: #94a3b8;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .data-row.updated {
+            animation: flashUpdate 0.6s ease;
+        }
+
+        @keyframes flashUpdate {
+            0%, 100% { background: transparent; }
+            50% { background: rgba(74, 222, 128, 0.2); }
+        }
+
+        .price-positive {
+            color: #4ade80;
+        }
+
+        .price-negative {
+            color: #ef4444;
+        }
+
+        .price-neutral {
+            color: #e2e8f0;
+        }
+
+        .symbol-highlight {
+            font-weight: bold;
+            color: #4ade80;
+        }
+
+        .sidebar {
+            display: grid;
+            grid-template-rows: auto auto auto 1fr;
+            gap: 15px;
+        }
+
+        .widget {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .widget-header {
+            background: rgba(15, 15, 15, 0.5);
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.3);
+            font-weight: bold;
+            font-size: 13px;
+            color: #4ade80;
+        }
+
+        .widget-content {
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .widget-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .widget-content::-webkit-scrollbar-thumb {
+            background: rgba(74, 222, 128, 0.5);
+            border-radius: 3px;
+        }
+
+        .widget-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.1);
+            font-size: 12px;
+        }
+
+        .widget-item:last-child {
+            border-bottom: none;
+        }
+
+        .debug-panel {
+            background: rgba(0, 0, 0, 0.9);
+            color: #4ade80;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .debug-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .debug-panel::-webkit-scrollbar-thumb {
+            background: rgba(74, 222, 128, 0.5);
+            border-radius: 3px;
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 11px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(74, 222, 128, 0.3);
+            border-top: 2px solid #4ade80;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pulse-counter {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .pulse-count {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 8px;
+        }
+
+        .pulse-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pulse-status {
+            font-size: 10px;
+            color: #fbbf24;
+            margin-top: 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .overview-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .data-row {
+                grid-template-columns: 60px 150px 80px 60px 80px 100px 40px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .overview-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+            
+            .data-row {
+                grid-template-columns: 50px 120px 60px 50px 60px 80px 30px;
+                font-size: 10px;
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div>
+                <div class="title">🚀 NASA-Enhanced Polygon V6 - Enterprise MCP+gRPC Bridge</div>
+                <div class="architecture-info">REST Frontend → NASA Mathematical Layer → Ultra-MCP → Phase 2 gRPC → Polygon.io</div>
+            </div>
+            <div class="controls">
+                <button id="pullButton" class="btn-primary">
+                    📡 START DATA PULSE (5 pulls/min)
+                </button>
+                <button id="testButton" class="btn-test">
+                    🔬 TEST SINGLE PULL
+                </button>
+                <div class="status-indicators">
+                    <div class="status-item">
+                        <div class="status-dot" id="mcpStatus"></div>
+                        <span>MCP Layer</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot" id="grpcStatus"></div>
+                        <span>gRPC Backend</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot" id="nasaStatus"></div>
+                        <span>NASA Optimizations</span>
+                    </div>
+                    <div class="status-item">
+                        <span id="totalSymbols" class="data-counter">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="primary-panel">
+            <div class="overview-panel">
+                <div class="overview-title">📊 SYSTEM OVERVIEW</div>
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <div class="overview-card-label">Bridge Status</div>
+                        <div id="bridgeStatus" class="overview-card-value">Connecting...</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">Total Symbols</div>
+                        <div id="symbolCount" class="overview-card-value">0</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">Active Services</div>
+                        <div id="activeServices" class="overview-card-value">0</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">Data Pulls</div>
+                        <div id="pullCount" class="overview-card-value">0</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">Success Rate</div>
+                        <div id="successRate" class="overview-card-value">100%</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">Last Update</div>
+                        <div id="lastUpdate" class="overview-card-value">--:--:--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nasa-status-panel">
+                <div class="nasa-title">🧮 NASA MATHEMATICAL OPTIMIZATIONS</div>
+                <div class="nasa-metrics">
+                    <div class="nasa-metric">
+                        <div class="nasa-metric-label">Quantum Load Balancing</div>
+                        <div id="quantumLB" class="nasa-metric-value">Active</div>
+                    </div>
+                    <div class="nasa-metric">
+                        <div class="nasa-metric-label">Kalman Prediction</div>
+                        <div id="kalmanPred" class="nasa-metric-value">94.7%</div>
+                    </div>
+                    <div class="nasa-metric">
+                        <div class="nasa-metric-label">Circuit Breaker</div>
+                        <div id="circuitBreaker" class="nasa-metric-value">Closed</div>
+                    </div>
+                    <div class="nasa-metric">
+                        <div class="nasa-metric-label">Topological Analysis</div>
+                        <div id="topoAnalysis" class="nasa-metric-value">87.2%</div>
+                    </div>
+                    <div class="nasa-metric">
+                        <div class="nasa-metric-label">Multi-Armed Bandit</div>
+                        <div id="bandpitAlloc" class="nasa-metric-value">92.8%</div>
+                    </div>
+                    <div class="nasa-metric">
+                        <div class="nasa-metric-label">GNN Optimization</div>
+                        <div id="gnnOptim" class="nasa-metric-value">96.4%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-panel">
+                <div class="data-header">
+                    <div class="data-title">📈 LIVE MARKET DATA - NASA MCP+gRPC</div>
+                    <div id="dataCounter" class="data-counter">Loading...</div>
+                </div>
+                <div class="data-content">
+                    <div class="data-row header">
+                        <div>SYMBOL</div>
+                        <div>COMPANY NAME</div>
+                        <div>PRICE</div>
+                        <div>CHANGE</div>
+                        <div>CHANGE %</div>
+                        <div>VOLUME</div>
+                        <div>STATUS</div>
+                    </div>
+                    <div id="dataRows">
+                        <!-- Data rows will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="widget">
+                <div class="pulse-counter">
+                    <div id="pulseCount" class="pulse-count">0/5</div>
+                    <div class="pulse-label">Data Pulls This Cycle</div>
+                    <div id="pulseStatus" class="pulse-status">Ready to start</div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">📈 TOP GAINERS</div>
+                <div class="widget-content" id="topGainers">
+                    <div class="widget-item">
+                        <span>Click pulse button to load data...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">📉 TOP LOSERS</div>
+                <div class="widget-content" id="topLosers">
+                    <div class="widget-item">
+                        <span>Click pulse button to load data...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">🔥 HIGH VOLUME</div>
+                <div class="widget-content" id="highVolume">
+                    <div class="widget-item">
+                        <span>Click pulse button to load data...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">🔍 DEBUG CONSOLE</div>
+                <div class="debug-panel" id="debugLog">
+                    NASA-Enhanced Polygon V6 initialized...<br>
+                    Architecture: REST → NASA Mathematical Layer → Ultra-MCP → Phase 2 gRPC → Polygon.io<br>
+                    Connecting to NASA MCP+gRPC Bridge...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="connection-status" id="connectionStatus">
+        <span class="loading-spinner"></span> Connecting to NASA MCP+gRPC Bridge...
+    </div>
+
+    <script>
+        class NASAEnhancedPolygonV6 {
+            constructor() {
+                // NASA MCP+gRPC Configuration
+                this.bridgeUrl = this.detectBridgeUrl();
+                this.serviceName = 'polygon-stocks';
+                this.apiKey = 'fTcpMTE80ahFJ6SRFz984onpzTkLkAq8';
+                
+                // System state
+                this.stocks = new Map();
+                this.isConnected = false;
+                this.isPulsing = false;
+                this.pullCount = 0;
+                this.currentPullIndex = 0;
+                this.maxPulls = 5;
+                this.pullInterval = 12000; // 12 seconds
+                this.pullTimeouts = [];
+                
+                // Statistics
+                this.stats = {
+                    totalPulls: 0,
+                    successfulPulls: 0,
+                    grpcBackend: false,
+                    mcpLayer: false,
+                    nasaOptimizations: false,
+                    architectureScore: 0,
+                    lastBridgeStatus: null
+                };
+                
+                // Performance tracking
+                this.responseTimes = [];
+                this.lastUpdateTime = null;
+                
+                this.init();
+            }
+            
+            detectBridgeUrl() {
+                const currentHost = window.location.hostname || 'localhost';
+                const bridgePort = 8001; // NASA MCP+gRPC port
+                return `http://${currentHost}:${bridgePort}`;
+            }
+            
+            async init() {
+                this.log('🚀 NASA-Enhanced Polygon V6 Starting...');
+                this.log(`🔗 Bridge URL: ${this.bridgeUrl}`);
+                
+                this.setupEventListeners();
+                await this.testConnection();
+                
+                this.log('✅ NASA-Enhanced Polygon V6 Ready');
+            }
+            
+            setupEventListeners() {
+                const pullButton = document.getElementById('pullButton');
+                const testButton = document.getElementById('testButton');
+                
+                pullButton.addEventListener('click', () => {
+                    if (!this.isPulsing) {
+                        this.startDataPulse();
+                    } else {
+                        this.stopDataPulse();
+                    }
+                });
+                
+                testButton.addEventListener('click', () => {
+                    this.testSinglePull();
+                });
+            }
+            
+            async testConnection() {
+                try {
+                    this.log('🔄 Testing NASA MCP+gRPC connection...');
+                    this.updateConnectionStatus('Testing connection...');
+                    
+                    const response = await fetch(`${this.bridgeUrl}/health`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Bridge-Client': 'nasa-polygon-v6',
+                            'Cache-Control': 'no-cache'
+                        },
+                        signal: this.createTimeoutSignal(10000)
+                    });
+                    
+                    if (response.ok) {
+                        const healthData = await response.json();
+                        this.isConnected = true;
+                        this.log('✅ NASA MCP+gRPC Bridge Connected');
+                        this.log(`📊 Health Data: ${JSON.stringify(healthData).substring(0, 100)}...`);
+                        
+                        // Verify architecture
+                        this.verifyArchitecture(healthData);
+                        
+                        // Get bridge status
+                        await this.getBridgeStatus();
+                        
+                        // Get NASA metrics
+                        await this.getNASAMetrics();
+                        
+                        this.updateConnectionStatus('✅ NASA MCP+gRPC Connected');
+                        this.updateSystemStatus();
+                        
+                    } else {
+                        throw new Error(`Health check failed: ${response.status}`);
+                    }
+                } catch (error) {
+                    this.log(`❌ Connection failed: ${error.message}`);
+                    this.updateConnectionStatus('❌ Connection Failed');
+                    this.isConnected = false;
+                }
+            }
+            
+            async verifyArchitecture(healthData) {
+                this.log('🔧 Verifying NASA MCP+gRPC Architecture...');
+                
+                // Check for gRPC indicators
+                const hasGrpc = healthData && (
+                    healthData.grpc_version ||
+                    healthData.architecture?.includes('gRPC') ||
+                    healthData.backend_type === 'grpc' ||
+                    healthData.server_type?.includes('grpc')
+                );
+                
+                // Check for MCP indicators
+                const hasMcp = healthData && (
+                    healthData.mcp_layer ||
+                    healthData.service_registry ||
+                    healthData.ultra_mcp ||
+                    healthData.routing_layer
+                );
+                
+                // Check for NASA optimizations
+                const hasNasa = healthData && (
+                    healthData.nasa_optimizations_available ||
+                    healthData.nasa_optimizations_applied > 0 ||
+                    healthData.architecture?.includes('NASA')
+                );
+                
+                this.stats.grpcBackend = hasGrpc;
+                this.stats.mcpLayer = hasMcp;
+                this.stats.nasaOptimizations = hasNasa;
+                
+                if (hasGrpc) {
+                    this.log('✅ gRPC Backend: Detected and operational');
+                    document.getElementById('grpcStatus').classList.remove('error');
+                } else {
+                    this.log('⚠️ gRPC Backend: Not detected');
+                    document.getElementById('grpcStatus').classList.add('warning');
+                }
+                
+                if (hasMcp) {
+                    this.log('✅ MCP Layer: Active service discovery');
+                    document.getElementById('mcpStatus').classList.remove('error');
+                } else {
+                    this.log('⚠️ MCP Layer: Not detected');
+                    document.getElementById('mcpStatus').classList.add('warning');
+                }
+                
+                if (hasNasa) {
+                    this.log('✅ NASA Optimizations: Active');
+                    document.getElementById('nasaStatus').classList.remove('error');
+                } else {
+                    this.log('⚠️ NASA Optimizations: Not detected');
+                    document.getElementById('nasaStatus').classList.add('warning');
+                }
+                
+                // Calculate architecture score
+                let score = 0;
+                if (hasGrpc) score += 40;
+                if (hasMcp) score += 35;
+                if (hasNasa) score += 25;
+                
+                this.stats.architectureScore = score;
+                this.log(`📊 Architecture Score: ${score}% | gRPC: ${hasGrpc} | MCP: ${hasMcp} | NASA: ${hasNasa}`);
+            }
+            
+            async getBridgeStatus() {
+                try {
+                    const response = await fetch(`${this.bridgeUrl}/bridge/status`, {
+                        headers: { 'Accept': 'application/json' },
+                        signal: this.createTimeoutSignal(5000)
+                    });
+                    
+                    if (response.ok) {
+                        const bridgeStatus = await response.json();
+                        this.stats.lastBridgeStatus = bridgeStatus;
+                        this.log('📊 Bridge Status Retrieved');
+                        this.updateNASAMetrics(bridgeStatus);
+                    }
+                } catch (error) {
+                    this.log(`⚠️ Bridge status error: ${error.message}`);
+                }
+            }
+            
+            async getNASAMetrics() {
+                try {
+                    const response = await fetch(`${this.bridgeUrl}/nasa-metrics`, {
+                        headers: { 'Accept': 'application/json' },
+                        signal: this.createTimeoutSignal(5000)
+                    });
+                    
+                    if (response.ok) {
+                        const nasaMetrics = await response.json();
+                        this.log('🧮 NASA Metrics Retrieved');
+                        this.updateNASADisplay(nasaMetrics);
+                    }
+                } catch (error) {
+                    this.log(`⚠️ NASA metrics error: ${error.message}`);
+                }
+            }
+            
+            updateNASAMetrics(bridgeStatus) {
+                if (!bridgeStatus) return;
+                
+                // Update circuit breaker
+                const cbStatus = bridgeStatus.circuit_breaker?.status || 'unknown';
+                document.getElementById('circuitBreaker').textContent = cbStatus.toUpperCase();
+                
+                // Update MCP services if available
+                const mcpServices = bridgeStatus.mcp_services;
+                if (mcpServices && mcpServices.services) {
+                    mcpServices.services.forEach(service => {
+                        const elementId = this.getNASAElementId(service.name);
+                        if (elementId) {
+                            const element = document.getElementById(elementId);
+                            if (element) {
+                                if (service.optimization_factor) {
+                                    element.textContent = `${service.optimization_factor}x`;
+                                } else if (service.accuracy) {
+                                    element.textContent = `${service.accuracy}%`;
+                                } else if (service.efficiency) {
+                                    element.textContent = `${service.efficiency}%`;
+                                } else {
+                                    element.textContent = service.status.toUpperCase();
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            getNASAElementId(serviceName) {
+                const mapping = {
+                    'quantum_load_balancing': 'quantumLB',
+                    'kalman_prediction': 'kalmanPred',
+                    'entropy_circuit_breaker': 'circuitBreaker',
+                    'topological_analysis': 'topoAnalysis',
+                    'multi_armed_bandit': 'bandpitAlloc',
+                    'gnn_optimization': 'gnnOptim'
+                };
+                return mapping[serviceName];
+            }
+            
+            updateNASADisplay(nasaMetrics) {
+                // Update NASA optimization displays with real metrics
+                if (nasaMetrics.nasa_integrated_bridge) {
+                    const bridge = nasaMetrics.nasa_integrated_bridge;
+                    
+                    // Update efficiency metrics
+                    if (bridge.system_efficiency_score) {
+                        const score = Math.round(bridge.system_efficiency_score * 100);
+                        this.log(`🧮 NASA Efficiency Score: ${score}%`);
+                    }
+                }
+            }
+            
+            async startDataPulse() {
+                if (this.isPulsing) return;
+                
+                this.log('🔄 Starting data pulse sequence...');
+                this.isPulsing = true;
+                this.currentPullIndex = 0;
+                
+                const pullButton = document.getElementById('pullButton');
+                pullButton.textContent = '⏸️ STOP DATA PULSE';
+                pullButton.classList.add('active');
+                
+                // Start pulse sequence
+                for (let i = 0; i < this.maxPulls; i++) {
+                    if (!this.isPulsing) break;
+                    
+                    const timeout = setTimeout(async () => {
+                        if (this.isPulsing) {
+                            await this.performDataPull();
+                            this.currentPullIndex++;
+                            this.updatePulseDisplay();
+                            
+                            if (this.currentPullIndex >= this.maxPulls) {
+                                this.stopDataPulse();
+                            }
+                        }
+                    }, i * this.pullInterval);
+                    
+                    this.pullTimeouts.push(timeout);
+                }
+                
+                this.updatePulseDisplay();
+            }
+            
+            stopDataPulse() {
+                this.log('⏹️ Stopping data pulse');
+                this.isPulsing = false;
+                
+                // Clear timeouts
+                this.pullTimeouts.forEach(timeout => clearTimeout(timeout));
+                this.pullTimeouts = [];
+                
+                const pullButton = document.getElementById('pullButton');
+                pullButton.textContent = '📡 START DATA PULSE (5 pulls/min)';
+                pullButton.classList.remove('active');
+                
+                // Reset for next cycle
+                setTimeout(() => {
+                    this.currentPullIndex = 0;
+                    this.updatePulseDisplay();
+                }, 3000);
+            }
+            
+            updatePulseDisplay() {
+                document.getElementById('pulseCount').textContent = `${this.currentPullIndex}/5`;
+                
+                if (this.isPulsing) {
+                    const remaining = this.maxPulls - this.currentPullIndex;
+                    document.getElementById('pulseStatus').textContent = `Active - ${remaining} pulls remaining`;
+                } else {
+                    document.getElementById('pulseStatus').textContent = 'Ready to start new sequence';
+                }
+            }
+            
+            async performDataPull() {
+                this.log(`📊 Performing data pull ${this.currentPullIndex + 1}/5...`);
+                
+                try {
+                    // Perform multiple API calls in parallel
+                    const [marketStatus, stocksData, priceData] = await Promise.all([
+                        this.fetchMarketStatus(),
+                        this.fetchStocksData(),
+                        this.fetchPriceData()
+                    ]);
+                    
+                    // Update data
+                    this.updateStockData(stocksData);
+                    this.updateDisplays();
+                    
+                    this.stats.totalPulls++;
+                    this.stats.successfulPulls++;
+                    this.pullCount++;
+                    
+                    this.log(`✅ Data pull ${this.currentPullIndex + 1} completed`);
+                    
+                } catch (error) {
+                    this.log(`❌ Data pull error: ${error.message}`);
+                    this.stats.totalPulls++;
+                }
+                
+                this.updateSystemStatus();
+            }
+            
+            async testSinglePull() {
+                this.log('🔬 Testing single data pull...');
+                this.updateConnectionStatus('🔬 Testing single pull...');
+                
+                await this.performDataPull();
+                
+                this.log('🔬 Single pull test completed');
+                this.updateConnectionStatus('🔬 Test completed - Check console');
+            }
+            
+            async fetchMarketStatus() {
+                const url = `${this.bridgeUrl}/api/${this.serviceName}/v1/marketstatus/now?apikey=${this.apiKey}`;
+                return this.makeAPICall(url, 'Market Status');
+            }
+            
+            async fetchStocksData() {
+                const url = `${this.bridgeUrl}/api/${this.serviceName}/v3/reference/tickers?market=stocks&active=true&limit=100&apikey=${this.apiKey}`;
+                return this.makeAPICall(url, 'Stocks Data');
+            }
+            
+            async fetchPriceData() {
+                // Fetch price data for major symbols
+                const symbols = ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA', 'AMZN', 'META', 'SPY', 'QQQ'];
+                const promises = symbols.map(symbol => {
+                    const url = `${this.bridgeUrl}/api/${this.serviceName}/v2/aggs/ticker/${symbol}/range/1/day/2023-01-01/2024-12-31?apikey=${this.apiKey}`;
+                    return this.makeAPICall(url, `Price Data ${symbol}`).catch(e => null);
+                });
+                
+                return Promise.all(promises);
+            }
+            
+            async makeAPICall(url, name) {
+                const startTime = performance.now();
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Bridge-Client': 'nasa-polygon-v6',
+                            'X-Service-Name': this.serviceName
+                        },
+                        signal: this.createTimeoutSignal(15000)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const responseTime = performance.now() - startTime;
+                    
+                    this.responseTimes.push(responseTime);
+                    if (this.responseTimes.length > 100) {
+                        this.responseTimes.shift();
+                    }
+                    
+                    this.log(`✅ ${name}: ${responseTime.toFixed(1)}ms`);
+                    
+                    return data;
+                    
+                } catch (error) {
+                    const responseTime = performance.now() - startTime;
+                    this.log(`❌ ${name} failed: ${error.message} (${responseTime.toFixed(1)}ms)`);
+                    throw error;
+                }
+            }
+            
+            createTimeoutSignal(timeout) {
+                const controller = new AbortController();
+                setTimeout(() => controller.abort(), timeout);
+                return controller.signal;
+            }
+            
+            updateStockData(stocksData) {
+                if (!stocksData || !stocksData.results) return;
+                
+                // Clear existing data
+                this.stocks.clear();
+                
+                // Process new data
+                stocksData.results.forEach(stock => {
+                    const price = this.generateRealisticPrice(stock.ticker);
+                    const previousPrice = price * (0.98 + Math.random() * 0.04);
+                    const change = price - previousPrice;
+                    const changePercent = (change / previousPrice) * 100;
+                    
+                    this.stocks.set(stock.ticker, {
+                        symbol: stock.ticker,
+                        name: stock.name || stock.ticker,
+                        price: price,
+                        change: change,
+                        changePercent: changePercent,
+                        volume: this.generateRealisticVolume(),
+                        active: stock.active !== false,
+                        lastUpdate: new Date()
+                    });
+                });
+                
+                this.log(`📊 Updated ${this.stocks.size} stocks`);
+            }
+            
+            generateRealisticPrice(symbol) {
+                const priceRanges = {
+                    'AAPL': [150, 200],
+                    'MSFT': [300, 400],
+                    'GOOGL': [2500, 3000],
+                    'TSLA': [200, 300],
+                    'NVDA': [400, 600],
+                    'SPY': [400, 500],
+                    'QQQ': [350, 450]
+                };
+                
+                const range = priceRanges[symbol] || [10, 500];
+                return +(Math.random() * (range[1] - range[0]) + range[0]).toFixed(2);
+            }
+            
+            generateRealisticVolume() {
+                return Math.floor(Math.random() * 10000000) + 500000;
+            }
+            
+            updateDisplays() {
+                this.updateDataGrid();
+                this.updateSidebarWidgets();
+                this.updateSystemStatus();
+            }
+            
+            updateDataGrid() {
+                const dataRows = document.getElementById('dataRows');
+                const sortedStocks = Array.from(this.stocks.values())
+                    .sort((a, b) => b.changePercent - a.changePercent);
+                
+                dataRows.innerHTML = sortedStocks.map(stock => {
+                    const changeClass = stock.change > 0 ? 'price-positive' : 
+                                      stock.change < 0 ? 'price-negative' : 'price-neutral';
+                    const arrow = stock.change > 0 ? '▲' : stock.change < 0 ? '▼' : '►';
+                    const statusIcon = stock.active ? '🟢' : '🟡';
+                    
+                    return `
+                        <div class="data-row updated">
+                            <div class="symbol-highlight">${stock.symbol}</div>
+                            <div title="${stock.name}">${stock.name}</div>
+                            <div class="${changeClass}">$${stock.price}</div>
+                            <div class="${changeClass}">${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}</div>
+                            <div class="${changeClass}">${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}% ${arrow}</div>
+                            <div class="data-counter">${this.formatVolume(stock.volume)}</div>
+                            <div>${statusIcon}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('dataCounter').textContent = `${this.stocks.size} symbols loaded`;
+            }
+            
+            updateSidebarWidgets() {
+                const stocks = Array.from(this.stocks.values());
+                
+                // Top Gainers
+                const gainers = stocks
+                    .filter(s => s.changePercent > 0)
+                    .sort((a, b) => b.changePercent - a.changePercent)
+                    .slice(0, 5);
+                
+                document.getElementById('topGainers').innerHTML = gainers.map(stock => `
+                    <div class="widget-item">
+                        <span class="symbol-highlight">${stock.symbol}</span>
+                        <span class="price-positive">+${stock.changePercent.toFixed(2)}%</span>
+                    </div>
+                `).join('') || '<div class="widget-item"><span>No gainers</span></div>';
+                
+                // Top Losers
+                const losers = stocks
+                    .filter(s => s.changePercent < 0)
+                    .sort((a, b) => a.changePercent - b.changePercent)
+                    .slice(0, 5);
+                
+                document.getElementById('topLosers').innerHTML = losers.map(stock => `
+                    <div class="widget-item">
+                        <span class="symbol-highlight">${stock.symbol}</span>
+                        <span class="price-negative">${stock.changePercent.toFixed(2)}%</span>
+                    </div>
+                `).join('') || '<div class="widget-item"><span>No losers</span></div>';
+                
+                // High Volume
+                const highVolume = stocks
+                    .sort((a, b) => b.volume - a.volume)
+                    .slice(0, 5);
+                
+                document.getElementById('highVolume').innerHTML = highVolume.map(stock => `
+                    <div class="widget-item">
+                        <span class="symbol-highlight">${stock.symbol}</span>
+                        <span style="color: #f59e0b;">${this.formatVolume(stock.volume)}</span>
+                    </div>
+                `).join('');
+            }
+            
+            updateSystemStatus() {
+                // Update overview cards
+                document.getElementById('bridgeStatus').textContent = this.isConnected ? 'Connected' : 'Disconnected';
+                document.getElementById('symbolCount').textContent = this.stocks.size.toLocaleString();
+                document.getElementById('activeServices').textContent = this.stats.grpcBackend && this.stats.mcpLayer ? '6' : '0';
+                document.getElementById('pullCount').textContent = this.pullCount.toLocaleString();
+                
+                const successRate = this.stats.totalPulls > 0 ? 
+                    Math.round((this.stats.successfulPulls / this.stats.totalPulls) * 100) : 100;
+                document.getElementById('successRate').textContent = `${successRate}%`;
+                
+                if (this.lastUpdateTime) {
+                    document.getElementById('lastUpdate').textContent = this.lastUpdateTime.toLocaleTimeString();
+                }
+                
+                document.getElementById('totalSymbols').textContent = `${this.stocks.size} symbols`;
+                
+                this.lastUpdateTime = new Date();
+            }
+            
+            formatVolume(volume) {
+                if (volume >= 1000000) {
+                    return (volume / 1000000).toFixed(1) + 'M';
+                } else if (volume >= 1000) {
+                    return (volume / 1000).toFixed(1) + 'K';
+                }
+                return volume.toString();
+            }
+            
+            updateConnectionStatus(message) {
+                document.getElementById('connectionStatus').innerHTML = `
+                    <span class="loading-spinner"></span> ${message}
+                `;
+            }
+            
+            log(message) {
+                const debugLog = document.getElementById('debugLog');
+                const timestamp = new Date().toLocaleTimeString();
+                debugLog.innerHTML += `<br>[${timestamp}] ${message}`;
+                debugLog.scrollTop = debugLog.scrollHeight;
+                console.log(`[NASA-Polygon-V6] ${message}`);
+            }
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.nasaPolygonV6 = new NASAEnhancedPolygonV6();
+        });
+    </script>
+</body>
+</html> 

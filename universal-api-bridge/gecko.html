@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gecko Bridge Dashboard | Universal API Bridge Integration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #333;
+            font-size: 13px;
+            line-height: 1.4;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .bridge-info {
+            background: rgba(52, 73, 94, 0.95);
+            color: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .bridge-info strong {
+            color: #3498db;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        .start-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .control-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 12px;
+        }
+
+        .bridge-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #ecf0f1;
+        }
+
+        .bridge-status.connected {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        .bridge-status.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .rate-limit-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rate-bar {
+            width: 100px;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .rate-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db 0%, #f39c12 50%, #e74c3c 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .bridge-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            background: #3498db;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .global-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item.loading {
+            border-left-color: #f39c12;
+        }
+
+        .stat-item.error {
+            border-left-color: #e74c3c;
+        }
+
+        .stat-item.fresh {
+            border-left-color: #27ae60;
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.3);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .stat-change {
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .stat-metadata {
+            position: absolute;
+            top: 2px;
+            right: 5px;
+            font-size: 9px;
+            color: #95a5a6;
+        }
+
+        .positive { color: #16a085; }
+        .negative { color: #e74c3c; }
+
+        .ticker-container {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            height: 35px;
+            position: relative;
+        }
+
+        .ticker {
+            display: flex;
+            align-items: center;
+            animation: scroll 60s linear infinite;
+            white-space: nowrap;
+            height: 100%;
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .ticker-symbol {
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .ticker-price {
+            margin-right: 8px;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .main-table {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            background: #34495e;
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .table-info {
+            font-size: 11px;
+            opacity: 0.8;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 12px;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .rank-col { width: 40px; text-align: center; }
+        .name-col { width: 200px; }
+        .price-col { width: 120px; text-align: right; }
+        .change-col { width: 80px; text-align: right; }
+        .market-cap-col { width: 140px; text-align: right; }
+        .volume-col { width: 120px; text-align: right; }
+
+        .coin-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .coin-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .coin-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .coin-symbol {
+            color: #7f8c8d;
+            font-size: 11px;
+            margin-left: 4px;
+            text-transform: uppercase;
+        }
+
+        .price {
+            font-weight: 600;
+        }
+
+        .change-24h {
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .change-positive {
+            background: rgba(22, 160, 133, 0.1);
+            color: #16a085;
+        }
+
+        .change-negative {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-width: 350px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #16a085;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.error {
+            background: #e74c3c;
+        }
+
+        .status-indicator.warning {
+            background: #f39c12;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .error-state {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .debug-panel {
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .debug-panel.hidden {
+            display: none;
+        }
+
+        .debug-toggle {
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .bridge-metadata {
+            background: rgba(52, 152, 219, 0.1);
+            color: #2980b9;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 5px; }
+            .global-stats { grid-template-columns: repeat(2, 1fr); }
+            th, td { padding: 6px 8px; font-size: 11px; }
+            .name-col { width: 150px; }
+            .control-panel { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bridge-info">
+            🏗️ <strong>Universal API Bridge Integration</strong> - REST Frontend → Ultra-MCP Layer → Phase 2 gRPC Backend | 
+            Bridge Endpoint: <strong>localhost:8000</strong> | 
+            Service: <strong>coingecko</strong>
+        </div>
+
+        <div class="control-panel">
+            <div>
+                <button id="startButton" class="start-button">🚀 Start Bridge Data Feed</button>
+                <button id="debugToggle" class="debug-toggle">Debug Console</button>
+            </div>
+            <div class="control-info">
+                <div class="bridge-status" id="bridgeStatus">
+                    <span>🔗</span>
+                    <span>Bridge: Disconnected</span>
+                </div>
+                <div class="rate-limit-indicator">
+                    <span>Requests/Min:</span>
+                    <div class="rate-bar">
+                        <div class="rate-fill" id="rateFill"></div>
+                    </div>
+                    <span id="rateText">0/25</span>
+                </div>
+                <div>Parallel: <span id="parallelCount">0</span></div>
+                <div>Status: <span id="systemStatus">Idle</span></div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>
+                <span class="bridge-icon">🌉</span>
+                Gecko Bridge Dashboard
+            </h1>
+            <div class="global-stats" id="globalStats">
+                <div class="stat-item">
+                    <div class="stat-metadata" id="marketCapMeta"></div>
+                    <div class="stat-label">Total Market Cap</div>
+                    <div class="stat-value" id="totalMarketCap">Bridge Not Started</div>
+                    <div class="stat-change" id="marketCapChange"></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-metadata" id="volumeMeta"></div>
+                    <div class="stat-label">24h Volume</div>
+                    <div class="stat-value" id="totalVolume">Bridge Not Started</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-metadata" id="btcMeta"></div>
+                    <div class="stat-label">BTC Dominance</div>
+                    <div class="stat-value" id="btcDominance">Bridge Not Started</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-metadata" id="ethMeta"></div>
+                    <div class="stat-label">ETH Dominance</div>
+                    <div class="stat-value" id="ethDominance">Bridge Not Started</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-metadata" id="cryptosMeta"></div>
+                    <div class="stat-label">Active Cryptocurrencies</div>
+                    <div class="stat-value" id="activeCryptos">Bridge Not Started</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-metadata" id="marketsMeta"></div>
+                    <div class="stat-label">Markets</div>
+                    <div class="stat-value" id="markets">Bridge Not Started</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticker-container">
+            <div class="ticker" id="trendingTicker">
+                <div class="ticker-item">Click "Start Bridge Data Feed" to connect to Universal API Bridge...</div>
+            </div>
+        </div>
+
+        <div class="main-table">
+            <div class="table-header">
+                <div class="table-title">Top Cryptocurrencies (via Universal Bridge)</div>
+                <div class="table-info">
+                    <div>Last updated: <span id="lastUpdate">Never</span></div>
+                    <div>Bridge latency: <span id="bridgeLatency">-</span></div>
+                    <div>gRPC calls: <span id="grpcCalls">0</span></div>
+                </div>
+            </div>
+            <div id="tableContainer">
+                <div class="loading">Click "Start Bridge Data Feed" to connect to Universal API Bridge...</div>
+            </div>
+        </div>
+
+        <div class="debug-panel hidden" id="debugPanel">
+            <div id="debugLog">Universal API Bridge Debug Console initialized. Click Start to begin...<br>Bridge Architecture: REST → MCP → gRPC → External APIs</div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-row">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="statusText">Universal Bridge Idle - Click Start</span>
+            </div>
+            <div class="status-row">
+                <span>Bridge Calls: <span id="bridgeCalls">0</span></span>
+                <span>|</span>
+                <span>Success: <span id="successCalls">0</span></span>
+                <span>|</span>
+                <span>gRPC Errors: <span id="errorCalls">0</span></span>
+            </div>
+            <div class="status-row">
+                <span>Avg Bridge Time: <span id="avgResponse">0ms</span></span>
+                <span>|</span>
+                <span>MCP Queue: <span id="queueSize">0</span></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class GeckoBridgeDashboard {
+            constructor() {
+                // Universal API Bridge Configuration
+                this.bridgeUrl = 'http://localhost:8000';
+                this.serviceName = 'coingecko';
+                
+                // Rate limiting for bridge calls
+                this.maxCallsPerMinute = 25;
+                this.callTimestamps = [];
+                this.activeRequests = new Set();
+                
+                // Statistics
+                this.stats = {
+                    totalBridgeCalls: 0,
+                    successCalls: 0,
+                    errorCalls: 0,
+                    responseTimes: [],
+                    lastUpdate: null,
+                    grpcCalls: 0
+                };
+                
+                // System state
+                this.isRunning = false;
+                this.bridgeConnected = false;
+                this.dataCache = new Map();
+                
+                // Debug
+                this.debugEnabled = false;
+                this.debugLog = [];
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.log('🏗️ Universal API Bridge Dashboard initialized');
+                this.log('🔧 Architecture: REST Frontend → Ultra-MCP → Phase 2 gRPC → External APIs');
+                this.checkBridgeConnectivity();
+                this.updateUI();
+            }
+
+            setupEventListeners() {
+                document.getElementById('startButton').addEventListener('click', () => {
+                    if (!this.isRunning) {
+                        this.startBridgeDataFeed();
+                    } else {
+                        this.stopBridgeDataFeed();
+                    }
+                });
+
+                document.getElementById('debugToggle').addEventListener('click', () => {
+                    this.toggleDebugPanel();
+                });
+
+                // Handle page visibility for bridge optimization
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden && this.isRunning) {
+                        this.log('📱 Page hidden - reducing bridge call frequency');
+                    } else if (!document.hidden && this.isRunning) {
+                        this.log('👁️ Page visible - resuming normal bridge operations');
+                    }
+                });
+            }
+
+            async checkBridgeConnectivity() {
+                this.log('🔍 Checking Universal API Bridge connectivity...');
+                
+                try {
+                    const response = await fetch(`${this.bridgeUrl}/health`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        },
+                        signal: AbortSignal.timeout(5000)
+                    });
+                    
+                    if (response.ok) {
+                        const healthData = await response.json();
+                        this.bridgeConnected = true;
+                        this.log('✅ Universal API Bridge is healthy and accessible');
+                        this.log(`📊 Bridge Health: ${JSON.stringify(healthData).substring(0, 150)}...`);
+                        this.updateBridgeStatus('connected');
+                        
+                        // Check if coingecko service is registered
+                        await this.checkServiceRegistration();
+                    } else {
+                        throw new Error(`Bridge health check failed: ${response.status}`);
+                    }
+                } catch (error) {
+                    this.bridgeConnected = false;
+                    this.log(`❌ Bridge connectivity failed: ${error.message}`);
+                    this.updateBridgeStatus('error');
+                    this.showBridgeError(error.message);
+                }
+            }
+
+            async checkServiceRegistration() {
+                try {
+                    const response = await fetch(`${this.bridgeUrl}/api/services`, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' },
+                        signal: AbortSignal.timeout(5000)
+                    });
+                    
+                    if (response.ok) {
+                        const servicesData = await response.json();
+                        const coingeckoService = servicesData.services?.find(s => s.name === this.serviceName);
+                        
+                        if (coingeckoService) {
+                            this.log(`✅ CoinGecko service registered in bridge: ${JSON.stringify(coingeckoService)}`);
+                        } else {
+                            this.log('⚠️ CoinGecko service not found in bridge registry');
+                            this.log('💡 Bridge will auto-register service on first request');
+                        }
+                    }
+                } catch (error) {
+                    this.log(`⚠️ Service check failed: ${error.message}`);
+                }
+            }
+
+            updateBridgeStatus(status) {
+                const statusElement = document.getElementById('bridgeStatus');
+                statusElement.className = `bridge-status ${status}`;
+                
+                switch (status) {
+                    case 'connected':
+                        statusElement.innerHTML = '<span>✅</span><span>Bridge: Connected</span>';
+                        break;
+                    case 'error':
+                        statusElement.innerHTML = '<span>❌</span><span>Bridge: Error</span>';
+                        break;
+                    default:
+                        statusElement.innerHTML = '<span>🔗</span><span>Bridge: Disconnected</span>';
+                }
+            }
+
+            showBridgeError(message) {
+                const container = document.getElementById('tableContainer');
+                container.innerHTML = `
+                    <div class="error-state" style="margin: 20px; padding: 20px;">
+                        <h3>🌉 Universal API Bridge Connection Error</h3>
+                        <p><strong>Cannot connect to Universal API Bridge at localhost:8000</strong></p>
+                        <p>Error: ${message}</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ul style="text-align: left; margin: 10px 0;">
+                            <li>Start the Universal API Bridge: <code>python -m universal_api_bridge</code></li>
+                            <li>Verify bridge is running: <code>curl http://localhost:8000/health</code></li>
+                            <li>Check bridge service registration</li>
+                            <li>Ensure CoinGecko service is configured in the bridge</li>
+                        </ul>
+                        <p><em>The bridge provides REST→gRPC→External API routing with optimizations.</em></p>
+                    </div>
+                `;
+            }
+
+            async startBridgeDataFeed() {
+                if (!this.bridgeConnected) {
+                    this.log('❌ Cannot start - Bridge not connected');
+                    return;
+                }
+
+                this.isRunning = true;
+                this.log('🚀 Starting Universal API Bridge data feed...');
+                
+                const startButton = document.getElementById('startButton');
+                startButton.textContent = '🛑 Stop Bridge Feed';
+                startButton.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+                
+                document.getElementById('systemStatus').textContent = 'Active';
+                this.updateStatusIndicator('active');
+                
+                // Initial parallel bridge requests
+                await this.performInitialBridgeLoad();
+                
+                // Start continuous bridge updates
+                this.startContinuousBridgeUpdates();
+            }
+
+            stopBridgeDataFeed() {
+                this.isRunning = false;
+                this.log('🛑 Stopping Universal API Bridge data feed...');
+                
+                const startButton = document.getElementById('startButton');
+                startButton.textContent = '🚀 Start Bridge Data Feed';
+                startButton.style.background = 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)';
+                
+                document.getElementById('systemStatus').textContent = 'Stopped';
+                this.updateStatusIndicator('idle');
+                
+                // Clear any pending bridge requests
+                this.activeRequests.clear();
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                }
+            }
+
+            async performInitialBridgeLoad() {
+                this.log('📡 Performing initial data load via Universal API Bridge...');
+                
+                const bridgeEndpoints = [
+                    { name: 'global', endpoint: 'global', handler: 'handleGlobalData' },
+                    { name: 'trending', endpoint: 'search/trending', handler: 'handleTrendingData' },
+                    { name: 'markets', endpoint: 'coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h', handler: 'handleMarketData' },
+                    { name: 'simple_prices', endpoint: 'simple/price?ids=bitcoin,ethereum,binancecoin,cardano,solana&vs_currencies=usd&include_24hr_change=true', handler: 'handleSimplePrices' }
+                ];
+
+                // Execute all initial bridge requests in parallel
+                const promises = bridgeEndpoints.map(endpoint => 
+                    this.makeBridgeApiCall(endpoint.name, endpoint.endpoint, endpoint.handler)
+                );
+
+                try {
+                    await Promise.allSettled(promises);
+                    this.log('✅ Initial bridge load completed');
+                } catch (error) {
+                    this.log(`❌ Initial bridge load error: ${error.message}`);
+                }
+            }
+
+            startContinuousBridgeUpdates() {
+                this.log('🔄 Starting continuous Universal Bridge update cycle...');
+                
+                const bridgeEndpoints = [
+                    { name: 'global', endpoint: 'global', handler: 'handleGlobalData', interval: 6000 },
+                    { name: 'trending', endpoint: 'search/trending', handler: 'handleTrendingData', interval: 12000 },
+                    { name: 'markets', endpoint: 'coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h', handler: 'handleMarketData', interval: 8000 },
+                    { name: 'categories', endpoint: 'coins/categories?order=market_cap_desc', handler: 'handleCategoriesData', interval: 15000 },
+                    { name: 'exchanges', endpoint: 'exchanges?per_page=20&page=1', handler: 'handleExchangesData', interval: 20000 }
+                ];
+
+                bridgeEndpoints.forEach(endpoint => {
+                    this.scheduleBridgeCall(endpoint);
+                });
+            }
+
+            scheduleBridgeCall(endpoint) {
+                const makeCall = async () => {
+                    if (!this.isRunning || !this.bridgeConnected) return;
+                    
+                    if (this.canMakeBridgeCall()) {
+                        await this.makeBridgeApiCall(endpoint.name, endpoint.endpoint, endpoint.handler);
+                    } else {
+                        this.log(`⏱️ Bridge rate limit reached, delaying ${endpoint.name} call`);
+                    }
+                    
+                    if (this.isRunning) {
+                        setTimeout(makeCall, endpoint.interval);
+                    }
+                };
+
+                setTimeout(makeCall, Math.random() * 3000); // Stagger initial bridge calls
+            }
+
+            async makeBridgeApiCall(name, endpoint, handlerName) {
+                if (!this.canMakeBridgeCall()) {
+                    this.log(`🚫 Bridge rate limit exceeded for ${name}`);
+                    return null;
+                }
+
+                const requestId = `bridge_${name}_${Date.now()}`;
+                this.activeRequests.add(requestId);
+                
+                const startTime = performance.now();
+                let response = null;
+                
+                try {
+                    this.recordBridgeCall();
+                    this.log(`📤 Making Universal Bridge call: ${name}`);
+                    
+                    // Call through Universal API Bridge
+                    const bridgeEndpoint = `${this.bridgeUrl}/api/${this.serviceName}/${endpoint}`;
+                    this.log(`🔗 Bridge URL: ${bridgeEndpoint}`);
+                    
+                    response = await fetch(bridgeEndpoint, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-Bridge-Client': 'gecko-dashboard',
+                            'X-Service-Name': this.serviceName
+                        },
+                        signal: AbortSignal.timeout(15000) // 15 second timeout for bridge calls
+                    });
+
+                    if (!response.ok) {
+                        let errorText = '';
+                        try {
+                            errorText = await response.text();
+                        } catch (textError) {
+                            errorText = `Could not read error response: ${textError.message}`;
+                        }
+                        
+                        this.log(`❌ Bridge HTTP ${response.status}: ${response.statusText}`);
+                        this.log(`📄 Bridge error response: ${errorText.substring(0, 200)}...`);
+                        throw new Error(`Bridge Error ${response.status}: ${response.statusText}`);
+                    }
+
+                    let responseData = null;
+                    try {
+                        const responseText = await response.text();
+                        if (responseText.trim()) {
+                            responseData = JSON.parse(responseText);
+                        } else {
+                            throw new Error('Empty response from bridge');
+                        }
+                    } catch (jsonError) {
+                        this.log(`❌ Bridge JSON parsing error: ${jsonError.message}`);
+                        throw new Error(`Invalid JSON response from bridge: ${jsonError.message}`);
+                    }
+
+                    const responseTime = performance.now() - startTime;
+                    
+                    this.recordSuccessfulBridgeCall(responseTime);
+                    this.log(`✅ Bridge ${name} completed in ${responseTime.toFixed(2)}ms`);
+                    
+                    // Log bridge metadata if present
+                    if (responseData && responseData._bridge_metadata) {
+                        const metadata = responseData._bridge_metadata;
+                        this.log(`🏗️ Bridge metadata: latency=${metadata.processing_time_us}μs, arch=${metadata.architecture}`);
+                        this.stats.grpcCalls += 1;
+                    }
+                    
+                    // Extract actual data from bridge response
+                    const actualData = responseData && responseData.data ? responseData.data : responseData;
+                    this.log(`📊 Bridge data received: ${this.safeStringify(actualData).substring(0, 100)}...`);
+                    
+                    // Handle the data using the specified handler
+                    if (this[handlerName] && typeof this[handlerName] === 'function') {
+                        try {
+                            this[handlerName](actualData, name, responseData._bridge_metadata);
+                        } catch (handlerError) {
+                            this.log(`❌ Data handler error for ${name}: ${handlerError.message}`);
+                        }
+                    } else {
+                        this.log(`⚠️ Handler ${handlerName} not found or not a function`);
+                    }
+                    
+                    return actualData;
+                    
+                } catch (error) {
+                    const responseTime = performance.now() - startTime;
+                    this.recordFailedBridgeCall();
+                    this.log(`❌ Bridge ${name} failed: ${error.message} (${responseTime.toFixed(2)}ms)`);
+                    
+                    // Enhanced bridge error detection
+                    if (error.message.includes('Failed to fetch') || 
+                        error.message.includes('net::ERR_') ||
+                        error.name === 'TypeError' ||
+                        error.name === 'AbortError') {
+                        this.log('🚨 Bridge connectivity issues detected');
+                        this.bridgeConnected = false;
+                        this.updateBridgeStatus('error');
+                    }
+                    
+                    this.updateStatusIndicator('error');
+                    return null;
+                } finally {
+                    this.activeRequests.delete(requestId);
+                    this.updateUI();
+                }
+            }
+
+            canMakeBridgeCall() {
+                const now = Date.now();
+                const oneMinuteAgo = now - 60000;
+                
+                // Remove timestamps older than 1 minute
+                this.callTimestamps = this.callTimestamps.filter(timestamp => timestamp > oneMinuteAgo);
+                
+                return this.callTimestamps.length < this.maxCallsPerMinute;
+            }
+
+            recordBridgeCall() {
+                this.callTimestamps.push(Date.now());
+                this.stats.totalBridgeCalls++;
+            }
+
+            recordSuccessfulBridgeCall(responseTime) {
+                try {
+                    this.stats.successCalls++;
+                    this.stats.responseTimes.push(responseTime);
+                    
+                    // Fixed memory leak: consistent array management
+                    if (this.stats.responseTimes.length > 50) {
+                        this.stats.responseTimes = this.stats.responseTimes.slice(-50);
+                    }
+                    
+                    this.stats.lastUpdate = new Date();
+                    this.updateStatusIndicator('active');
+                } catch (error) {
+                    this.log(`❌ Error recording successful call: ${error.message}`);
+                }
+            }
+
+            recordFailedBridgeCall() {
+                this.stats.errorCalls++;
+            }
+
+            // Data handlers for bridge responses
+            handleGlobalData(data, source, bridgeMetadata) {
+                try {
+                    if (data && data.data) {
+                        const timestamp = new Date().toLocaleTimeString();
+                        const latency = bridgeMetadata ? `${(bridgeMetadata.processing_time_us/1000).toFixed(1)}ms` : 'N/A';
+                        
+                        // Safe property access with validation
+                        const globalData = data.data;
+                        
+                        if (globalData.total_market_cap && globalData.total_market_cap.usd) {
+                            this.updateElementWithMetadata('totalMarketCap', this.formatCurrency(globalData.total_market_cap.usd), 'marketCapMeta', `${timestamp} (${latency})`);
+                        }
+                        
+                        if (globalData.total_volume && globalData.total_volume.usd) {
+                            this.updateElementWithMetadata('totalVolume', this.formatCurrency(globalData.total_volume.usd), 'volumeMeta', `${timestamp} (${latency})`);
+                        }
+                        
+                        if (globalData.market_cap_percentage) {
+                            if (globalData.market_cap_percentage.btc !== undefined) {
+                                this.updateElementWithMetadata('btcDominance', `${globalData.market_cap_percentage.btc.toFixed(1)}%`, 'btcMeta', `${timestamp} (${latency})`);
+                            }
+                            if (globalData.market_cap_percentage.eth !== undefined) {
+                                this.updateElementWithMetadata('ethDominance', `${globalData.market_cap_percentage.eth.toFixed(1)}%`, 'ethMeta', `${timestamp} (${latency})`);
+                            }
+                        }
+                        
+                        if (globalData.active_cryptocurrencies !== undefined) {
+                            this.updateElementWithMetadata('activeCryptos', globalData.active_cryptocurrencies.toLocaleString(), 'cryptosMeta', `${timestamp} (${latency})`);
+                        }
+                        
+                        if (globalData.markets !== undefined) {
+                            this.updateElementWithMetadata('markets', globalData.markets.toLocaleString(), 'marketsMeta', `${timestamp} (${latency})`);
+                        }
+
+                        // Safe market cap change handling
+                        const marketCapChange = this.safeGetElement('marketCapChange');
+                        if (marketCapChange && globalData.market_cap_change_percentage_24h_usd !== undefined) {
+                            const changePercent = globalData.market_cap_change_percentage_24h_usd;
+                            marketCapChange.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
+                            marketCapChange.className = `stat-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+                        }
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling global data: ${error.message}`);
+                }
+            }
+
+            handleTrendingData(data, source, bridgeMetadata) {
+                try {
+                    if (data && data.coins && Array.isArray(data.coins)) {
+                        const ticker = this.safeGetElement('trendingTicker');
+                        if (!ticker) return;
+                        
+                        const tickerItems = data.coins.slice(0, 15).map(coin => {
+                            try {
+                                const symbol = coin.item && coin.item.symbol ? coin.item.symbol.toUpperCase() : 'UNKNOWN';
+                                const price = coin.item && coin.item.price_btc ? `${(coin.item.price_btc * 1000000).toFixed(2)} sats` : 'Bridge Data';
+                                const rank = coin.item && coin.item.market_cap_rank ? coin.item.market_cap_rank : 'N/A';
+                                
+                                return `
+                                    <div class="ticker-item">
+                                        <span class="ticker-symbol">${this.sanitizeHTML(symbol)}</span>
+                                        <span class="ticker-price">${this.sanitizeHTML(price)}</span>
+                                        <span class="ticker-change">🔥 Rank #${this.sanitizeHTML(rank)}</span>
+                                    </div>
+                                `;
+                            } catch (itemError) {
+                                this.log(`⚠️ Error processing trending coin: ${itemError.message}`);
+                                return '';
+                            }
+                        }).filter(item => item !== '').join('');
+                        
+                        ticker.innerHTML = tickerItems;
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling trending data: ${error.message}`);
+                }
+            }
+
+            handleMarketData(data, source, bridgeMetadata) {
+                try {
+                    if (data && Array.isArray(data)) {
+                        this.updateCryptoTable(data, bridgeMetadata);
+                        this.updateLastUpdateTime();
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling market data: ${error.message}`);
+                }
+            }
+
+            handleSimplePrices(data, source, bridgeMetadata) {
+                try {
+                    if (data && typeof data === 'object') {
+                        this.log(`💰 Simple prices updated for ${Object.keys(data).length} coins via bridge`);
+                        this.dataCache.set('simple_prices', data);
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling simple prices: ${error.message}`);
+                }
+            }
+
+            handleCategoriesData(data, source, bridgeMetadata) {
+                try {
+                    if (data && Array.isArray(data)) {
+                        this.log(`📊 Categories data loaded via bridge: ${data.length} categories`);
+                        this.dataCache.set('categories', data);
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling categories data: ${error.message}`);
+                }
+            }
+
+            handleExchangesData(data, source, bridgeMetadata) {
+                try {
+                    if (data && Array.isArray(data)) {
+                        this.log(`🏢 Exchanges data loaded via bridge: ${data.length} exchanges`);
+                        this.dataCache.set('exchanges', data);
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling exchanges data: ${error.message}`);
+                }
+            }
+
+            updateElementWithMetadata(elementId, value, metadataId, metadata) {
+                try {
+                    const element = this.safeGetElement(elementId);
+                    const metadataElement = this.safeGetElement(metadataId);
+                    
+                    if (element) {
+                        element.textContent = value;
+                        element.parentElement.classList.add('fresh');
+                        setTimeout(() => {
+                            if (element.parentElement) {
+                                element.parentElement.classList.remove('fresh');
+                            }
+                        }, 3000);
+                    }
+                    
+                    if (metadataElement) {
+                        metadataElement.textContent = metadata;
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating element ${elementId}: ${error.message}`);
+                }
+            }
+
+            updateCryptoTable(coins, bridgeMetadata) {
+                try {
+                    const container = this.safeGetElement('tableContainer');
+                    if (!container) return;
+                    
+                    const bridgeInfo = bridgeMetadata ? 
+                        `<div class="bridge-metadata">Bridge: ${this.sanitizeHTML(bridgeMetadata.architecture)} | Latency: ${(bridgeMetadata.processing_time_us/1000).toFixed(1)}ms</div>` : 
+                        '';
+                    
+                    const safeCoins = coins.filter(coin => coin && typeof coin === 'object').slice(0, 40);
+                    
+                    const tableRows = safeCoins.map(coin => {
+                        try {
+                            const rank = coin.market_cap_rank ? coin.market_cap_rank : '-';
+                            const name = coin.name ? this.sanitizeHTML(coin.name) : 'Unknown';
+                            const symbol = coin.symbol ? this.sanitizeHTML(coin.symbol.toUpperCase()) : 'UNK';
+                            const image = coin.image ? this.sanitizeHTML(coin.image) : '';
+                            const price = coin.current_price ? this.formatPrice(coin.current_price) : '0.00';
+                            const change24h = coin.price_change_percentage_24h !== undefined ? coin.price_change_percentage_24h : 0;
+                            const marketCap = coin.market_cap ? this.formatLargeNumber(coin.market_cap) : '0';
+                            const volume = coin.total_volume ? this.formatLargeNumber(coin.total_volume) : '0';
+                            
+                            return `
+                                <tr>
+                                    <td class="rank-col">${rank}</td>
+                                    <td class="name-col">
+                                        <div class="coin-info">
+                                            ${image ? `<img src="${image}" alt="${name}" class="coin-icon" onerror="this.style.display='none'">` : ''}
+                                            <div>
+                                                <div class="coin-name">${name}</div>
+                                                <span class="coin-symbol">${symbol}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="price-col price">$${price}</td>
+                                    <td class="change-col">
+                                        <span class="change-24h ${change24h >= 0 ? 'change-positive' : 'change-negative'}">
+                                            ${change24h >= 0 ? '+' : ''}${change24h.toFixed(2)}%
+                                        </span>
+                                    </td>
+                                    <td class="market-cap-col">$${marketCap}</td>
+                                    <td class="volume-col">$${volume}</td>
+                                </tr>
+                            `;
+                        } catch (rowError) {
+                            this.log(`⚠️ Error processing coin row: ${rowError.message}`);
+                            return '';
+                        }
+                    }).filter(row => row !== '').join('');
+                    
+                    const table = `
+                        ${bridgeInfo}
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="rank-col">#</th>
+                                    <th class="name-col">Name</th>
+                                    <th class="price-col">Price</th>
+                                    <th class="change-col">24h %</th>
+                                    <th class="market-cap-col">Market Cap</th>
+                                    <th class="volume-col">Volume (24h)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    container.innerHTML = table;
+                } catch (error) {
+                    this.log(`❌ Error updating crypto table: ${error.message}`);
+                }
+            }
+
+            updateUI() {
+                try {
+                    // Update rate limiting indicator
+                    const rateFill = this.safeGetElement('rateFill');
+                    const rateText = this.safeGetElement('rateText');
+                    if (rateFill && rateText) {
+                        const ratePercent = (this.callTimestamps.length / this.maxCallsPerMinute) * 100;
+                        rateFill.style.width = `${ratePercent}%`;
+                        rateText.textContent = `${this.callTimestamps.length}/${this.maxCallsPerMinute}`;
+                    }
+                    
+                    // Update parallel requests counter
+                    const parallelElement = this.safeGetElement('parallelCount');
+                    if (parallelElement) {
+                        parallelElement.textContent = this.activeRequests.size;
+                    }
+                    
+                    // Update statistics
+                    const statsMap = {
+                        'bridgeCalls': this.stats.totalBridgeCalls,
+                        'successCalls': this.stats.successCalls,
+                        'errorCalls': this.stats.errorCalls,
+                        'grpcCalls': this.stats.grpcCalls
+                    };
+                    
+                    Object.entries(statsMap).forEach(([elementId, value]) => {
+                        const element = this.safeGetElement(elementId);
+                        if (element) {
+                            element.textContent = value;
+                        }
+                    });
+                    
+                    // Update average response time
+                    if (this.stats.responseTimes.length > 0) {
+                        const avgResponse = this.stats.responseTimes.reduce((a, b) => a + b, 0) / this.stats.responseTimes.length;
+                        const avgElement = this.safeGetElement('avgResponse');
+                        if (avgElement) {
+                            avgElement.textContent = `${avgResponse.toFixed(0)}ms`;
+                        }
+                    }
+                    
+                    // Update queue size (active requests)
+                    const queueElement = this.safeGetElement('queueSize');
+                    if (queueElement) {
+                        queueElement.textContent = this.activeRequests.size;
+                    }
+                    
+                    // Calculate and display bridge latency
+                    if (this.stats.lastUpdate) {
+                        const latency = Date.now() - this.stats.lastUpdate.getTime();
+                        const latencyElement = this.safeGetElement('bridgeLatency');
+                        if (latencyElement) {
+                            latencyElement.textContent = `${(latency/1000).toFixed(1)}s`;
+                        }
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating UI: ${error.message}`);
+                }
+            }
+
+            updateStatusIndicator(status) {
+                const indicator = document.getElementById('statusIndicator');
+                const statusText = document.getElementById('statusText');
+                
+                indicator.className = 'status-indicator';
+                
+                switch (status) {
+                    case 'active':
+                        indicator.classList.add('active');
+                        statusText.textContent = 'Universal Bridge streaming data';
+                        break;
+                    case 'error':
+                        indicator.classList.add('error');
+                        statusText.textContent = 'Bridge errors detected';
+                        break;
+                    case 'warning':
+                        indicator.classList.add('warning');
+                        statusText.textContent = 'Bridge rate limit approaching';
+                        break;
+                    case 'idle':
+                    default:
+                        statusText.textContent = 'Universal Bridge idle';
+                        break;
+                }
+            }
+
+            updateLastUpdateTime() {
+                const now = new Date();
+                document.getElementById('lastUpdate').textContent = now.toLocaleTimeString();
+            }
+
+            // Utility functions
+            formatPrice(price) {
+                if (!price) return '0.00';
+                if (price >= 1) {
+                    return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                } else if (price >= 0.01) {
+                    return price.toFixed(4);
+                } else {
+                    return price.toFixed(8);
+                }
+            }
+
+            formatCurrency(value) {
+                if (!value) return '$0';
+                if (value >= 1e12) {
+                    return `$${(value / 1e12).toFixed(2)}T`;
+                } else if (value >= 1e9) {
+                    return `$${(value / 1e9).toFixed(2)}B`;
+                } else if (value >= 1e6) {
+                    return `$${(value / 1e6).toFixed(2)}M`;
+                } else {
+                    return `$${value.toLocaleString()}`;
+                }
+            }
+
+            formatLargeNumber(value) {
+                if (!value) return '0';
+                if (value >= 1e12) {
+                    return `${(value / 1e12).toFixed(2)}T`;
+                } else if (value >= 1e9) {
+                    return `${(value / 1e9).toFixed(2)}B`;
+                } else if (value >= 1e6) {
+                    return `${(value / 1e6).toFixed(2)}M`;
+                } else if (value >= 1e3) {
+                    return `${(value / 1e3).toFixed(2)}K`;
+                } else {
+                    return value.toLocaleString();
+                }
+            }
+
+            // Debug functions
+            toggleDebugPanel() {
+                this.debugEnabled = !this.debugEnabled;
+                const panel = document.getElementById('debugPanel');
+                const button = document.getElementById('debugToggle');
+                
+                if (this.debugEnabled) {
+                    panel.classList.remove('hidden');
+                    button.textContent = 'Hide Debug';
+                    this.updateDebugLog();
+                } else {
+                    panel.classList.add('hidden');
+                    button.textContent = 'Debug Console';
+                }
+            }
+
+            log(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] ${message}`;
+                
+                this.debugLog.push(logEntry);
+                if (this.debugLog.length > 100) {
+                    this.debugLog = this.debugLog.slice(-50);
+                }
+                
+                console.log(logEntry);
+                
+                if (this.debugEnabled) {
+                    this.updateDebugLog();
+                }
+            }
+
+            updateDebugLog() {
+                const debugElement = document.getElementById('debugLog');
+                if (debugElement) {
+                    debugElement.innerHTML = this.debugLog.slice(-20).join('<br>');
+                    debugElement.scrollTop = debugElement.scrollHeight;
+                }
+            }
+
+            // Enhanced security and error handling utilities
+            safeGetElement(elementId) {
+                try {
+                    return document.getElementById(elementId);
+                } catch (error) {
+                    this.log(`⚠️ Error accessing element ${elementId}: ${error.message}`);
+                    return null;
+                }
+            }
+
+            sanitizeHTML(str) {
+                if (typeof str !== 'string') return '';
+                return str.replace(/[&<>"']/g, function(match) {
+                    const escape = {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    };
+                    return escape[match];
+                });
+            }
+
+            showBridgeError(message) {
+                try {
+                    const container = this.safeGetElement('tableContainer');
+                    if (!container) return;
+                    
+                    const sanitizedMessage = this.sanitizeHTML(message);
+                    
+                    container.innerHTML = `
+                        <div class="error-state" style="margin: 20px; padding: 20px;">
+                            <h3>🌉 Universal API Bridge Connection Error</h3>
+                            <p><strong>Cannot connect to Universal API Bridge at localhost:8000</strong></p>
+                            <p>Error: ${sanitizedMessage}</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul style="text-align: left; margin: 10px 0;">
+                                <li>Start the Universal API Bridge: <code>python -m universal_api_bridge</code></li>
+                                <li>Verify bridge is running: <code>curl http://localhost:8000/health</code></li>
+                                <li>Check bridge service registration</li>
+                                <li>Ensure CoinGecko service is configured in the bridge</li>
+                            </ul>
+                            <p><em>The bridge provides REST→gRPC→External API routing with optimizations.</em></p>
+                        </div>
+                    `;
+                } catch (error) {
+                    this.log(`❌ Error showing bridge error: ${error.message}`);
+                }
+            }
+
+            // Enhanced utility functions
+            safeStringify(obj) {
+                try {
+                    return JSON.stringify(obj);
+                } catch (error) {
+                    return `[Object: ${typeof obj}]`;
+                }
+            }
+        }
+
+        // Initialize Universal Bridge Dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new GeckoBridgeDashboard();
+        });
+
+        // Enhanced error handling for bridge operations
+        window.addEventListener('error', (event) => {
+            console.error('Global error in Bridge Dashboard:', event.error);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection in Bridge:', event.reason);
+        });
+    </script>
+</body>
+</html> 

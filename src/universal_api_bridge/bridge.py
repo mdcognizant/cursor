@@ -173,8 +173,8 @@ class BridgeMonitor:
                 avg_latency = p99_latency = 0.0
             
             # Calculate error rate
-            total_requests = self.request_count.value
-            error_count = self.error_count.value
+            total_requests = self.request_count
+            error_count = self.error_count
             error_rate = error_count / max(total_requests, 1)
             
             # Calculate throughput
@@ -315,7 +315,7 @@ class BridgeMonitor:
             self._request_count_last = 0
         
         if current_time - self._last_throughput_update >= 1.0:  # Update every second
-            current_requests = self.request_count.value
+            current_requests = self.request_count
             rps = (current_requests - self._request_count_last) / (current_time - self._last_throughput_update)
             self.throughput_samples.append(rps)
             
@@ -463,10 +463,11 @@ class UniversalAPIBridge:
             e2e_latency_ns = time.perf_counter_ns() - start_time
             e2e_latency_ms = e2e_latency_ns / 1_000_000
             
-            # Update bridge metrics
-            current_avg = self.bridge_metrics['avg_e2e_latency_ns'].value
-            new_avg = (current_avg + e2e_latency_ns) // 2
-            self.bridge_metrics['avg_e2e_latency_ns'].value = new_avg
+            # Update bridge metrics with thread safety
+            with self._bridge_metrics_lock:
+                current_avg = self.bridge_metrics['avg_e2e_latency_ns']
+                new_avg = (current_avg + e2e_latency_ns) // 2
+                self.bridge_metrics['avg_e2e_latency_ns'] = new_avg
             
             # Record monitoring metrics
             success = 'error' not in response

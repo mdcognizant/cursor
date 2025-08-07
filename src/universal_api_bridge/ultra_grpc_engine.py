@@ -22,13 +22,22 @@ import hashlib
 from typing import Dict, List, Optional, Any, Union, Callable, Tuple
 from threading import Lock, RLock
 
-# Make numpy optional
+# Make numpy optional - CRITICAL: Must not crash if unavailable
 try:
     import numpy as np
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
     np = None
+    # Create minimal numpy-like interface for compatibility
+    class _MinimalNumpy:
+        def array(self, data): return data
+        def mean(self, data): return sum(data) / len(data) if data else 0
+        def std(self, data): 
+            if not data: return 0
+            mean_val = sum(data) / len(data)
+            return (sum((x - mean_val) ** 2 for x in data) / len(data)) ** 0.5
+    np = _MinimalNumpy()
 from dataclasses import dataclass, field
 from collections import deque, defaultdict
 from concurrent.futures import ThreadPoolExecutor
@@ -39,7 +48,18 @@ import struct
 try:
     from .config import Phase2GRPCConfig, UnifiedBridgeConfig
 except ImportError:
-    from config import Phase2GRPCConfig, UnifiedBridgeConfig
+    try:
+        from config import Phase2GRPCConfig, UnifiedBridgeConfig
+    except ImportError:
+        # Define fallback configs
+        class Phase2GRPCConfig:
+            def __init__(self):
+                self.max_workers = 10
+                self.port = 8001
+                
+        class UnifiedBridgeConfig:
+            def __init__(self):
+                self.performance_mode = 'ultra'
 
 logger = logging.getLogger(__name__)
 
@@ -301,7 +321,8 @@ class Phase2UltraOptimizedEngine:
             if is_hot_path and self.config.enable_zero_latency_hot_paths:
                 # Ultra-fast hot path processing
                 response = await self._process_hot_path(request_data, request_features)
-                ctypes.c_long.from_address(ctypes.addressof(self.metrics['hot_path_requests'])).value += 1
+                with self._engine_metrics_lock:
+                    self.metrics['hot_path_requests'] += 1
             else:
                 # Standard optimized path with all Phase 2 features
                 response = await self._process_standard_path(request_data, request_features, predicted_latency)
@@ -325,14 +346,16 @@ class Phase2UltraOptimizedEngine:
                 'optimizations_applied': self._get_applied_optimizations()
             }
             
-            # Success
-            ctypes.c_long.from_address(ctypes.addressof(self.metrics['successful_requests'])).value += 1
+            # Success (THREAD-SAFE)
+            with self._engine_metrics_lock:
+                self.metrics['successful_requests'] += 1
             
             return response
             
         except Exception as e:
-            # Error handling with circuit breaker
-            ctypes.c_long.from_address(ctypes.addressof(self.metrics['failed_requests'])).value += 1
+            # Error handling with circuit breaker (THREAD-SAFE)
+            with self._engine_metrics_lock:
+                self.metrics['failed_requests'] += 1
             await self._handle_error(e, request_id)
             
             # Return error response with debugging info
@@ -366,7 +389,8 @@ class Phase2UltraOptimizedEngine:
             batch_hashes = self.simd_processor.vectorized_hash_batch(
                 [str(item).encode() for item in request_data['batch_data']]
             )
-            ctypes.c_long.from_address(ctypes.addressof(self.metrics['simd_operations_performed'])).value += len(batch_hashes)
+            with self._engine_metrics_lock:
+                self.metrics['simd_operations_performed'] += len(batch_hashes)
         
         # Optimal compression selection
         payload_bytes = str(request_data).encode('utf-8')
@@ -398,14 +422,16 @@ class Phase2UltraOptimizedEngine:
         # Record latency sample
         self.latency_samples.append(actual_latency)
         
-        # Check for ultra-low latency achievement
+        # Check for ultra-low latency achievement (THREAD-SAFE)
         if actual_latency < 0.0001:  # < 100μs
-            ctypes.c_long.from_address(ctypes.addressof(self.metrics['ultra_low_latency_requests'])).value += 1
+            with self._engine_metrics_lock:
+                self.metrics['ultra_low_latency_requests'] += 1
         
-        # Check ML prediction accuracy
+        # Check ML prediction accuracy (THREAD-SAFE)
         prediction_error = abs(predicted_latency - actual_latency)
         if prediction_error < predicted_latency * 0.2:  # Within 20%
-            ctypes.c_long.from_address(ctypes.addressof(self.metrics['ml_predictions_accurate'])).value += 1
+            with self._engine_metrics_lock:
+                self.metrics['ml_predictions_accurate'] += 1
     
     async def _handle_error(self, error: Exception, request_id: str):
         """Handle errors with thread-safe circuit breaker and graceful degradation."""
@@ -414,13 +440,18 @@ class Phase2UltraOptimizedEngine:
         # Thread-safe circuit breaker logic
         with self._circuit_breaker_lock:
             self.error_count += 1
+            previous_error_time = self.last_error_time
             self.last_error_time = current_time
             
             # Check circuit breaker condition atomically
-            if self.error_count > 50 and (current_time - self.last_error_time) < 60:
+            # Open circuit if we have >50 errors and this error is within 60 seconds of the previous error
+            if self.error_count > 50 and (current_time - previous_error_time) < 60:
                 if self.circuit_breaker_state != "OPEN":
                     self.circuit_breaker_state = "OPEN"
                     logger.warning(f"Circuit breaker opened due to error rate. Request: {request_id}")
+            elif (current_time - previous_error_time) >= 60:
+                # Reset error count if errors are spaced out (not in quick succession)
+                self.error_count = 1
         
         logger.error(f"Request {request_id} failed: {error}")
     
@@ -454,35 +485,36 @@ class Phase2UltraOptimizedEngine:
         else:
             avg_latency = p99_latency = min_latency = max_latency = 0.0
         
-        total_requests = self.metrics['total_requests'].value
-        
-        # Calculate accurate percentages with proper zero handling
-        success_rate = (self.metrics['successful_requests'].value / total_requests) if total_requests > 0 else 0.0
-        ultra_low_latency_percentage = (self.metrics['ultra_low_latency_requests'].value / total_requests * 100) if total_requests > 0 else 0.0
-        ml_accuracy_rate = (self.metrics['ml_predictions_accurate'].value / total_requests * 100) if total_requests > 0 else 0.0
-        
-        return {
-            "engine_version": "Phase2_Ultra_Optimized_v2.0",
-            "performance_metrics": {
-                "total_requests": total_requests,
-                "successful_requests": self.metrics['successful_requests'].value,
-                "failed_requests": self.metrics['failed_requests'].value,
-                "success_rate": success_rate,
-                "average_latency_ms": avg_latency,
-                "p99_latency_ms": p99_latency,
-                "min_latency_ms": min_latency,
-                "max_latency_ms": max_latency,
-                "ultra_low_latency_requests": self.metrics['ultra_low_latency_requests'].value,
-                "hot_path_requests": self.metrics['hot_path_requests'].value,
-                "ultra_low_latency_percentage": ultra_low_latency_percentage
-            },
-            "optimization_metrics": {
-                "ml_predictions_accurate": self.metrics['ml_predictions_accurate'].value,
-                "ml_accuracy_rate": ml_accuracy_rate,
-                "simd_operations_performed": self.metrics['simd_operations_performed'].value,
-                "simd_acceleration_enabled": self.simd_processor.simd_available,
-                "applied_optimizations": self._get_applied_optimizations()
-            },
+        with self._engine_metrics_lock:
+            total_requests = self.metrics['total_requests']
+            
+            # Calculate accurate percentages with proper zero handling
+            success_rate = (self.metrics['successful_requests'] / total_requests) if total_requests > 0 else 0.0
+            ultra_low_latency_percentage = (self.metrics['ultra_low_latency_requests'] / total_requests * 100) if total_requests > 0 else 0.0
+            ml_accuracy_rate = (self.metrics['ml_predictions_accurate'] / total_requests * 100) if total_requests > 0 else 0.0
+            
+            return {
+                "engine_version": "Phase2_Ultra_Optimized_v2.0",
+                "performance_metrics": {
+                    "total_requests": total_requests,
+                    "successful_requests": self.metrics['successful_requests'],
+                    "failed_requests": self.metrics['failed_requests'],
+                    "success_rate": success_rate,
+                    "average_latency_ms": avg_latency,
+                    "p99_latency_ms": p99_latency,
+                    "min_latency_ms": min_latency,
+                    "max_latency_ms": max_latency,
+                    "ultra_low_latency_requests": self.metrics['ultra_low_latency_requests'],
+                    "hot_path_requests": self.metrics['hot_path_requests'],
+                    "ultra_low_latency_percentage": ultra_low_latency_percentage
+                },
+                "optimization_metrics": {
+                    "ml_predictions_accurate": self.metrics['ml_predictions_accurate'],
+                    "ml_accuracy_rate": ml_accuracy_rate,
+                    "simd_operations_performed": self.metrics['simd_operations_performed'],
+                    "simd_acceleration_enabled": self.simd_processor.simd_available,
+                    "applied_optimizations": self._get_applied_optimizations()
+                },
             "stability_metrics": {
                 "circuit_breaker_state": self.circuit_breaker_state,
                 "error_count": self.error_count,

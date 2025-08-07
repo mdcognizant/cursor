@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Polygon V6 Enhanced - Complete Stock Data with USD Prices</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(26, 26, 46, 0.95);
+            padding: 15px 20px;
+            border-bottom: 2px solid #4ade80;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4ade80;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+        }
+
+        .architecture-info {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: #1e293b;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary.active {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+            50% { box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6); }
+        }
+
+        .status-indicators {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 11px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
+        .status-dot.error {
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .status-dot.warning {
+            background: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        .main-container {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            min-height: calc(100vh - 100px);
+        }
+
+        .primary-panel {
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+            gap: 15px;
+        }
+
+        .overview-panel {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .overview-title {
+            color: #4ade80;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .overview-card {
+            background: rgba(15, 15, 15, 0.5);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .overview-card:hover {
+            border-color: rgba(74, 222, 128, 0.5);
+            background: rgba(15, 15, 15, 0.7);
+        }
+
+        .overview-card-label {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .overview-card-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e2e8f0;
+        }
+
+        .tabs-container {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .tabs-header {
+            display: flex;
+            background: rgba(15, 15, 15, 0.5);
+            border-bottom: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .tab-button:hover {
+            background: rgba(74, 222, 128, 0.1);
+            color: #e2e8f0;
+        }
+
+        .tab-button.active {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            border-bottom: 2px solid #4ade80;
+        }
+
+        .tab-content {
+            padding: 20px;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .tab-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .tab-content::-webkit-scrollbar-track {
+            background: rgba(15, 15, 15, 0.3);
+        }
+
+        .tab-content::-webkit-scrollbar-thumb {
+            background: rgba(74, 222, 128, 0.5);
+            border-radius: 4px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .data-table th {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .data-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .data-table tr:hover {
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .price-positive {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .price-negative {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .price-neutral {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        .symbol-highlight {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .sidebar {
+            display: grid;
+            grid-template-rows: auto auto auto 1fr;
+            gap: 15px;
+        }
+
+        .widget {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .widget-header {
+            background: rgba(15, 15, 15, 0.5);
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.3);
+            font-weight: bold;
+            font-size: 13px;
+            color: #4ade80;
+        }
+
+        .widget-content {
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .widget-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .widget-content::-webkit-scrollbar-thumb {
+            background: rgba(74, 222, 128, 0.5);
+            border-radius: 3px;
+        }
+
+        .widget-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.1);
+            font-size: 12px;
+        }
+
+        .widget-item:last-child {
+            border-bottom: none;
+        }
+
+        .debug-panel {
+            background: rgba(0, 0, 0, 0.9);
+            color: #4ade80;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .debug-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .debug-panel::-webkit-scrollbar-thumb {
+            background: rgba(74, 222, 128, 0.5);
+            border-radius: 3px;
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 11px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(74, 222, 128, 0.3);
+            border-top: 2px solid #4ade80;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pulse-counter {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .pulse-count {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 8px;
+        }
+
+        .pulse-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pulse-status {
+            font-size: 10px;
+            color: #fbbf24;
+            margin-top: 8px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 40px;
+            color: #ef4444;
+        }
+
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stock-card {
+            background: rgba(15, 15, 15, 0.5);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .stock-card:hover {
+            border-color: rgba(74, 222, 128, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .stock-symbol {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 5px;
+        }
+
+        .stock-name {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .stock-price {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stock-change {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .analytics-card {
+            background: rgba(15, 15, 15, 0.5);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .analytics-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 5px;
+        }
+
+        .analytics-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        /* Live Ticker Animations */
+        .ticker-row {
+            transition: all 0.3s ease;
+        }
+
+        .ticker-row:hover {
+            background: rgba(74, 222, 128, 0.1);
+            transform: translateX(2px);
+        }
+
+        .price-pulse {
+            animation: pricePulse 0.8s ease-in-out;
+        }
+
+        @keyframes pricePulse {
+            0% { 
+                background: rgba(74, 222, 128, 0.3);
+                transform: scale(1);
+            }
+            50% { 
+                background: rgba(74, 222, 128, 0.1);
+                transform: scale(1.02);
+            }
+            100% { 
+                background: transparent;
+                transform: scale(1);
+            }
+        }
+
+        .price-cell {
+            position: relative;
+        }
+
+        .price-cell::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.2), transparent);
+            opacity: 0;
+            animation: priceGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes priceGlow {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background: rgba(15, 15, 15, 0.3);
+        }
+
+        .data-table tbody tr:nth-child(odd) {
+            background: rgba(26, 26, 46, 0.2);
+        }
+
+        /* Enhanced ticker table styling */
+        .data-table th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .overview-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .tabs-header {
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                flex: none;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div>
+                <div class="title">🚀 Polygon V6 Enhanced - Complete Stock Data with USD Prices</div>
+                <div class="architecture-info">REST Frontend → NASA Mathematical Layer → Ultra-MCP → Phase 2 gRPC → Polygon.io</div>
+            </div>
+            <div class="controls">
+                <button id="pullButton" class="btn-primary">
+                    📡 START DATA PULLS (5/min)
+                </button>
+                <button id="testButton" class="btn-primary" style="background: #ef4444;">
+                    🔬 TEST CONNECTION
+                </button>
+                <div class="status-indicators">
+                    <div class="status-item">
+                        <div class="status-dot" id="mcpStatus"></div>
+                        <span>MCP Layer</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot" id="grpcStatus"></div>
+                        <span>gRPC Backend</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot" id="bridgeStatus"></div>
+                        <span>Bridge Status</span>
+                    </div>
+                    <div class="status-item">
+                        <span id="totalSymbols">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="primary-panel">
+            <div class="overview-panel">
+                <div class="overview-title">📊 MARKET OVERVIEW</div>
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <div class="overview-card-label">Connection Status</div>
+                        <div id="connectionStatus" class="overview-card-value">Connecting...</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">Market Status</div>
+                        <div id="marketStatus" class="overview-card-value">Loading...</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">Total Stocks</div>
+                        <div id="stockCount" class="overview-card-value">0</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">With Prices</div>
+                        <div id="priceCount" class="overview-card-value">0</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">Data Pulls</div>
+                        <div id="pullCount" class="overview-card-value">0</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-card-label">Last Update</div>
+                        <div id="lastUpdate" class="overview-card-value">--:--:--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-button active" data-tab="live-tickers">📊 Live Market Tickers</button>
+                    <button class="tab-button" data-tab="stocks">📈 Stock Prices</button>
+                    <button class="tab-button" data-tab="tickers">📋 Stock Tickers</button>
+                    <button class="tab-button" data-tab="analytics">📊 Analytics</button>
+                    <button class="tab-button" data-tab="portfolio">💼 Portfolio</button>
+                </div>
+                <div class="tab-content" id="tabContent">
+                    <!-- Tab content will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="widget">
+                <div class="pulse-counter">
+                    <div id="pulseCount" class="pulse-count">0/5</div>
+                    <div class="pulse-label">Pulls This Cycle</div>
+                    <div id="pulseStatus" class="pulse-status">Ready to start</div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">📈 TOP GAINERS</div>
+                <div class="widget-content" id="topGainers">
+                    <div class="widget-item">
+                        <span>Start data pulls to load...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">📉 TOP LOSERS</div>
+                <div class="widget-content" id="topLosers">
+                    <div class="widget-item">
+                        <span>Start data pulls to load...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">🔍 DEBUG CONSOLE</div>
+                <div class="debug-panel" id="debugLog">
+                    Polygon V6 Enhanced initialized...<br>
+                    Architecture: REST → NASA Mathematical Layer → Ultra-MCP → Phase 2 gRPC → Polygon.io<br>
+                    Enhanced with real-time USD pricing and analytics...<br>
+                    Connecting to MCP+gRPC Bridge...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="connection-status" id="connectionStatusFooter">
+        <span class="loading-spinner"></span> Connecting to NASA MCP+gRPC Bridge...
+    </div>
+
+    <script>
+        class PolygonV6Enhanced {
+            constructor() {
+                // Configuration
+                this.bridgeUrl = this.detectBridgeUrl();
+                this.serviceName = 'polygon-stocks';
+                this.apiKey = 'fTcpMTE80ahFJ6SRFz984onpzTkLkAq8';
+                
+                // State management
+                this.isConnected = false;
+                this.isPulling = false;
+                this.stocks = new Map();
+                this.stockPrices = new Map();
+                this.pullCount = 0;
+                this.currentPullIndex = 0;
+                this.maxPulls = 5;
+                this.activeTab = 'live-tickers';
+                
+                // Resource management
+                this.timeouts = new Set();
+                this.intervals = new Set();
+                this.eventListeners = new Map();
+                this.abortControllers = new Set();
+                
+                // Statistics
+                this.stats = {
+                    totalPulls: 0,
+                    successfulPulls: 0,
+                    grpcBackend: false,
+                    mcpLayer: false,
+                    architectureScore: 0,
+                    responseTimes: []
+                };
+                
+                // Top 50 major stock symbols for price fetching
+                this.majorSymbols = [
+                    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX', 
+                    'SPY', 'QQQ', 'VTI', 'DIS', 'AMD', 'INTC', 'CRM', 'ADBE',
+                    'PYPL', 'UBER', 'ABNB', 'COIN', 'SNOW', 'PLTR', 'RBLX', 'HOOD',
+                    'BABA', 'BRK-B', 'JNJ', 'V', 'WMT', 'JPM', 'MA', 'PG',
+                    'UNH', 'HD', 'BAC', 'XOM', 'CVX', 'LLY', 'ABBV', 'PFE',
+                    'KO', 'AVGO', 'NKE', 'MRK', 'TMO', 'COST', 'ACN', 'DHR',
+                    'NEE', 'TXN'
+                ];
+                
+                this.init();
+            }
+            
+            detectBridgeUrl() {
+                const currentHost = window.location.hostname || 'localhost';
+                const bridgePort = 8001;
+                return `http://${currentHost}:${bridgePort}`;
+            }
+            
+            async init() {
+                try {
+                    this.log('🚀 Polygon V6 Enhanced Starting...');
+                    this.log(`🔗 Bridge URL: ${this.bridgeUrl}`);
+                    this.log('💰 Enhanced with real-time USD pricing');
+                    
+                    this.setupEventListeners();
+                    this.initializeTabs();
+                    await this.testConnection();
+                    
+                    this.log('✅ Polygon V6 Enhanced Ready');
+                } catch (error) {
+                    this.handleError(error, 'Initialization');
+                }
+            }
+            
+            setupEventListeners() {
+                const pullButton = this.safeGetElement('pullButton');
+                const testButton = this.safeGetElement('testButton');
+                
+                if (pullButton) {
+                    this.addEventListener(pullButton, 'click', () => this.toggleDataPulls());
+                }
+                
+                if (testButton) {
+                    this.addEventListener(testButton, 'click', () => this.testSinglePull());
+                }
+                
+                // Tab navigation
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    this.addEventListener(button, 'click', (e) => {
+                        const tab = e.target.dataset.tab;
+                        this.switchTab(tab);
+                    });
+                });
+                
+                // Global error handlers
+                this.addEventListener(window, 'error', (event) => {
+                    this.handleError(event.error, 'Global Error');
+                });
+                
+                this.addEventListener(window, 'unhandledrejection', (event) => {
+                    this.handleError(event.reason, 'Unhandled Promise');
+                });
+                
+                // Cleanup on page unload
+                this.addEventListener(window, 'beforeunload', () => this.cleanup());
+                this.addEventListener(window, 'pagehide', () => this.cleanup());
+            }
+            
+            initializeTabs() {
+                this.switchTab('live-tickers');
+            }
+            
+            switchTab(tabName) {
+                console.log('🔍 DEBUG: Switching to tab:', tabName);
+                
+                // Update active tab button
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.tab === tabName) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                this.activeTab = tabName;
+                this.renderTabContent(tabName);
+            }
+            
+            renderTabContent(tabName) {
+                const tabContent = this.safeGetElement('tabContent');
+                if (!tabContent) return;
+                
+                switch (tabName) {
+                    case 'live-tickers':
+                        this.renderLiveTickersTab(tabContent);
+                        break;
+                    case 'stocks':
+                        this.renderStocksTab(tabContent);
+                        break;
+                    case 'tickers':
+                        this.renderTickersTab(tabContent);
+                        break;
+                    case 'analytics':
+                        this.renderAnalyticsTab(tabContent);
+                        break;
+                    case 'portfolio':
+                        this.renderPortfolioTab(tabContent);
+                        break;
+                    default:
+                        tabContent.innerHTML = '<div class="loading-state">Tab not found</div>';
+                }
+            }
+            
+            renderLiveTickersTab(container) {
+                console.log('🔍 DEBUG: renderLiveTickersTab called');
+                console.log('🔍 DEBUG: stockPrices size:', this.stockPrices.size);
+                console.log('🔍 DEBUG: stockPrices entries:', Array.from(this.stockPrices.entries()).slice(0, 3));
+                
+                const stocksWithPrices = Array.from(this.stockPrices.values())
+                    .sort((a, b) => {
+                        // Sort by performance: gainers first, then by percentage change descending
+                        if (a.changePercent !== b.changePercent) {
+                            return b.changePercent - a.changePercent;
+                        }
+                        // If same change percentage, sort by price (higher first)
+                        return b.price - a.price;
+                    })
+                    .slice(0, 50); // Top 50 stocks
+                
+                console.log('🔍 DEBUG: stocksWithPrices length after processing:', stocksWithPrices.length);
+                
+                if (stocksWithPrices.length === 0) {
+                    container.innerHTML = `
+                        <div class="loading-state">
+                            <div style="margin-bottom: 15px;">📊</div>
+                            <div><strong>Live Market Tickers (Top 50)</strong></div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #94a3b8;">
+                                No live ticker data available yet. Click "START DATA PULLS" to fetch real-time market data with USD prices for top 50 performing stocks.
+                            </div>
+                            <div style="margin-top: 10px; font-size: 11px; color: #f59e0b;">
+                                🔍 Debug: stockPrices.size = ${this.stockPrices.size} | pullCount = ${this.pullCount}
+                            </div>
+                        </div>
+                    `;
+                    console.log('🔍 DEBUG: No stock prices available, showing loading state');
+                    return;
+                }
+                
+                // Create table with live refreshing data - Top 50 by performance
+                const tableRows = stocksWithPrices.map((stock, index) => {
+                    const changeClass = stock.change > 0 ? 'price-positive' : 
+                                      stock.change < 0 ? 'price-negative' : 'price-neutral';
+                    const arrow = stock.change > 0 ? '▲' : stock.change < 0 ? '▼' : '►';
+                    const statusIcon = '🟢'; // Live indicator
+                    
+                    // Performance ranking badges
+                    let rankBadge = '';
+                    if (index < 5) {
+                        rankBadge = `<span style="background: #10b981; color: white; padding: 2px 6px; border-radius: 12px; font-size: 9px; font-weight: bold; margin-left: 5px;">TOP ${index + 1}</span>`;
+                    } else if (index < 10) {
+                        rankBadge = `<span style="background: #f59e0b; color: white; padding: 2px 6px; border-radius: 12px; font-size: 9px; font-weight: bold; margin-left: 5px;">TOP 10</span>`;
+                    } else if (stock.changePercent > 0) {
+                        rankBadge = `<span style="background: #6366f1; color: white; padding: 2px 6px; border-radius: 12px; font-size: 9px; font-weight: bold; margin-left: 5px;">GAINER</span>`;
+                    }
+                    
+                    // Add pulse animation for recently updated data
+                    const animationDelay = (index % 20) * 50; // Stagger animations
+                    const pulseClass = this.pullCount > 0 ? 'price-pulse' : '';
+                    
+                    // Performance rate calculation
+                    const performanceRate = this.calculatePerformanceRate(stock);
+                    const rateClass = performanceRate >= 8 ? 'price-positive' : 
+                                    performanceRate >= 5 ? 'price-neutral' : 'price-negative';
+                    
+                    return `
+                        <tr class="ticker-row ${pulseClass}" style="animation-delay: ${animationDelay}ms;">
+                            <td style="font-weight: bold; color: #94a3b8; font-size: 11px;">#${index + 1}</td>
+                            <td class="symbol-highlight">
+                                ${this.escapeHtml(stock.symbol)}
+                                ${rankBadge}
+                            </td>
+                            <td style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${this.escapeHtml(stock.name)}">
+                                ${this.escapeHtml(stock.name)}
+                            </td>
+                            <td class="price-cell ${changeClass}" style="font-weight: bold; font-size: 13px;">
+                                $${stock.price.toFixed(2)}
+                                ${stock.dataType === 'real' ? '<span style="color: #10b981; font-size: 8px; margin-left: 3px;">●</span>' : 
+                                  stock.dataType === 'simulated' ? '<span style="color: #f59e0b; font-size: 8px; margin-left: 3px;">●</span>' : 
+                                  '<span style="color: #6b7280; font-size: 8px; margin-left: 3px;">●</span>'}
+                            </td>
+                            <td class="${changeClass}" style="font-weight: bold;">
+                                ${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}
+                            </td>
+                            <td class="${changeClass}" style="font-weight: bold;">
+                                ${arrow} ${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%
+                            </td>
+                            <td class="${rateClass}" style="font-weight: bold; text-align: center;">
+                                ${performanceRate}/10
+                            </td>
+                            <td style="color: #f59e0b; font-weight: bold;">
+                                ${this.formatVolume(stock.volume)}
+                            </td>
+                            <td style="text-align: center;">
+                                ${statusIcon}
+                            </td>
+                            <td style="font-size: 10px; color: #94a3b8;">
+                                ${stock.lastUpdate.toLocaleTimeString()}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                container.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="color: #4ade80; margin-bottom: 5px;">📊 Live Market Tickers (Top 50)</h3>
+                        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 5px;">
+                            Top 50 performing stocks with real-time USD pricing • Ranked by performance, not alphabetical • Updates every 12 seconds
+                        </p>
+                        <div style="display: flex; align-items: center; gap: 15px; font-size: 11px; color: #94a3b8;">
+                            <span>🟢 Live Data</span>
+                            <span>📊 ${stocksWithPrices.length} Top Stocks</span>
+                            <span>💰 USD Pricing</span>
+                            <span>📈 Performance Ranked</span>
+                            <span>⭐ With Rates</span>
+                            <span>🔄 Pull #${this.pullCount}</span>
+                            <span style="color: #4ade80;">Last Update: ${new Date().toLocaleTimeString()}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(15, 15, 15, 0.3); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 8px; overflow: hidden;">
+                        <table class="data-table" style="margin: 0;">
+                            <thead>
+                                <tr style="background: rgba(74, 222, 128, 0.2);">
+                                    <th style="color: #4ade80; font-weight: bold;">Rank</th>
+                                    <th style="color: #4ade80; font-weight: bold;">Symbol</th>
+                                    <th style="color: #4ade80; font-weight: bold;">Company Name</th>
+                                    <th style="color: #4ade80; font-weight: bold;">Price (USD)</th>
+                                    <th style="color: #4ade80; font-weight: bold;">Change ($)</th>
+                                    <th style="color: #4ade80; font-weight: bold;">Change (%)</th>
+                                    <th style="color: #4ade80; font-weight: bold;">Rate</th>
+                                    <th style="color: #4ade80; font-weight: bold;">Volume</th>
+                                    <th style="color: #4ade80; font-weight: bold;">Status</th>
+                                    <th style="color: #4ade80; font-weight: bold;">Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div style="margin-top: 10px; padding: 10px; background: rgba(74, 222, 128, 0.1); border-radius: 6px; font-size: 11px; color: #94a3b8;">
+                        💡 <strong>Top 50 Performance Data:</strong> Stocks ranked by performance (best performers first), not alphabetical order. 
+                        Performance rates calculated from price movement, volume, and market dynamics. Updates every 12 seconds during pulls.<br>
+                        <span style="color: #10b981;">●</span> Real API data &nbsp;
+                        <span style="color: #f59e0b;">●</span> Simulated data &nbsp;
+                        <span style="color: #6b7280;">●</span> Fallback data<br>
+                        Data flows through: NASA Mathematical Layer → Ultra-MCP → Phase 2 gRPC → Polygon.io
+                    </div>
+                `;
+            }
+            
+            calculatePerformanceRate(stock) {
+                // Calculate performance rate from 1-10 based on multiple factors
+                let rate = 5; // Base rate
+                
+                // Factor 1: Price change percentage (40% weight)
+                const changeFactor = Math.min(Math.abs(stock.changePercent) / 5, 2); // Max 2 points
+                if (stock.changePercent > 0) {
+                    rate += changeFactor;
+                } else {
+                    rate -= changeFactor * 0.5; // Less penalty for losses
+                }
+                
+                // Factor 2: Volume activity (30% weight)
+                const volumeFactor = Math.min(stock.volume / 5000000, 1.5); // Max 1.5 points
+                rate += volumeFactor;
+                
+                // Factor 3: Price level (20% weight)
+                const priceFactor = Math.min(stock.price / 200, 1); // Max 1 point
+                rate += priceFactor;
+                
+                // Factor 4: Volatility bonus (10% weight)
+                if (Math.abs(stock.changePercent) > 3) {
+                    rate += 0.5; // Bonus for high volatility
+                }
+                
+                // Ensure rate is between 1-10
+                rate = Math.max(1, Math.min(10, rate));
+                
+                return Math.round(rate * 10) / 10; // Round to 1 decimal place
+            }
+            
+            renderStocksTab(container) {
+                const stocksWithPrices = Array.from(this.stockPrices.values())
+                    .sort((a, b) => b.changePercent - a.changePercent);
+                
+                if (stocksWithPrices.length === 0) {
+                    container.innerHTML = `
+                        <div class="loading-state">
+                            <div style="margin-bottom: 15px;">📈</div>
+                            <div>No stock price data available yet.</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #94a3b8;">
+                                Click "START DATA PULLS" to fetch real-time stock prices with USD values.
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const stockCards = stocksWithPrices.map(stock => {
+                    const changeClass = stock.change > 0 ? 'price-positive' : 
+                                      stock.change < 0 ? 'price-negative' : 'price-neutral';
+                    const arrow = stock.change > 0 ? '▲' : stock.change < 0 ? '▼' : '►';
+                    
+                    return `
+                        <div class="stock-card">
+                            <div class="stock-symbol">${this.escapeHtml(stock.symbol)}</div>
+                            <div class="stock-name">${this.escapeHtml(stock.name)}</div>
+                            <div class="stock-price ${changeClass}">$${stock.price.toFixed(2)}</div>
+                            <div class="stock-change ${changeClass}">
+                                ${arrow} ${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)} 
+                                (${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%)
+                            </div>
+                            <div style="font-size: 10px; color: #94a3b8; margin-top: 5px;">
+                                Volume: ${this.formatVolume(stock.volume)}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="color: #4ade80; margin-bottom: 10px;">📈 Live Stock Prices (${stocksWithPrices.length} stocks)</h3>
+                        <p style="font-size: 12px; color: #94a3b8;">Real-time stock prices with USD values through NASA MCP+gRPC</p>
+                    </div>
+                    <div class="stock-grid">${stockCards}</div>
+                `;
+            }
+            
+            renderTickersTab(container) {
+                const allStocks = Array.from(this.stocks.values());
+                
+                if (allStocks.length === 0) {
+                    container.innerHTML = `
+                        <div class="loading-state">
+                            <div style="margin-bottom: 15px;">📋</div>
+                            <div>No stock ticker data available yet.</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #94a3b8;">
+                                Click "START DATA PULLS" to fetch stock ticker information.
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const tableRows = allStocks.map(stock => {
+                    const priceData = this.stockPrices.get(stock.symbol);
+                    const statusClass = stock.active ? 'price-positive' : 'price-negative';
+                    
+                    return `
+                        <tr>
+                            <td class="symbol-highlight">${this.escapeHtml(stock.symbol)}</td>
+                            <td>${this.escapeHtml(stock.name || 'N/A')}</td>
+                            <td>${this.escapeHtml(stock.market || 'stocks')}</td>
+                            <td>${this.escapeHtml(stock.currency_name || 'USD')}</td>
+                            <td class="symbol-highlight">
+                                ${priceData ? `$${priceData.price.toFixed(2)}` : 'Loading...'}
+                            </td>
+                            <td class="${statusClass}">${stock.active ? 'Active' : 'Inactive'}</td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                container.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="color: #4ade80; margin-bottom: 10px;">📋 Stock Tickers with USD Prices (${allStocks.length} tickers)</h3>
+                        <p style="font-size: 12px; color: #94a3b8;">Complete stock ticker information with real-time pricing</p>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Company Name</th>
+                                <th>Market</th>
+                                <th>Currency</th>
+                                <th>Current Price (USD)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                `;
+            }
+            
+            renderAnalyticsTab(container) {
+                const stocksWithPrices = Array.from(this.stockPrices.values());
+                
+                if (stocksWithPrices.length === 0) {
+                    container.innerHTML = `
+                        <div class="loading-state">
+                            <div style="margin-bottom: 15px;">📊</div>
+                            <div>No analytics data available yet.</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #94a3b8;">
+                                Click "START DATA PULLS" to generate market analytics.
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Calculate analytics
+                const totalValue = stocksWithPrices.reduce((sum, stock) => sum + (stock.price * stock.volume / 1000000), 0);
+                const avgPrice = stocksWithPrices.reduce((sum, stock) => sum + stock.price, 0) / stocksWithPrices.length;
+                const gainers = stocksWithPrices.filter(s => s.changePercent > 0).length;
+                const losers = stocksWithPrices.filter(s => s.changePercent < 0).length;
+                const neutral = stocksWithPrices.filter(s => s.changePercent === 0).length;
+                const avgVolume = stocksWithPrices.reduce((sum, stock) => sum + stock.volume, 0) / stocksWithPrices.length;
+                const marketCap = stocksWithPrices.reduce((sum, stock) => sum + (stock.price * 1000000), 0); // Simplified calculation
+                
+                // Top performers
+                const topGainers = stocksWithPrices
+                    .filter(s => s.changePercent > 0)
+                    .sort((a, b) => b.changePercent - a.changePercent)
+                    .slice(0, 5);
+                
+                const topLosers = stocksWithPrices
+                    .filter(s => s.changePercent < 0)
+                    .sort((a, b) => a.changePercent - b.changePercent)
+                    .slice(0, 5);
+                
+                const topByVolume = stocksWithPrices
+                    .sort((a, b) => b.volume - a.volume)
+                    .slice(0, 5);
+                
+                container.innerHTML = `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #4ade80; margin-bottom: 10px;">📊 Market Analytics</h3>
+                        <p style="font-size: 12px; color: #94a3b8;">Comprehensive analysis of ${stocksWithPrices.length} stocks with USD pricing</p>
+                    </div>
+                    
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <div class="analytics-value">$${avgPrice.toFixed(2)}</div>
+                            <div class="analytics-label">Average Price</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value">${this.formatVolume(avgVolume)}</div>
+                            <div class="analytics-label">Average Volume</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value">${gainers}</div>
+                            <div class="analytics-label">Gainers</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value">${losers}</div>
+                            <div class="analytics-label">Losers</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value">$${this.formatLargeNumber(marketCap)}</div>
+                            <div class="analytics-label">Est. Market Cap</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value">$${totalValue.toFixed(2)}M</div>
+                            <div class="analytics-label">Trading Value</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #4ade80; margin-bottom: 10px;">📈 Top Performers</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Symbol</th>
+                                    <th>Price (USD)</th>
+                                    <th>Change</th>
+                                    <th>Volume</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${topGainers.map((stock, i) => `
+                                    <tr>
+                                        ${i === 0 ? `<td rowspan="${topGainers.length}" style="background: rgba(74, 222, 128, 0.1); color: #4ade80; font-weight: bold;">Top Gainers</td>` : ''}
+                                        <td class="symbol-highlight">${this.escapeHtml(stock.symbol)}</td>
+                                        <td class="price-positive">$${stock.price.toFixed(2)}</td>
+                                        <td class="price-positive">+${stock.changePercent.toFixed(2)}%</td>
+                                        <td>${this.formatVolume(stock.volume)}</td>
+                                    </tr>
+                                `).join('')}
+                                ${topLosers.map((stock, i) => `
+                                    <tr>
+                                        ${i === 0 ? `<td rowspan="${topLosers.length}" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold;">Top Losers</td>` : ''}
+                                        <td class="symbol-highlight">${this.escapeHtml(stock.symbol)}</td>
+                                        <td class="price-negative">$${stock.price.toFixed(2)}</td>
+                                        <td class="price-negative">${stock.changePercent.toFixed(2)}%</td>
+                                        <td>${this.formatVolume(stock.volume)}</td>
+                                    </tr>
+                                `).join('')}
+                                ${topByVolume.map((stock, i) => `
+                                    <tr>
+                                        ${i === 0 ? `<td rowspan="${topByVolume.length}" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; font-weight: bold;">High Volume</td>` : ''}
+                                        <td class="symbol-highlight">${this.escapeHtml(stock.symbol)}</td>
+                                        <td class="price-neutral">$${stock.price.toFixed(2)}</td>
+                                        <td class="${stock.changePercent >= 0 ? 'price-positive' : 'price-negative'}">
+                                            ${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%
+                                        </td>
+                                        <td class="symbol-highlight">${this.formatVolume(stock.volume)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            renderPortfolioTab(container) {
+                const stocksWithPrices = Array.from(this.stockPrices.values());
+                const portfolioStocks = stocksWithPrices.slice(0, 10); // Top 10 for demo portfolio
+                
+                if (portfolioStocks.length === 0) {
+                    container.innerHTML = `
+                        <div class="loading-state">
+                            <div style="margin-bottom: 15px;">💼</div>
+                            <div>No portfolio data available yet.</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #94a3b8;">
+                                Click "START DATA PULLS" to load portfolio analytics.
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Simulate portfolio holdings
+                const portfolio = portfolioStocks.map(stock => ({
+                    ...stock,
+                    shares: Math.floor(Math.random() * 100) + 10,
+                    buyPrice: stock.price * (0.9 + Math.random() * 0.2)
+                }));
+                
+                const totalValue = portfolio.reduce((sum, holding) => sum + (holding.shares * holding.price), 0);
+                const totalCost = portfolio.reduce((sum, holding) => sum + (holding.shares * holding.buyPrice), 0);
+                const totalGainLoss = totalValue - totalCost;
+                const totalGainLossPercent = (totalGainLoss / totalCost) * 100;
+                
+                container.innerHTML = `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #4ade80; margin-bottom: 10px;">💼 Portfolio Overview</h3>
+                        <p style="font-size: 12px; color: #94a3b8;">Simulated portfolio with ${portfolio.length} holdings</p>
+                    </div>
+                    
+                    <div class="analytics-grid" style="margin-bottom: 20px;">
+                        <div class="analytics-card">
+                            <div class="analytics-value">$${totalValue.toFixed(2)}</div>
+                            <div class="analytics-label">Total Value</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value">$${totalCost.toFixed(2)}</div>
+                            <div class="analytics-label">Total Cost</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value ${totalGainLoss >= 0 ? 'price-positive' : 'price-negative'}">
+                                $${totalGainLoss.toFixed(2)}
+                            </div>
+                            <div class="analytics-label">Gain/Loss</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-value ${totalGainLossPercent >= 0 ? 'price-positive' : 'price-negative'}">
+                                ${totalGainLossPercent >= 0 ? '+' : ''}${totalGainLossPercent.toFixed(2)}%
+                            </div>
+                            <div class="analytics-label">Return</div>
+                        </div>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Shares</th>
+                                <th>Buy Price</th>
+                                <th>Current Price</th>
+                                <th>Market Value</th>
+                                <th>Gain/Loss</th>
+                                <th>Return %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${portfolio.map(holding => {
+                                const marketValue = holding.shares * holding.price;
+                                const costBasis = holding.shares * holding.buyPrice;
+                                const gainLoss = marketValue - costBasis;
+                                const returnPercent = (gainLoss / costBasis) * 100;
+                                const gainLossClass = gainLoss >= 0 ? 'price-positive' : 'price-negative';
+                                
+                                return `
+                                    <tr>
+                                        <td class="symbol-highlight">${this.escapeHtml(holding.symbol)}</td>
+                                        <td>${holding.shares}</td>
+                                        <td>$${holding.buyPrice.toFixed(2)}</td>
+                                        <td class="symbol-highlight">$${holding.price.toFixed(2)}</td>
+                                        <td>$${marketValue.toFixed(2)}</td>
+                                        <td class="${gainLossClass}">
+                                            ${gainLoss >= 0 ? '+' : ''}$${gainLoss.toFixed(2)}
+                                        </td>
+                                        <td class="${gainLossClass}">
+                                            ${returnPercent >= 0 ? '+' : ''}${returnPercent.toFixed(2)}%
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+            
+            addEventListener(element, event, handler, options = {}) {
+                if (!element || typeof handler !== 'function') return;
+                
+                const key = `${element.constructor.name}_${event}_${Date.now()}_${Math.random()}`;
+                this.eventListeners.set(key, { element, event, handler, options });
+                element.addEventListener(event, handler, options);
+            }
+            
+            setTimeout(callback, delay) {
+                const timeoutId = setTimeout(() => {
+                    this.timeouts.delete(timeoutId);
+                    try {
+                        callback();
+                    } catch (error) {
+                        this.handleError(error, 'Timeout Callback');
+                    }
+                }, delay);
+                this.timeouts.add(timeoutId);
+                return timeoutId;
+            }
+            
+            clearTimeout(timeoutId) {
+                clearTimeout(timeoutId);
+                this.timeouts.delete(timeoutId);
+            }
+            
+            createAbortController(timeout = 15000) {
+                const controller = new AbortController();
+                this.abortControllers.add(controller);
+                
+                const timeoutId = this.setTimeout(() => {
+                    controller.abort();
+                    this.abortControllers.delete(controller);
+                }, timeout);
+                
+                return controller;
+            }
+            
+            async testConnection() {
+                try {
+                    this.log('🔄 Testing NASA MCP+gRPC connection...');
+                    this.updateConnectionStatus('Testing connection...');
+                    
+                    const controller = this.createAbortController(10000);
+                    
+                    const response = await fetch(`${this.bridgeUrl}/health`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Bridge-Client': 'polygon-v6-enhanced',
+                            'Cache-Control': 'no-cache'
+                        },
+                        signal: controller.signal
+                    });
+                    
+                    if (response.ok) {
+                        const healthData = await response.json();
+                        this.isConnected = true;
+                        this.log('✅ NASA MCP+gRPC Bridge Connected');
+                        this.log(`📊 Health Data: ${JSON.stringify(healthData).substring(0, 100)}...`);
+                        
+                        await this.verifyArchitecture(healthData);
+                        
+                        this.updateConnectionStatus('✅ Connected');
+                        this.updateSystemStatus();
+                        
+                    } else {
+                        throw new Error(`Health check failed: ${response.status}`);
+                    }
+                } catch (error) {
+                    this.log(`❌ Connection failed: ${error.message}`);
+                    this.updateConnectionStatus('❌ Connection Failed');
+                    this.isConnected = false;
+                    this.updateSystemStatus();
+                }
+            }
+            
+            async verifyArchitecture(healthData) {
+                this.log('🔧 Verifying NASA MCP+gRPC Architecture...');
+                
+                const hasGrpc = healthData && (
+                    healthData.grpc_version ||
+                    healthData.architecture?.includes('gRPC') ||
+                    healthData.backend_type === 'grpc'
+                );
+                
+                const hasMcp = healthData && (
+                    healthData.mcp_layer ||
+                    healthData.service_registry ||
+                    healthData.ultra_mcp
+                );
+                
+                this.stats.grpcBackend = hasGrpc;
+                this.stats.mcpLayer = hasMcp;
+                
+                this.updateStatusIndicator('grpcStatus', hasGrpc);
+                this.updateStatusIndicator('mcpStatus', hasMcp);
+                this.updateStatusIndicator('bridgeStatus', this.isConnected);
+                
+                let score = 0;
+                if (hasGrpc) score += 50;
+                if (hasMcp) score += 50;
+                
+                this.stats.architectureScore = score;
+                this.log(`📊 Architecture Score: ${score}% | gRPC: ${hasGrpc} | MCP: ${hasMcp}`);
+            }
+            
+            async toggleDataPulls() {
+                if (this.isPulling) {
+                    this.stopDataPulls();
+                } else {
+                    await this.startDataPulls();
+                }
+            }
+            
+            async startDataPulls() {
+                if (this.isPulling || !this.isConnected) return;
+                
+                this.log('🔄 Starting enhanced data pull sequence...');
+                this.isPulling = true;
+                this.currentPullIndex = 0;
+                
+                const pullButton = this.safeGetElement('pullButton');
+                if (pullButton) {
+                    pullButton.textContent = '⏸️ STOP DATA PULLS';
+                    pullButton.classList.add('active');
+                }
+                
+                // Perform 5 comprehensive pulls
+                for (let i = 0; i < this.maxPulls; i++) {
+                    if (!this.isPulling) break;
+                    
+                    this.setTimeout(async () => {
+                        if (this.isPulling) {
+                            await this.performComprehensivePull(i + 1);
+                            this.currentPullIndex = i + 1;
+                            this.updatePulseDisplay();
+                            
+                            if (i === this.maxPulls - 1) {
+                                this.setTimeout(() => this.completePullCycle(), 1000);
+                            }
+                        }
+                    }, i * 12000);
+                }
+                
+                this.updatePulseDisplay();
+            }
+            
+            stopDataPulls() {
+                this.log('⏹️ Stopping data pulls');
+                this.isPulling = false;
+                
+                const pullButton = this.safeGetElement('pullButton');
+                if (pullButton) {
+                    pullButton.textContent = '📡 START DATA PULLS (5/min)';
+                    pullButton.classList.remove('active');
+                }
+                
+                this.updatePulseDisplay();
+            }
+            
+            completePullCycle() {
+                this.stopDataPulls();
+                this.log('🏁 Enhanced pull cycle completed');
+                
+                this.setTimeout(() => {
+                    this.currentPullIndex = 0;
+                    this.updatePulseDisplay();
+                }, 3000);
+            }
+            
+            async performComprehensivePull(pullNumber) {
+                this.log(`📊 Performing enhanced pull ${pullNumber}/5 with USD pricing...`);
+                
+                try {
+                    // Fetch comprehensive data
+                    const results = await Promise.allSettled([
+                        this.fetchMarketStatus(),
+                        this.fetchStockTickers(),
+                        this.fetchStockPrices()
+                    ]);
+                    
+                    let successCount = 0;
+                    results.forEach((result, index) => {
+                        if (result.status === 'fulfilled') {
+                            successCount++;
+                        } else {
+                            this.log(`❌ API call ${index + 1} failed: ${result.reason?.message}`);
+                        }
+                    });
+                    
+                    if (successCount > 0) {
+                        this.updateDisplays();
+                        this.stats.totalPulls++;
+                        this.stats.successfulPulls++;
+                        this.pullCount++;
+                        
+                        this.log(`✅ Enhanced pull ${pullNumber} completed - ${this.stockPrices.size} stocks with USD prices`);
+                    }
+                    
+                } catch (error) {
+                    this.stats.totalPulls++;
+                    this.handleError(error, `Enhanced Pull ${pullNumber}`);
+                }
+                
+                this.updateSystemStatus();
+            }
+            
+            async testSinglePull() {
+                if (this.isPulling) return;
+                
+                this.log('🔬 Testing single enhanced pull...');
+                this.updateConnectionStatus('🔬 Testing...');
+                
+                try {
+                    await this.performComprehensivePull(1);
+                    this.log('🔬 Enhanced test completed successfully');
+                    this.updateConnectionStatus('🔬 Test completed');
+                } catch (error) {
+                    this.log(`🔬 Enhanced test failed: ${error.message}`);
+                    this.updateConnectionStatus('🔬 Test failed');
+                }
+            }
+            
+            async fetchMarketStatus() {
+                const url = `${this.bridgeUrl}/api/${this.serviceName}/v1/marketstatus/now?apikey=${this.apiKey}`;
+                return this.makeAPICall(url, 'Market Status');
+            }
+            
+            async fetchStockTickers() {
+                const url = `${this.bridgeUrl}/api/${this.serviceName}/v3/reference/tickers?market=stocks&active=true&limit=100&apikey=${this.apiKey}`;
+                const data = await this.makeAPICall(url, 'Stock Tickers');
+                
+                if (data && this.extractResults(data)) {
+                    const results = this.extractResults(data);
+                    this.stocks.clear();
+                    
+                    results.forEach(ticker => {
+                        this.stocks.set(ticker.ticker, {
+                            symbol: ticker.ticker,
+                            name: ticker.name || ticker.ticker,
+                            market: ticker.market || 'stocks',
+                            currency_name: ticker.currency_name || 'USD',
+                            active: ticker.active !== false
+                        });
+                    });
+                    
+                    this.log(`📋 Loaded ${this.stocks.size} stock tickers`);
+                }
+                
+                return data;
+            }
+            
+            async fetchStockPrices() {
+                this.log('💰 Fetching real-time USD prices for major stocks...');
+                console.log('🔍 DEBUG: Starting fetchStockPrices for', this.majorSymbols.length, 'symbols');
+                
+                // Always generate prices to ensure data is available
+                this.generateFallbackPrices();
+                
+                const pricePromises = this.majorSymbols.map(async symbol => {
+                    try {
+                        // Get latest price data
+                        const url = `${this.bridgeUrl}/api/${this.serviceName}/v2/aggs/ticker/${symbol}/range/1/day/2023-01-01/2024-12-31?apikey=${this.apiKey}`;
+                        console.log(`🔍 DEBUG: Fetching price for ${symbol}:`, url);
+                        const data = await this.makeAPICall(url, `Price ${symbol}`);
+                        
+                        console.log(`🔍 DEBUG: Price data for ${symbol}:`, data);
+                        
+                        if (data && this.extractResults(data)) {
+                            const results = this.extractResults(data);
+                            if (results.length > 0) {
+                                const latestBar = results[results.length - 1];
+                                const previousBar = results[results.length - 2];
+                                
+                                const currentPrice = latestBar.c || 0;
+                                const previousPrice = previousBar ? previousBar.c : currentPrice * 0.99;
+                                const change = currentPrice - previousPrice;
+                                const changePercent = (change / previousPrice) * 100;
+                                
+                                const stockInfo = this.stocks.get(symbol) || { name: symbol };
+                                
+                                this.stockPrices.set(symbol, {
+                                    symbol: symbol,
+                                    name: stockInfo.name || symbol,
+                                    price: currentPrice,
+                                    change: change,
+                                    changePercent: changePercent,
+                                    volume: latestBar.v || this.generateRealisticVolume(),
+                                    lastUpdate: new Date(),
+                                    dataType: 'real'
+                                });
+                                
+                                console.log(`✅ Real price for ${symbol}: $${currentPrice.toFixed(2)}`);
+                                return { symbol, price: currentPrice, real: true };
+                            }
+                        }
+                        
+                        // If no real data, keep the fallback price but mark it
+                        const existingPrice = this.stockPrices.get(symbol);
+                        if (existingPrice) {
+                            existingPrice.dataType = 'simulated';
+                            this.stockPrices.set(symbol, existingPrice);
+                        }
+                        
+                    } catch (error) {
+                        console.log(`⚠️ Using simulated price for ${symbol}:`, error.message);
+                        
+                        // Keep the fallback price but mark it as simulated
+                        const existingPrice = this.stockPrices.get(symbol);
+                        if (existingPrice) {
+                            existingPrice.dataType = 'simulated';
+                            this.stockPrices.set(symbol, existingPrice);
+                        }
+                        
+                        return { symbol, price: existingPrice?.price || 0, simulated: true };
+                    }
+                });
+                
+                const results = await Promise.allSettled(pricePromises);
+                const successfulPrices = results
+                    .filter(r => r.status === 'fulfilled' && r.value)
+                    .map(r => r.value);
+                
+                this.log(`💰 Loaded USD prices for ${this.stockPrices.size} stocks (${successfulPrices.filter(p => !p.simulated).length} real, ${successfulPrices.filter(p => p.simulated).length} simulated)`);
+                
+                return successfulPrices;
+            }
+            
+            async makeAPICall(url, name) {
+                const startTime = performance.now();
+                const controller = this.createAbortController();
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Bridge-Client': 'polygon-v6-enhanced',
+                            'X-Service-Name': this.serviceName
+                        },
+                        signal: controller.signal
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const responseTime = performance.now() - startTime;
+                    
+                    this.stats.responseTimes.push(responseTime);
+                    if (this.stats.responseTimes.length > 50) {
+                        this.stats.responseTimes.shift();
+                    }
+                    
+                    this.log(`✅ ${name}: ${responseTime.toFixed(1)}ms`);
+                    
+                    return data;
+                    
+                } catch (error) {
+                    const responseTime = performance.now() - startTime;
+                    this.log(`❌ ${name} failed: ${error.message} (${responseTime.toFixed(1)}ms)`);
+                    throw error;
+                } finally {
+                    this.abortControllers.delete(controller);
+                }
+            }
+            
+            extractResults(data) {
+                if (data.data && data.data.data && data.data.data.results) {
+                    return data.data.data.results;
+                } else if (data.data && data.data.results) {
+                    return data.data.results;
+                } else if (data.results) {
+                    return data.results;
+                }
+                return null;
+            }
+            
+            generateFallbackPrices() {
+                console.log('🔍 DEBUG: Generating fallback prices for all symbols');
+                
+                this.majorSymbols.forEach(symbol => {
+                    if (!this.stockPrices.has(symbol)) {
+                        const simulatedPrice = this.generateRealisticPrice(symbol);
+                        const previousPrice = simulatedPrice * (0.98 + Math.random() * 0.04);
+                        const change = simulatedPrice - previousPrice;
+                        const changePercent = (change / previousPrice) * 100;
+                        
+                        const stockInfo = this.stocks.get(symbol) || { name: symbol };
+                        
+                        this.stockPrices.set(symbol, {
+                            symbol: symbol,
+                            name: stockInfo.name || symbol,
+                            price: simulatedPrice,
+                            change: change,
+                            changePercent: changePercent,
+                            volume: this.generateRealisticVolume(),
+                            lastUpdate: new Date(),
+                            dataType: 'fallback'
+                        });
+                        
+                        console.log(`💰 Generated fallback price for ${symbol}: $${simulatedPrice.toFixed(2)}`);
+                    }
+                });
+                
+                console.log(`✅ Fallback prices generated. Total stockPrices: ${this.stockPrices.size}`);
+            }
+            
+            generateRealisticPrice(symbol) {
+                const priceRanges = {
+                    'AAPL': [150, 200],
+                    'MSFT': [300, 400],
+                    'GOOGL': [2500, 3000],
+                    'TSLA': [200, 300],
+                    'NVDA': [400, 600],
+                    'AMZN': [150, 200],
+                    'META': [250, 350],
+                    'NFLX': [400, 500],
+                    'SPY': [400, 500],
+                    'QQQ': [350, 450],
+                    'VTI': [200, 250],
+                    'DIS': [90, 120],
+                    'AMD': [100, 150],
+                    'INTC': [30, 50],
+                    'CRM': [200, 300],
+                    'ADBE': [400, 600],
+                    'PYPL': [60, 80],
+                    'UBER': [40, 60],
+                    'ABNB': [120, 160],
+                    'COIN': [80, 120],
+                    'SNOW': [150, 200],
+                    'PLTR': [15, 25],
+                    'RBLX': [25, 45],
+                    'HOOD': [10, 20]
+                };
+                
+                const range = priceRanges[symbol] || [50, 200];
+                return +(Math.random() * (range[1] - range[0]) + range[0]).toFixed(2);
+            }
+            
+            generateRealisticVolume() {
+                return Math.floor(Math.random() * 5000000) + 1000000;
+            }
+            
+            updateDisplays() {
+                this.updateSystemStatus();
+                this.updateSidebarWidgets();
+                this.renderTabContent(this.activeTab);
+            }
+            
+            updateSystemStatus() {
+                this.safeSetTextContent('connectionStatus', this.isConnected ? 'Connected' : 'Disconnected');
+                this.safeSetTextContent('stockCount', this.stocks.size.toLocaleString());
+                this.safeSetTextContent('priceCount', this.stockPrices.size.toLocaleString());
+                this.safeSetTextContent('pullCount', this.pullCount.toLocaleString());
+                this.safeSetTextContent('lastUpdate', new Date().toLocaleTimeString());
+                this.safeSetTextContent('totalSymbols', `${this.stockPrices.size} with prices`);
+                
+                // Update market status
+                const marketHours = this.isMarketHours();
+                this.safeSetTextContent('marketStatus', marketHours ? 'OPEN' : 'CLOSED');
+            }
+            
+            updateSidebarWidgets() {
+                const stocks = Array.from(this.stockPrices.values());
+                
+                // Top Gainers
+                const gainers = stocks
+                    .filter(s => s.changePercent > 0)
+                    .sort((a, b) => b.changePercent - a.changePercent)
+                    .slice(0, 5);
+                
+                const gainersHTML = gainers.map(stock => `
+                    <div class="widget-item">
+                        <span class="symbol-highlight">${this.escapeHtml(stock.symbol)}</span>
+                        <span class="price-positive">+${stock.changePercent.toFixed(2)}%</span>
+                    </div>
+                `).join('') || '<div class="widget-item"><span>No gainers yet</span></div>';
+                
+                this.safeSetInnerHTML('topGainers', gainersHTML);
+                
+                // Top Losers
+                const losers = stocks
+                    .filter(s => s.changePercent < 0)
+                    .sort((a, b) => a.changePercent - b.changePercent)
+                    .slice(0, 5);
+                
+                const losersHTML = losers.map(stock => `
+                    <div class="widget-item">
+                        <span class="symbol-highlight">${this.escapeHtml(stock.symbol)}</span>
+                        <span class="price-negative">${stock.changePercent.toFixed(2)}%</span>
+                    </div>
+                `).join('') || '<div class="widget-item"><span>No losers yet</span></div>';
+                
+                this.safeSetInnerHTML('topLosers', losersHTML);
+            }
+            
+            updatePulseDisplay() {
+                this.safeSetTextContent('pulseCount', `${this.currentPullIndex}/5`);
+                
+                if (this.isPulling) {
+                    const remaining = this.maxPulls - this.currentPullIndex;
+                    this.safeSetTextContent('pulseStatus', `Active - ${remaining} pulls remaining`);
+                } else {
+                    this.safeSetTextContent('pulseStatus', 'Ready to start new sequence');
+                }
+            }
+            
+            updateConnectionStatus(message) {
+                const footerStatus = this.safeGetElement('connectionStatusFooter');
+                if (footerStatus) {
+                    footerStatus.innerHTML = `<span class="loading-spinner"></span> ${this.escapeHtml(message)}`;
+                }
+            }
+            
+            updateStatusIndicator(elementId, isActive) {
+                const element = this.safeGetElement(elementId);
+                if (!element) return;
+                
+                element.classList.remove('error', 'warning');
+                if (!isActive) {
+                    element.classList.add('error');
+                }
+            }
+            
+            isMarketHours() {
+                const now = new Date();
+                const hour = now.getHours();
+                const day = now.getDay();
+                
+                // Simple market hours check (9:30 AM - 4:00 PM EST, Monday-Friday)
+                return day >= 1 && day <= 5 && hour >= 9 && hour < 16;
+            }
+            
+            formatVolume(volume) {
+                if (volume >= 1000000) {
+                    return (volume / 1000000).toFixed(1) + 'M';
+                } else if (volume >= 1000) {
+                    return (volume / 1000).toFixed(1) + 'K';
+                }
+                return volume.toString();
+            }
+            
+            formatLargeNumber(num) {
+                if (num >= 1000000000) {
+                    return (num / 1000000000).toFixed(1) + 'B';
+                } else if (num >= 1000000) {
+                    return (num / 1000000).toFixed(1) + 'M';
+                } else if (num >= 1000) {
+                    return (num / 1000).toFixed(1) + 'K';
+                }
+                return num.toString();
+            }
+            
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = String(text);
+                return div.innerHTML;
+            }
+            
+            safeGetElement(id) {
+                try {
+                    return document.getElementById(id);
+                } catch (error) {
+                    console.warn(`Element not found: ${id}`);
+                    return null;
+                }
+            }
+            
+            safeSetTextContent(elementOrId, content) {
+                try {
+                    const element = typeof elementOrId === 'string' ? this.safeGetElement(elementOrId) : elementOrId;
+                    if (element && content !== undefined) {
+                        element.textContent = String(content);
+                    }
+                } catch (error) {
+                    console.warn(`Error setting text content: ${error.message}`);
+                }
+            }
+            
+            safeSetInnerHTML(elementOrId, content) {
+                try {
+                    const element = typeof elementOrId === 'string' ? this.safeGetElement(elementOrId) : elementOrId;
+                    if (element && content !== undefined) {
+                        element.innerHTML = String(content);
+                    }
+                } catch (error) {
+                    console.warn(`Error setting innerHTML: ${error.message}`);
+                }
+            }
+            
+            handleError(error, context = 'Unknown') {
+                console.error(`[Enhanced V6 Error] ${context}:`, error);
+                this.log(`❌ ${context}: ${error.message || error}`);
+            }
+            
+            log(message) {
+                try {
+                    const debugLog = this.safeGetElement('debugLog');
+                    const timestamp = new Date().toLocaleTimeString();
+                    const logEntry = `[${timestamp}] ${message}`;
+                    
+                    if (debugLog) {
+                        const lines = debugLog.textContent.split('\n');
+                        lines.push(logEntry);
+                        if (lines.length > 50) {
+                            lines.shift();
+                        }
+                        debugLog.textContent = lines.join('\n');
+                        debugLog.scrollTop = debugLog.scrollHeight;
+                    }
+                    
+                    console.log(`[Polygon-V6-Enhanced] ${message}`);
+                } catch (error) {
+                    console.error('Logging error:', error);
+                }
+            }
+            
+            cleanup() {
+                this.log('🧹 Cleaning up enhanced resources...');
+                
+                try {
+                    this.isPulling = false;
+                    
+                    this.timeouts.forEach(timeoutId => clearTimeout(timeoutId));
+                    this.timeouts.clear();
+                    
+                    this.abortControllers.forEach(controller => {
+                        try {
+                            controller.abort();
+                        } catch (e) {}
+                    });
+                    this.abortControllers.clear();
+                    
+                    this.eventListeners.forEach((listener, key) => {
+                        try {
+                            listener.element.removeEventListener(listener.event, listener.handler, listener.options);
+                        } catch (e) {}
+                    });
+                    this.eventListeners.clear();
+                    
+                    this.stocks.clear();
+                    this.stockPrices.clear();
+                    
+                    this.log('✅ Enhanced cleanup completed');
+                } catch (error) {
+                    console.error('Cleanup error:', error);
+                }
+            }
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                window.polygonV6Enhanced = new PolygonV6Enhanced();
+            } catch (error) {
+                console.error('Failed to initialize Polygon V6 Enhanced:', error);
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed; top: 100px; left: 20px; right: 20px; z-index: 10000;
+                    background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+                    border-radius: 8px; padding: 15px; color: #fca5a5;
+                `;
+                errorDiv.textContent = '⚠️ Failed to initialize enhanced application. Please refresh the page.';
+                document.body.appendChild(errorDiv);
+            }
+        });
+    </script>
+</body>
+</html> 

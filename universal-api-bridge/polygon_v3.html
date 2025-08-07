@@ -1,0 +1,4112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polygon Bridge Dashboard V3 | Comprehensive Data Analytics Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: #333;
+            font-size: 11px;
+            line-height: 1.3;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 8px;
+        }
+
+        .bridge-header {
+            background: rgba(26, 35, 126, 0.95);
+            color: white;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .bridge-header strong {
+            color: #64b5f6;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(25, 118, 210, 0.3);
+        }
+
+        .start-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(25, 118, 210, 0.4);
+        }
+
+        .start-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .control-item {
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .control-label {
+            display: block;
+            color: #666;
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+
+        .control-value {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .bridge-status {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 6px;
+            border-radius: 3px;
+            background: #ecf0f1;
+            font-size: 10px;
+        }
+
+        .bridge-status.connected {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .bridge-status.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .rate-monitor {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rate-bar {
+            width: 60px;
+            height: 4px;
+            background: #ecf0f1;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .rate-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #ff9800 50%, #f44336 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .market-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .market-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .market-title h1 {
+            font-size: 18px;
+            color: #1976d2;
+            margin-right: 10px;
+        }
+
+        .market-status-pill {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .market-status-pill.open {
+            background: #4caf50;
+        }
+
+        .market-status-pill.closed {
+            background: #f44336;
+        }
+
+        .market-status-pill.extended {
+            background: #ff9800;
+        }
+
+        .market-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .overview-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #1976d2;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .overview-card.fresh {
+            border-left-color: #4caf50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .overview-card.loading {
+            border-left-color: #ff9800;
+        }
+
+        .overview-card.error {
+            border-left-color: #f44336;
+        }
+
+        .overview-label {
+            font-size: 9px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .overview-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .overview-change {
+            font-size: 9px;
+            margin-top: 1px;
+        }
+
+        .overview-meta {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 8px;
+            color: #999;
+        }
+
+        .ticker-stream {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            height: 28px;
+            position: relative;
+        }
+
+        .ticker {
+            display: flex;
+            align-items: center;
+            animation: scroll 45s linear infinite;
+            white-space: nowrap;
+            height: 100%;
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .ticker-symbol {
+            font-weight: 700;
+            margin-right: 5px;
+            color: #64b5f6;
+        }
+
+        .ticker-price {
+            margin-right: 6px;
+        }
+
+        .ticker-change {
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        .ticker-change.positive {
+            background: #4caf50;
+        }
+
+        .ticker-change.negative {
+            background: #f44336;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
+        }
+
+        .stocks-table {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            background: #1976d2;
+            color: white;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .table-info {
+            font-size: 9px;
+            opacity: 0.9;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 6px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 10px;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .symbol-col { width: 80px; }
+        .name-col { width: 150px; }
+        .price-col { width: 80px; text-align: right; }
+        .change-col { width: 70px; text-align: right; }
+        .volume-col { width: 90px; text-align: right; }
+        .market-cap-col { width: 100px; text-align: right; }
+
+        .stock-symbol {
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .stock-name {
+            color: #666;
+            font-size: 9px;
+        }
+
+        .stock-price {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .change-value {
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 9px;
+        }
+
+        .change-positive {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+
+        .change-negative {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bridge-monitor {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .monitor-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .monitor-item {
+            text-align: center;
+            padding: 6px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .monitor-label {
+            font-size: 8px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .monitor-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .performance-chart {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .chart-container {
+            height: 150px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 10px;
+        }
+
+        .debug-panel {
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            padding: 8px;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .debug-panel.hidden {
+            display: none;
+        }
+
+        .debug-toggle {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            cursor: pointer;
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-width: 280px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.error {
+            background: #f44336;
+        }
+
+        .status-indicator.warning {
+            background: #ff9800;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .bridge-metadata {
+            background: rgba(25, 118, 210, 0.1);
+            color: #1976d2;
+            padding: 4px 6px;
+            border-radius: 3px;
+            font-size: 8px;
+            margin-top: 4px;
+        }
+
+        .positive { color: #4caf50; }
+        .negative { color: #f44336; }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 11px;
+        }
+
+        .error-state {
+            background: #f44336;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 4px 6px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .data-table .symbol, .data-table .name {
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .data-table .market, .data-table .type, .data-table .currency_name, .data-table .status {
+            font-size: 9px;
+            color: #666;
+        }
+
+        .data-table .positive, .data-table .negative {
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        .data-table .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0 10px;
+        }
+
+        .data-table .ticker-name {
+            font-weight: 500;
+            color: #64b5f6;
+        }
+
+        .data-table .ticker-market {
+            font-size: 8px;
+            color: #999;
+        }
+
+        .data-table .ticker-date {
+            font-size: 8px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 4px; }
+            .main-content { grid-template-columns: 1fr; }
+            .control-grid { grid-template-columns: repeat(3, 1fr); }
+            .market-overview { grid-template-columns: repeat(2, 1fr); }
+            th, td { padding: 4px 6px; font-size: 9px; }
+        }
+
+        .data-table .positive {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        .data-table .negative {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        .data-table .neutral {
+            background: #f5f5f5;
+            color: #666;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        /* ✨ BLINKING ANIMATION for updated data */
+        .data-blink {
+            animation: dataUpdate 0.6s ease-in-out;
+        }
+
+        @keyframes dataUpdate {
+            0% { background-color: #fff3cd; transform: scale(1); }
+            50% { background-color: #ffc107; transform: scale(1.02); }
+            100% { background-color: transparent; transform: scale(1); }
+        }
+
+        .price-blink {
+            animation: priceUpdate 0.8s ease-in-out;
+        }
+
+        @keyframes priceUpdate {
+            0% { background-color: #d4edda; color: #155724; }
+            25% { background-color: #28a745; color: white; transform: scale(1.05); }
+            75% { background-color: #28a745; color: white; transform: scale(1.05); }
+            100% { background-color: transparent; color: inherit; transform: scale(1); }
+        }
+
+        .symbol-highlight {
+            font-weight: 800;
+            color: #1976d2;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #90caf9;
+        }
+
+        /* ✨ TABBED INTERFACE for V3 */
+        .tab-container {
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 10px 0;
+        }
+
+        .tab-nav {
+            display: flex;
+            background: #f5f5f5;
+            border-radius: 6px 6px 0 0;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 100px;
+        }
+
+        .tab-button:hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #1976d2;
+            border-bottom-color: #1976d2;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 15px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 📊 ENHANCED DATA TABLES for V3 */
+        .enhanced-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .enhanced-table thead {
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            color: white;
+        }
+
+        .enhanced-table th {
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .enhanced-table td {
+            padding: 6px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 9px;
+            transition: background-color 0.2s ease;
+        }
+
+        .enhanced-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .enhanced-table .metric-cell {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        /* 📈 ANALYTICS CARDS for V3 */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #1976d2;
+            transition: transform 0.2s ease;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .analytics-card-title {
+            font-size: 10px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analytics-card-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1976d2;
+            margin-bottom: 4px;
+        }
+
+        .analytics-card-change {
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        .analytics-card-subtitle {
+            font-size: 8px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* 🔥 COMPARISON TABLES for V3 */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .comparison-header {
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        .comparison-body {
+            padding: 10px;
+        }
+
+        .comparison-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 9px;
+        }
+
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .comparison-value {
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        /* 📊 MISSING V3 OVERVIEW SECTION CSS */
+        .market-overview-section {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .overview-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            border-left: 4px solid #1976d2;
+            transition: transform 0.2s ease;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .overview-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .overview-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* 🚀 OPTIMIZATION: Loading animations and states */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .loading-state {
+            opacity: 0;
+            animation: fadeInLoading 0.3s ease-in-out forwards;
+        }
+
+        @keyframes fadeInLoading {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-highlight {
+            background-color: #ffe6e6 !important;
+            border-left: 4px solid #e74c3c !important;
+            animation: errorPulse 2s ease-in-out;
+        }
+
+        @keyframes errorPulse {
+            0%, 100% { background-color: #ffe6e6; }
+            50% { background-color: #ffcccc; }
+        }
+
+        /* 🚀 OPTIMIZATION: Enhanced responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 4px;
+            }
+            
+            .tab-nav {
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                min-width: 80px;
+                font-size: 9px;
+                padding: 6px 12px;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 8px;
+            }
+            
+            .comparison-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .enhanced-table {
+                font-size: 8px;
+            }
+            
+            .overview-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bridge-header {
+                font-size: 8px;
+                padding: 6px 8px;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .control-grid {
+                grid-template-columns: repeat(2, 1fr);
+                margin-left: 0;
+            }
+            
+            .analytics-card-value {
+                font-size: 14px;
+            }
+            
+            .tab-button {
+                min-width: 70px;
+                font-size: 8px;
+            }
+        }
+
+        /* 🚀 OPTIMIZATION: Accessibility improvements */
+        .tab-button:focus,
+        .start-button:focus,
+        .debug-toggle:focus {
+            outline: 2px solid #1976d2;
+            outline-offset: 2px;
+        }
+
+        .enhanced-table:focus-within {
+            box-shadow: 0 0 0 2px #1976d2;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .analytics-card {
+                border: 2px solid #000;
+            }
+            
+            .tab-button.active {
+                background: #000;
+                color: #fff;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .control-panel,
+            .debug-panel,
+            .tab-nav {
+                display: none;
+            }
+            
+            .tab-content {
+                display: block !important;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+        }
+
+        /* 🚀 OPTIMIZATION: Performance-optimized animations */
+        .data-blink,
+        .price-blink {
+            will-change: background-color;
+        }
+
+        .tab-content {
+            will-change: transform, opacity;
+        }
+
+        .analytics-card {
+            will-change: transform;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bridge-header">
+            🏗️ <strong>Universal API Bridge V3 - Comprehensive Data Analytics Platform</strong> - REST Frontend → Ultra-MCP Layer → Phase 2 gRPC Backend | 
+            Bridge Endpoint: <strong>localhost:8001</strong> | 
+            Service: <strong>polygon-stocks</strong> | 
+            ✅ <strong>Full Data Utilization Engine - ALL API data processed & analyzed</strong>
+        </div>
+
+        <!-- 🎯 V3 TABBED INTERFACE -->
+        <div class="tab-container">
+            <div class="tab-nav">
+                <button class="tab-button active" onclick="switchTab('overview')">📊 Market Overview</button>
+                <button class="tab-button" onclick="switchTab('tickers')">📈 Stock Tickers</button>
+                <button class="tab-button" onclick="switchTab('analytics')">🔬 Analytics</button>
+                <button class="tab-button" onclick="switchTab('comparison')">⚖️ Comparison</button>
+                <button class="tab-button" onclick="switchTab('technical')">📉 Technical</button>
+                <button class="tab-button" onclick="switchTab('raw')">🔍 Raw Data</button>
+            </div>
+
+            <!-- TAB: Market Overview -->
+            <div id="overview-tab" class="tab-content active">
+                <div class="analytics-grid" id="marketAnalyticsGrid">
+                    <!-- Dynamic market analytics cards will be populated here -->
+                </div>
+                
+                <div class="market-overview-section">
+                    <h4 style="margin: 15px 0 10px 0; color: #1976d2; font-size: 12px;">📊 Live Market Data</h4>
+                    <div class="overview-grid">
+                        <div class="overview-card">
+                            <div class="overview-value positive" id="sp500Value">Loading...</div>
+                            <div class="overview-label" id="sp500Label">Market Status</div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-value neutral" id="dowValue">Loading...</div>
+                            <div class="overview-label" id="dowLabel">Active Stocks</div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-value positive" id="nasdaqValue">Loading...</div>
+                            <div class="overview-label" id="nasdaqLabel">Total Volume</div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-value negative" id="russellValue">Loading...</div>
+                            <div class="overview-label" id="russellLabel">Avg Price</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Stock Tickers -->
+            <div id="tickers-tab" class="tab-content">
+                <div class="table-container" id="tickersTableContainer">
+                    <!-- Enhanced ticker data table will be populated here -->
+                </div>
+            </div>
+
+            <!-- TAB: Analytics -->
+            <div id="analytics-tab" class="tab-content">
+                <div class="analytics-grid" id="analyticsGrid">
+                    <!-- Comprehensive analytics will be populated here -->
+                </div>
+                <div class="table-container" id="analyticsTableContainer">
+                    <!-- Analytics data table will be populated here -->
+                </div>
+            </div>
+
+            <!-- TAB: Comparison -->
+            <div id="comparison-tab" class="tab-content">
+                <div class="comparison-container" id="comparisonContainer">
+                    <!-- Stock comparison tables will be populated here -->
+                </div>
+            </div>
+
+            <!-- TAB: Technical Analysis -->
+            <div id="technical-tab" class="tab-content">
+                <div class="analytics-grid" id="technicalGrid">
+                    <!-- Technical indicators will be populated here -->
+                </div>
+                <div class="table-container" id="technicalTableContainer">
+                    <!-- Technical analysis table will be populated here -->
+                </div>
+            </div>
+
+            <!-- TAB: Raw Data -->
+            <div id="raw-tab" class="tab-content">
+                <div class="table-container" id="rawDataContainer">
+                    <!-- Raw API response data will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- LEGACY V2 CONTENT - kept for compatibility -->
+        <div style="margin-top: 20px;">
+            <h4 style="margin: 15px 0 10px 0; color: #1976d2; font-size: 12px;">📊 Live Data Stream (V2 Compatible)</h4>
+            
+            <div class="control-panel">
+                <div>
+                    <div id="pullTimer" style="font-size: 14px; font-weight: bold; color: #1976d2; margin-bottom: 8px; text-align: center;">Ready to Pull Data</div>
+                    <button id="startButton" class="start-button">🚀 Start 5 Data Pulls (12s intervals)</button>
+                    <button id="debugToggle" class="debug-toggle">Debug</button>
+                    <button id="bridgeTestButton" class="debug-toggle" style="background: #ff9800;">🔧 Test Bridge</button>
+                    <button id="testTableButton" class="debug-toggle" style="background: #4caf50;">📊 Test Table</button>
+                    <div id="pullProgress" style="font-size: 10px; color: #666; margin-top: 4px; text-align: center;"></div>
+                </div>
+                <div class="control-grid">
+                    <div class="control-item">
+                        <span class="control-label">Bridge Status</span>
+                        <div class="bridge-status" id="bridgeStatus">
+                            <span>🔗</span>
+                            <span>Disconnected</span>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Pull Progress</span>
+                        <div class="rate-monitor">
+                            <div class="rate-bar">
+                                <div class="rate-fill" id="rateFill"></div>
+                            </div>
+                            <span id="rateText">Ready</span>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Active Requests</span>
+                        <span class="control-value" id="parallelCount">0</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Market Session</span>
+                        <span class="control-value" id="marketSession">Checking...</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Total Pulls</span>
+                        <span class="control-value" id="totalPulls">0</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Last Update</span>
+                        <span class="control-value" id="lastUpdate">Never</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ticker-stream">
+                <div class="ticker" id="stockTicker">
+                    <div class="ticker-item">Click "Pull Market Data" to fetch live stock data via Universal API Bridge...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="stocks-table">
+                <div class="table-header">
+                    <div class="table-title">Live Stock Data (via Universal Bridge)</div>
+                    <div class="table-info">
+                        <div>Last updated: <span id="tableLastUpdate">Never</span></div>
+                        <div>Bridge latency: <span id="bridgeLatency">-</span></div>
+                        <div>gRPC calls: <span id="grpcCalls">0</span></div>
+                    </div>
+                </div>
+                <div id="tableContainer">
+                    <div class="loading">Click "Pull Market Data" to execute 5 API calls via Universal API Bridge...</div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="bridge-monitor">
+                    <div class="monitor-title">🌉 Bridge Monitor</div>
+                    <div class="monitor-grid">
+                        <div class="monitor-item">
+                            <div class="monitor-label">Success Rate</div>
+                            <div class="monitor-value" id="successRate">0%</div>
+                        </div>
+                        <div class="monitor-item">
+                            <div class="monitor-label">Avg Response</div>
+                            <div class="monitor-value" id="avgResponse">0ms</div>
+                        </div>
+                        <div class="monitor-item">
+                            <div class="monitor-label">MCP Queue</div>
+                            <div class="monitor-value" id="mcpQueue">0</div>
+                        </div>
+                        <div class="monitor-item">
+                            <div class="monitor-label">gRPC Errors</div>
+                            <div class="monitor-value" id="grpcErrors">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="performance-chart">
+                    <div class="chart-title">⚡ Performance Metrics</div>
+                    <div class="chart-container">
+                        <div>Bridge performance visualization will appear here once data flows</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="debug-panel hidden" id="debugPanel">
+            <div id="debugLog">Universal API Bridge V3 Comprehensive Analytics Platform Debug Console initialized.<br>Architecture: REST → MCP → gRPC → Polygon.io | Full data utilization with multi-tab interface</div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-row">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="statusText">Universal Bridge Ready - Click to Pull Data</span>
+            </div>
+            <div class="status-row">
+                <span>Bridge Calls: <span id="statusBridgeCalls">0</span></span>
+                <span>|</span>
+                <span>Success: <span id="statusSuccessCalls">0</span></span>
+                <span>|</span>
+                <span>Errors: <span id="statusErrorCalls">0</span></span>
+            </div>
+            <div class="status-row">
+                <span>Polygon API: <span id="polygonApiStatus">Ready</span></span>
+                <span>|</span>
+                <span>Market: <span id="statusMarketState">Closed</span></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PolygonBridgeDashboard {
+            constructor() {
+                // Universal API Bridge Configuration
+                this.bridgeUrl = 'http://localhost:8001';
+                this.serviceName = 'polygon-stocks';
+                this.apiKey = 'fTcpMTE80ahFJ6SRFz984onpzTkLkAq8'; // Updated API key from user
+                
+                // 🚀 OPTIMIZATION: DOM Element Cache to reduce repeated queries
+                this.elements = new Map();
+                this.pendingUpdates = new Map();
+                this.updateThrottles = new Map();
+                
+                // 🚀 OPTIMIZATION: Request deduplication
+                this.activeApiCalls = new Map();
+                this.requestQueue = [];
+                
+                // New pull system: 5 pulls spread over 1 minute
+                this.pullsPerCycle = 5;
+                this.pullIntervalMs = 12000; // 12 seconds between pulls (60s / 5 = 12s)
+                this.cycleActive = false;
+                this.currentPullIndex = 0;
+                this.pullTimeouts = [];
+                this.activeRequests = new Set();
+                
+                // Timing
+                this.lastCycleTime = 0;
+                this.nextCycleTime = 0;
+                this.timerInterval = null;
+                
+                // 🚀 OPTIMIZATION: Enhanced Statistics with Memory Management
+                this.stats = {
+                    totalCycles: 0,
+                    totalPulls: 0,
+                    totalBridgeCalls: 0,
+                    successCalls: 0,
+                    errorCalls: 0,
+                    responseTimes: [],
+                    lastUpdate: null,
+                    grpcCalls: 0,
+                    // Memory management
+                    maxResponseTimes: 100, // Keep only last 100 response times
+                    performanceMetrics: {
+                        avgResponseTime: 0,
+                        minResponseTime: 0,
+                        maxResponseTime: 0,
+                        successRate: 0
+                    }
+    detectBridgeUrl() {
+        const currentHost = window.location.hostname || 'localhost';
+        const bridgePort = 8001;
+        const bridgeUrl = `http://${currentHost}:${bridgePort}`;
+        console.log(`🔍 Auto-detected bridge URL: ${bridgeUrl}`);
+        return bridgeUrl;
+    }
+
+                };
+                
+                // System state
+                this.bridgeConnected = false;
+                this.dataCache = new Map();
+                this.marketStatus = 'closed';
+                
+                // Debug
+                this.debugEnabled = false;
+                this.debugLog = [];
+                this.maxDebugLogs = 50; // 🚀 OPTIMIZATION: Limit debug log size
+                
+                // 🚀 OPTIMIZATION: Performance monitoring
+                this.performanceObserver = null;
+                this.lastRenderTime = 0;
+                this.renderThreshold = 16; // 60fps = 16ms per frame
+                
+                this.init();
+            }
+
+            // 🚀 OPTIMIZATION: Cached DOM element access
+            getCachedElement(id) {
+                if (!this.elements.has(id)) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        this.elements.set(id, element);
+                    }
+                }
+                return this.elements.get(id) || null;
+            }
+
+            // 🚀 OPTIMIZATION: Throttled DOM updates to prevent excessive reflows
+            throttleUpdate(key, updateFn, delay = 100) {
+                if (this.updateThrottles.has(key)) {
+                    clearTimeout(this.updateThrottles.get(key));
+                }
+                
+                this.updateThrottles.set(key, setTimeout(() => {
+                    updateFn();
+                    this.updateThrottles.delete(key);
+                }, delay));
+            }
+
+            // 🚀 OPTIMIZATION: Batch DOM updates to reduce reflows
+            batchUpdate(updates) {
+                requestAnimationFrame(() => {
+                    updates.forEach(update => {
+                        try {
+                            update();
+                        } catch (error) {
+                            this.log(`❌ Batch update error: ${error.message}`);
+                        }
+                    });
+                });
+            }
+
+            // 🚀 OPTIMIZATION: Request deduplication to prevent duplicate API calls
+            async makeOptimizedApiCall(endpoint, force = false) {
+                const callKey = `${endpoint}_${this.apiKey.substring(0, 8)}`;
+                
+                // Check if we already have a pending call for this endpoint
+                if (this.activeApiCalls.has(callKey) && !force) {
+                    this.log(`🔄 Deduplicating API call: ${endpoint}`);
+                    return this.activeApiCalls.get(callKey);
+                }
+                
+                // Create the API call promise
+                const apiPromise = this.makeBridgeApiCall(endpoint.name, endpoint.endpoint, endpoint.handler)
+                    .finally(() => {
+                        // Remove from active calls when complete
+                        this.activeApiCalls.delete(callKey);
+                    });
+                
+                this.activeApiCalls.set(callKey, apiPromise);
+                return apiPromise;
+            }
+
+            // 🚀 OPTIMIZATION: Enhanced memory management for statistics
+            recordResponseTime(responseTime) {
+                this.stats.responseTimes.push(responseTime);
+                
+                // Memory management: keep only last N response times
+                if (this.stats.responseTimes.length > this.stats.maxResponseTimes) {
+                    this.stats.responseTimes = this.stats.responseTimes.slice(-this.stats.maxResponseTimes);
+                }
+                
+                // Calculate performance metrics efficiently
+                this.updatePerformanceMetrics();
+            }
+
+            updatePerformanceMetrics() {
+                const times = this.stats.responseTimes;
+                if (times.length === 0) return;
+                
+                const sum = times.reduce((a, b) => a + b, 0);
+                this.stats.performanceMetrics.avgResponseTime = Math.round(sum / times.length);
+                this.stats.performanceMetrics.minResponseTime = Math.min(...times);
+                this.stats.performanceMetrics.maxResponseTime = Math.max(...times);
+                
+                const totalCalls = this.stats.successCalls + this.stats.errorCalls;
+                this.stats.performanceMetrics.successRate = totalCalls > 0 ? 
+                    Math.round((this.stats.successCalls / totalCalls) * 100) : 0;
+            }
+
+            // 🚀 OPTIMIZATION: Enhanced logging with memory management
+            log(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] ${message}`;
+                
+                this.debugLog.push(logEntry);
+                
+                // Memory management: keep only last N logs
+                if (this.debugLog.length > this.maxDebugLogs) {
+                    this.debugLog = this.debugLog.slice(-this.maxDebugLogs);
+                }
+                
+                console.log(logEntry);
+                
+                // Throttled debug panel update
+                this.throttleUpdate('debugLog', () => {
+                    this.updateDebugPanel();
+                }, 200);
+            }
+
+            // 🚀 OPTIMIZATION: More efficient safeGetElement with caching
+            safeGetElement(elementId) {
+                return this.getCachedElement(elementId);
+            }
+
+            // 🚀 OPTIMIZATION: Enhanced initialization with performance monitoring
+            init() {
+                this.setupEventListeners();
+                this.initializePerformanceMonitoring();
+                this.preloadCriticalElements();
+                
+                this.log('🏗️ Universal API Bridge V3 Comprehensive Analytics Platform initialized');
+                this.log('🔧 Architecture: REST Frontend → Ultra-MCP → Phase 2 gRPC → Polygon.io');
+                this.log('📊 V3 Features: Multi-tab interface, comprehensive data analytics, technical indicators');
+                this.log('✅ ALL API Data Utilized: Market Status, Ticker Lists, AAPL/SPY/QQQ Aggregates');
+                this.log('🎯 Analytics: Volume analysis, price trends, market comparisons, technical indicators');
+                this.log('🚀 OPTIMIZATIONS: DOM caching, request deduplication, memory management, throttled updates');
+                this.log('🔗 Bridge URL: ' + this.bridgeUrl);
+                this.log('🎯 API Key: ' + this.apiKey.substring(0, 10) + '...');
+                
+                // 🚀 V3 ENHANCED BRIDGE CONNECTIVITY
+                this.checkBridgeConnectivity();
+                
+                // Auto-retry bridge connection every 10 seconds if disconnected
+                setInterval(async () => {
+                    if (!this.bridgeConnected) {
+                        this.log('🔄 Auto-retry bridge connection...');
+                        await this.checkBridgeConnectivity();
+                    }
+                }, 10000);
+                
+                // Periodic bridge health check every 30 seconds
+                setInterval(async () => {
+                    if (this.bridgeConnected) {
+                        this.log('🔍 Periodic bridge health check...');
+                        await this.checkBridgeConnectivity();
+                    }
+                }, 30000);
+                
+                this.updateUI();
+                this.updateMarketTime();
+                setInterval(() => this.updateMarketTime(), 1000);
+                this.startMainTimer();
+                
+                // Initialize V3 features
+                this.initializeAnalytics();
+                this.activeTab = 'overview';
+                
+                // Add global error handler for debugging
+                window.addEventListener('error', (e) => {
+                    this.log(`❌ JavaScript Error: ${e.message} at ${e.filename}:${e.lineno}`);
+                });
+                
+                // Add unhandled promise rejection handler
+                window.addEventListener('unhandledrejection', (e) => {
+                    this.log(`❌ Unhandled Promise Rejection: ${e.reason}`);
+                });
+            }
+
+            // 🚀 OPTIMIZATION: Performance monitoring setup
+            initializePerformanceMonitoring() {
+                if ('PerformanceObserver' in window) {
+                    this.performanceObserver = new PerformanceObserver((list) => {
+                        for (const entry of list.getEntries()) {
+                            if (entry.entryType === 'measure') {
+                                this.log(`⚡ Performance: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
+                            }
+                        }
+                    });
+                    this.performanceObserver.observe({ entryTypes: ['measure'] });
+                }
+            }
+
+            // 🚀 OPTIMIZATION: Preload critical DOM elements
+            preloadCriticalElements() {
+                const criticalElements = [
+                    'startButton', 'debugToggle', 'bridgeStatus', 'pullTimer',
+                    'stockTicker', 'debugPanel', 'debugLog', 'marketAnalyticsGrid',
+                    'tickersTableContainer', 'comparisonContainer', 'rawDataContainer'
+                ];
+                
+                criticalElements.forEach(id => {
+                    this.getCachedElement(id);
+                });
+                
+                this.log(`🚀 Preloaded ${criticalElements.length} critical DOM elements`);
+            }
+
+            // 🎯 V3 TAB SWITCHING FUNCTIONALITY
+            switchTab(tabName) {
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Remove active class from all tab buttons  
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                
+                // Show selected tab content
+                const selectedTab = document.getElementById(`${tabName}-tab`);
+                if (selectedTab) {
+                    selectedTab.classList.add('active');
+                }
+                
+                // Find and activate the correct tab button
+                const tabButtons = document.querySelectorAll('.tab-button');
+                tabButtons.forEach(button => {
+                    if (button.onclick && button.onclick.toString().includes(`'${tabName}'`)) {
+                        button.classList.add('active');
+                    }
+                });
+                
+                // Update active tab
+                this.activeTab = tabName;
+                
+                // Load data for the selected tab
+                this.loadTabData(tabName);
+                
+                this.log(`🎯 Switched to ${tabName} tab`);
+            }
+
+            // 🔬 V3 ANALYTICS INITIALIZATION  
+            initializeAnalytics() {
+                this.analytics = {
+                    marketData: new Map(),
+                    stockMetrics: new Map(),
+                    technicalIndicators: new Map(),
+                    comparisons: new Map()
+                };
+                
+                // Initialize analytics containers
+                this.initializeAnalyticsContainers();
+            }
+
+            initializeAnalyticsContainers() {
+                // Create placeholder analytics cards
+                const marketAnalyticsGrid = this.safeGetElement('marketAnalyticsGrid');
+                if (marketAnalyticsGrid) {
+                    marketAnalyticsGrid.innerHTML = `
+                        <div class="analytics-card">
+                            <div class="analytics-card-title">Market Health</div>
+                            <div class="analytics-card-value" id="marketHealthValue">Analyzing...</div>
+                            <div class="analytics-card-subtitle">Overall market sentiment</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-card-title">Active Stocks</div>
+                            <div class="analytics-card-value" id="activeStocksValue">Loading...</div>
+                            <div class="analytics-card-subtitle">Currently trading securities</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-card-title">Data Freshness</div>
+                            <div class="analytics-card-value" id="dataFreshnessValue">Live</div>
+                            <div class="analytics-card-subtitle">Last update timestamp</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-card-title">API Performance</div>
+                            <div class="analytics-card-value" id="apiPerformanceValue">Excellent</div>
+                            <div class="analytics-card-subtitle">Bridge response time</div>
+                        </div>
+                    `;
+                }
+            }
+
+            setupEventListeners() {
+                const startButton = this.safeGetElement('startButton');
+                if (startButton) {
+                    startButton.addEventListener('click', () => {
+                        console.log('🔘 DEBUGGING - Start button clicked!');
+                        this.log('🔘 Start button clicked - initiating pull cycle');
+                        console.log('🔍 DEBUGGING - Bridge connected:', this.bridgeConnected);
+                        console.log('🔍 DEBUGGING - Button disabled:', startButton.disabled);
+                        this.startPullCycle();
+                    });
+                } else {
+                    this.log('❌ Start button not found in DOM');
+                }
+
+                const debugToggle = this.safeGetElement('debugToggle');
+                if (debugToggle) {
+                    debugToggle.addEventListener('click', () => {
+                        this.toggleDebugPanel();
+                    });
+                }
+
+                const bridgeTestButton = this.safeGetElement('bridgeTestButton');
+                if (bridgeTestButton) {
+                    bridgeTestButton.addEventListener('click', async () => {
+                        console.log('🔧 Manual bridge test triggered');
+                        this.log('🔧 Manual bridge test triggered');
+                        await this.checkBridgeConnectivity();
+                    });
+                }
+
+                const testTableButton = this.safeGetElement('testTableButton');
+                if (testTableButton) {
+                    testTableButton.addEventListener('click', () => {
+                        console.log('📊 Manual table test triggered');
+                        this.log('📊 Manual table test triggered');
+                        this.populateMainStockTable();
+                    });
+                }
+
+                // Add manual bridge connectivity check button
+                const bridgeStatus = this.safeGetElement('bridgeStatus');
+                if (bridgeStatus) {
+                    bridgeStatus.addEventListener('click', () => {
+                        this.log('🔄 Manual bridge connectivity check initiated');
+                        this.checkBridgeConnectivity();
+                    });
+                    bridgeStatus.style.cursor = 'pointer';
+                    bridgeStatus.title = 'Click to refresh bridge status';
+                } else {
+                    this.log('❌ Bridge status element not found in DOM');
+                }
+
+                // Auto-check bridge status every 30 seconds
+                setInterval(() => {
+                    this.checkBridgeConnectivity();
+                }, 30000);
+
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        this.log('📱 Page hidden - maintaining bridge connections');
+                    } else {
+                        this.log('👁️ Page visible - resuming operations and checking bridge');
+                        this.checkBridgeConnectivity();
+                    }
+                });
+            }
+
+            async startPullCycle() {
+                console.log('🚀 DEBUGGING - START PULL CYCLE INITIATED');
+                this.log('🚀 START PULL CYCLE INITIATED');
+                
+                console.log('🔍 DEBUGGING - Current state:', {
+                    cycleActive: this.cycleActive,
+                    bridgeConnected: this.bridgeConnected,
+                    bridgeUrl: this.bridgeUrl,
+                    apiKey: this.apiKey ? 'present' : 'missing'
+                });
+                
+                if (this.cycleActive) {
+                    console.log('⏱️ DEBUGGING - Cycle already active, ignoring request');
+                    this.log('⏱️ Pull cycle already in progress - ignoring request');
+                    return;
+                }
+
+                this.log('🔍 Verifying bridge connectivity before starting pulls...');
+                if (!this.bridgeConnected) {
+                    console.log('❌ DEBUGGING - Bridge not connected, attempting connection');
+                    this.log('❌ Bridge not connected - attempting to establish connection');
+                    this.updateBridgeStatus('checking');
+                    await this.checkBridgeConnectivity();
+                    if (!this.bridgeConnected) {
+                        console.log('❌ DEBUGGING - Bridge connection failed, cannot start pulls');
+                        this.log('❌ Bridge connection failed - cannot start pull cycle');
+                        return;
+                    }
+                } else {
+                    console.log('✅ DEBUGGING - Bridge connected, proceeding with cycle');
+                    this.log('✅ Bridge already connected - proceeding with pull cycle');
+                }
+
+                this.cycleActive = true;
+                this.currentPullIndex = 0;
+                this.lastCycleTime = Date.now();
+                this.nextCycleTime = this.lastCycleTime + 60000; // Next cycle in 1 minute
+                this.stats.totalCycles++;
+
+                this.log('🚀 Starting new pull cycle (5 pulls over 60 seconds)...');
+                
+                // Update button state
+                this.updateButtonForCycle();
+                
+                // Schedule all 5 pulls
+                this.schedulePullSequence();
+                
+                this.updateUI();
+            }
+
+            schedulePullSequence() {
+                console.log('📅 DEBUGGING - Scheduling pull sequence');
+                this.log('📅 Scheduling pull sequence');
+                
+                // Clear any existing timeouts
+                this.pullTimeouts.forEach(timeout => clearTimeout(timeout));
+                this.pullTimeouts = [];
+
+                // Define 5 endpoints that work with FREE TIER (avoid 403 errors)
+                const endpoints = [
+                    { name: 'market_status', endpoint: 'v1/marketstatus/now', delay: 0 },
+                    { name: 'ticker_list', endpoint: 'v3/reference/tickers?market=stocks&active=true&limit=50', delay: 12000 },
+                    { name: 'aapl_aggregates', endpoint: 'v2/aggs/ticker/AAPL/range/1/day/2024-01-01/2024-12-31', delay: 24000 },
+                    { name: 'spy_aggregates', endpoint: 'v2/aggs/ticker/SPY/range/1/day/2024-01-01/2024-12-31', delay: 36000 },
+                    { name: 'qqq_aggregates', endpoint: 'v2/aggs/ticker/QQQ/range/1/day/2024-01-01/2024-12-31', delay: 48000 }
+                ];
+
+                console.log('📅 DEBUGGING - Endpoints to schedule:', endpoints);
+
+                // Schedule each pull
+                endpoints.forEach((endpointConfig, index) => {
+                    console.log(`⏰ DEBUGGING - Scheduling pull ${index + 1}: ${endpointConfig.name} in ${endpointConfig.delay}ms`);
+                    
+                    const timeout = setTimeout(async () => {
+                        console.log(`⚡ DEBUGGING - Executing scheduled pull: ${endpointConfig.name}`);
+                        this.currentPullIndex = index + 1;
+                        await this.executeSinglePull(endpointConfig, index + 1);
+                        
+                        // Check if this was the last pull
+                        if (index === endpoints.length - 1) {
+                            console.log('🏁 DEBUGGING - Last pull completed, scheduling cycle completion');
+                            setTimeout(() => this.completePullCycle(), 2000); // Wait 2s after last pull
+                        }
+                    }, endpointConfig.delay);
+
+                    this.pullTimeouts.push(timeout);
+                });
+                
+                console.log(`📅 DEBUGGING - ${endpoints.length} pulls scheduled`);
+            }
+
+            async executeSinglePull(endpointConfig, pullNumber) {
+                this.log(`📡 Executing pull ${pullNumber}/5: ${endpointConfig.name}`);
+                console.log(`🔍 DEBUGGING - Starting pull:`, {
+                    pullNumber: pullNumber,
+                    name: endpointConfig.name,
+                    endpoint: endpointConfig.endpoint,
+                    bridgeUrl: this.bridgeUrl
+                });
+                
+                try {
+                    this.log(`🚀 Making bridge API call for: ${endpointConfig.name}`);
+                    const result = await this.makeBridgeApiCall(
+                        endpointConfig.name, 
+                        endpointConfig.endpoint, 
+                        this.getHandlerForEndpoint(endpointConfig.name)
+                    );
+                    
+                    console.log(`🔍 DEBUGGING - Bridge call result:`, {
+                        name: endpointConfig.name,
+                        hasResult: !!result,
+                        resultType: typeof result,
+                        resultKeys: result ? Object.keys(result) : 'no result'
+                    });
+                    
+                    if (result) {
+                        this.stats.totalPulls++;
+                        this.log(`✅ Pull ${pullNumber}/5 completed: ${endpointConfig.name}`);
+                        console.log(`✅ Pull completed successfully:`, endpointConfig.name);
+                    } else {
+                        this.log(`❌ Pull ${pullNumber}/5 failed: ${endpointConfig.name}`);
+                        console.log(`❌ Pull failed - no result:`, endpointConfig.name);
+                    }
+                } catch (error) {
+                    this.log(`❌ Pull ${pullNumber}/5 error: ${endpointConfig.name} - ${error.message}`);
+                    console.error(`❌ Pull error:`, error);
+                }
+                
+                this.updatePullProgress(pullNumber);
+                this.updateUI();
+            }
+
+            getHandlerForEndpoint(endpointName) {
+                const handlerMap = {
+                    'market_status': 'handleMarketStatus',
+                    'ticker_list': 'handleTickerList',
+                    'aapl_aggregates': 'handleAggregateData',
+                    'spy_aggregates': 'handleAggregateData',
+                    'qqq_aggregates': 'handleAggregateData'
+                };
+                return handlerMap[endpointName] || 'handleGenericData';
+            }
+
+            updatePullProgress(pullNumber) {
+                const progressElement = this.safeGetElement('pullProgress');
+                if (progressElement) {
+                    const remaining = this.pullsPerCycle - pullNumber;
+                    if (remaining > 0) {
+                        const nextPullSeconds = Math.ceil((remaining * this.pullIntervalMs) / 1000);
+                        progressElement.textContent = `Pull ${pullNumber}/5 complete. Next pull in ${nextPullSeconds}s`;
+                        progressElement.style.color = '#4caf50';
+                    } else {
+                        progressElement.textContent = 'All 5 pulls completed! Waiting for next cycle...';
+                        progressElement.style.color = '#2196f3';
+                    }
+                }
+            }
+
+            completePullCycle() {
+                this.cycleActive = false;
+                this.currentPullIndex = 0;
+                
+                // Clear timeouts
+                this.pullTimeouts.forEach(timeout => clearTimeout(timeout));
+                this.pullTimeouts = [];
+                
+                this.log('✅ Pull cycle completed successfully');
+                this.updateLastUpdateTime();
+                this.updateButtonForReady();
+                this.updateUI();
+            }
+
+            updateButtonForCycle() {
+                const startButton = this.safeGetElement('startButton');
+                if (startButton) {
+                    startButton.textContent = '⏳ Pull Cycle Active...';
+                    startButton.style.background = 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)';
+                    startButton.disabled = true;
+                }
+            }
+
+            updateButtonForReady() {
+                const startButton = this.safeGetElement('startButton');
+                if (startButton) {
+                    startButton.textContent = '🚀 Start 5 Data Pulls (12s intervals)';
+                    startButton.style.background = 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)';
+                    startButton.disabled = false;
+                }
+            }
+
+            startMainTimer() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                }
+                
+                this.timerInterval = setInterval(() => {
+                    this.updateTimer();
+                    this.updateUI();
+                }, 1000);
+            }
+
+            updateTimer() {
+                const timerElement = this.safeGetElement('pullTimer');
+                if (!timerElement) return;
+
+                if (this.cycleActive) {
+                    const elapsed = Date.now() - this.lastCycleTime;
+                    const remaining = Math.max(0, 60000 - elapsed);
+                    const seconds = Math.ceil(remaining / 1000);
+                    
+                    if (remaining > 0) {
+                        timerElement.textContent = `Pull Cycle: ${this.currentPullIndex}/5 | ${seconds}s remaining`;
+                        timerElement.style.color = '#ff9800';
+                    } else {
+                        timerElement.textContent = `Finalizing pull cycle...`;
+                        timerElement.style.color = '#4caf50';
+                    }
+                } else {
+                    timerElement.textContent = 'Ready to Start Next Pull Cycle';
+                    timerElement.style.color = '#1976d2';
+                }
+            }
+
+            async checkBridgeConnectivity() {
+                console.log('🔍 V3 Bridge Connectivity Check Starting...');
+                console.log(`🌐 Testing connection to: ${this.bridgeUrl}/health`);
+                this.log('🔍 V3 Bridge Connectivity Check Starting...');
+                this.log(`🌐 Testing connection to: ${this.bridgeUrl}/health`);
+                
+                // Show checking status first
+                this.updateBridgeStatus('checking');
+                
+                try {
+                    // Simple fetch for better reliability
+                    console.log('📡 Making fetch request...');
+                    const response = await fetch(`${this.bridgeUrl}/health`, {
+                        method: 'GET',
+                        headers: { 
+                            'Accept': 'application/json',
+                            'X-Bridge-Client': 'polygon-dashboard-v3',
+                            'Cache-Control': 'no-cache'
+                        }
+                    });
+                    
+                    console.log(`📡 Response received: ${response.status} ${response.statusText}`);
+                    this.log(`📡 Bridge response: ${response.status} ${response.statusText}`);
+                    
+                    if (response.ok) {
+                        const healthData = await response.json();
+                        this.bridgeConnected = true;
+                        console.log('✅ V3 Bridge Successfully Connected!');
+                        console.log('📊 Health Data:', healthData);
+                        this.log('✅ V3 Bridge Successfully Connected!');
+                        this.log(`📊 Health Data: ${JSON.stringify(healthData).substring(0, 150)}...`);
+                        this.updateBridgeStatus('connected');
+                        
+                        // Skip service registration check for now to avoid complications
+                        this.log('⚠️ Skipping service registration check for debugging');
+                        
+                        // Update UI elements
+                        this.updateButtonForReady();
+                        
+                    } else {
+                        throw new Error(`Health check failed: ${response.status} ${response.statusText}`);
+                    }
+                } catch (error) {
+                    this.bridgeConnected = false;
+                    console.error('❌ V3 Bridge Connection Failed:', error);
+                    this.log(`❌ V3 Bridge Connection Failed: ${error.message}`);
+                    
+                    // Detailed error logging
+                    if (error.name === 'AbortError') {
+                        this.log('⏰ Connection timeout - Bridge server may be down');
+                    } else if (error.message.includes('Failed to fetch')) {
+                        this.log('🔌 Network error - Check if bridge server is running on localhost:8001');
+                        console.log('🔌 Network error details:', error);
+                    } else {
+                        this.log(`🔍 Error details: ${error.name} - ${error.message}`);
+                        console.log('🔍 Full error:', error);
+                    }
+                    
+                    this.updateBridgeStatus('error');
+                    
+                    // Update start button to show disconnected state
+                    const startButton = this.safeGetElement('startButton');
+                    if (startButton) {
+                        startButton.disabled = true;
+                        startButton.textContent = '❌ Bridge Disconnected - Check Server';
+                        startButton.style.background = 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)';
+                    }
+                }
+            }
+
+            async checkServiceRegistration() {
+                try {
+                    const response = await fetch(`${this.bridgeUrl}/api/services`, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' },
+                        signal: AbortSignal.timeout(5000)
+                    });
+                    
+                    if (response.ok) {
+                        const servicesData = await response.json();
+                        const polygonService = servicesData.services?.find(s => s.name === this.serviceName);
+                        
+                        if (polygonService) {
+                            this.log(`✅ Polygon service registered in bridge: ${this.safeStringify(polygonService)}`);
+                        } else {
+                            this.log('⚠️ Polygon service not found in bridge registry');
+                            this.log('💡 Bridge will auto-register service on first request');
+                        }
+                    }
+                } catch (error) {
+                    this.log(`⚠️ Service check failed: ${error.message}`);
+                }
+            }
+
+            updateBridgeStatus(status) {
+                const statusElement = this.safeGetElement('bridgeStatus');
+                if (!statusElement) {
+                    this.log('❌ Bridge status element not found');
+                    return;
+                }
+                
+                statusElement.className = `bridge-status ${status}`;
+                
+                switch (status) {
+                    case 'connected':
+                        statusElement.innerHTML = `
+                            <span>✅</span>
+                            <span>MCP+gRPC Bridge Connected</span>
+                            <div style="font-size: 8px; color: #666; margin-top: 2px;">
+                                Universal API Bridge | Port: 8001 | Polygon.io Ready
+                            </div>
+                        `;
+                        statusElement.style.color = '#4caf50';
+                        break;
+                    case 'error':
+                        statusElement.innerHTML = `
+                            <span>❌</span>
+                            <span>Bridge Connection Error</span>
+                            <div style="font-size: 8px; color: #f44336; margin-top: 2px;">
+                                Click to retry connection
+                            </div>
+                        `;
+                        statusElement.style.color = '#f44336';
+                        break;
+                    case 'checking':
+                        statusElement.innerHTML = `
+                            <span>🔄</span>
+                            <span>Checking MCP+gRPC Status...</span>
+                            <div style="font-size: 8px; color: #ff9800; margin-top: 2px;">
+                                Verifying Universal API Bridge
+                            </div>
+                        `;
+                        statusElement.style.color = '#ff9800';
+                        break;
+                    default:
+                        statusElement.innerHTML = `
+                            <span>🔗</span>
+                            <span>Bridge Disconnected</span>
+                            <div style="font-size: 8px; color: #666; margin-top: 2px;">
+                                Universal API Bridge offline
+                            </div>
+                        `;
+                        statusElement.style.color = '#666';
+                }
+                
+                this.log(`🔄 Bridge status updated to: ${status}`);
+            }
+
+            showBridgeError(message) {
+                try {
+                    const container = this.safeGetElement('tableContainer');
+                    if (!container) return;
+                    
+                    const sanitizedMessage = this.sanitizeHTML(message);
+                    
+                    container.innerHTML = `
+                        <div class="error-state" style="margin: 15px; padding: 15px;">
+                            <h3>🌉 Universal API Bridge Connection Error</h3>
+                            <p><strong>Cannot connect to Universal API Bridge at localhost:8001</strong></p>
+                            <p>Error: ${sanitizedMessage}</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul style="text-align: left; margin: 8px 0; font-size: 10px;">
+                                <li>Start the Universal API Bridge: <code>python -m universal_api_bridge</code></li>
+                                <li>Verify bridge is running: <code>curl http://localhost:8001/health</code></li>
+                                <li>Check bridge service registration</li>
+                                <li>Ensure Polygon.io service is configured in the bridge</li>
+                            </ul>
+                            <p><em>The bridge provides REST→gRPC→External API routing with optimizations.</em></p>
+                        </div>
+                    `;
+                } catch (error) {
+                    this.log(`❌ Error showing bridge error: ${error.message}`);
+                }
+            }
+
+
+
+            async makeBridgeApiCall(name, endpoint, handlerName) {
+                const requestId = `bridge_${name}_${Date.now()}`;
+                this.activeRequests.add(requestId);
+                
+                // 🚀 OPTIMIZATION: Performance measurement
+                const measureName = `api_call_${name}`;
+                performance.mark(`${measureName}_start`);
+                
+                const startTime = performance.now();
+                let response = null;
+                
+                try {
+                    this.recordBridgeCall();
+                    this.log(`📤 Making Universal Bridge call: ${name}`);
+                    
+                    // Call through Universal API Bridge with Polygon.io parameters
+                    const bridgeEndpoint = `${this.bridgeUrl}/api/${this.serviceName}/${endpoint}`;
+                    
+                    // ✅ FIX: Properly handle URL construction to avoid double ?
+                    const hasQueryParams = endpoint.includes('?');
+                    const separator = hasQueryParams ? '&' : '?';
+                    const fullUrl = `${bridgeEndpoint}${separator}apikey=${this.apiKey}`;
+                    
+                    this.log(`🔗 Bridge URL: ${bridgeEndpoint}`);
+                    this.log(`🎯 Full URL: ${fullUrl}`);
+                    
+                    response = await fetch(fullUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-Bridge-Client': 'polygon-dashboard-v3',
+                            'X-Service-Name': this.serviceName
+                        },
+                        signal: AbortSignal.timeout(15000)
+                    });
+
+                    if (!response.ok) {
+                        let errorText = '';
+                        try {
+                            errorText = await response.text();
+                        } catch (textError) {
+                            errorText = `Could not read error response: ${textError.message}`;
+                        }
+                        
+                        this.log(`❌ Bridge HTTP ${response.status}: ${response.statusText}`);
+                        this.log(`📄 Bridge error response: ${errorText.substring(0, 150)}...`);
+                        throw new Error(`Bridge Error ${response.status}: ${response.statusText}`);
+                    }
+
+                    let responseData = null;
+                    try {
+                        const responseText = await response.text();
+                        if (responseText.trim()) {
+                            responseData = JSON.parse(responseText);
+                        } else {
+                            throw new Error('Empty response from bridge');
+                        }
+                    } catch (jsonError) {
+                        this.log(`❌ Bridge JSON parsing error: ${jsonError.message}`);
+                        throw new Error(`Invalid JSON response from bridge: ${jsonError.message}`);
+                    }
+
+                    const responseTime = performance.now() - startTime;
+                    
+                    // 🚀 OPTIMIZATION: Use new performance tracking
+                    this.recordResponseTime(responseTime);
+                    
+                    // 🚀 OPTIMIZATION: Performance measurement
+                    performance.mark(`${measureName}_end`);
+                    performance.measure(measureName, `${measureName}_start`, `${measureName}_end`);
+                    
+                    this.log(`✅ Bridge call successful: ${name} (${responseTime.toFixed(1)}ms)`);
+                    this.stats.successCalls++;
+
+                    // 🔧 FIXED: Process response data immediately  
+                    console.log('📊 Processing API response for:', name, 'Data:', responseData);
+                    this.log(`📊 Processing API response for: ${name}`);
+                    
+                    const bridgeMetadata = {
+                        responseTime: responseTime,
+                        architecture: 'Universal API Bridge V3',
+                        processing_time_us: responseTime * 1000,
+                        endpoint: name,
+                        success: true
+                    };
+                    
+                    // 🔧 TEST: Add extensive debugging for data routing
+                    console.log('🔍 DEBUGGING - API Response received:', {
+                        name: name,
+                        endpoint: endpoint,
+                        dataKeys: responseData ? Object.keys(responseData) : 'no data',
+                        dataType: typeof responseData,
+                        hasResults: responseData && responseData.results ? responseData.results.length : 'no results'
+                    });
+                    
+                    this.log(`🔍 DEBUGGING - Processing response for: ${name} | Endpoint: ${endpoint}`);
+                    
+                    // Route data to appropriate handler based on endpoint type
+                    try {
+                        if (name.includes('ticker') || endpoint.includes('reference/tickers')) {
+                            this.log(`📋 → Routing to handleTickerList`);
+                            console.log('📋 → Calling handleTickerList with data:', responseData);
+                            this.handleTickerList(responseData, name, bridgeMetadata);
+                        } else if (name.includes('agg') || endpoint.includes('aggs/ticker')) {
+                            this.log(`📈 → Routing to handleAggregateData`);
+                            console.log('📈 → Calling handleAggregateData with data:', responseData);
+                            this.handleAggregateData(responseData, name, bridgeMetadata);
+                        } else if (name.includes('market') || endpoint.includes('marketstatus')) {
+                            this.log(`🏛️ → Routing to handleMarketStatus`);
+                            console.log('🏛️ → Calling handleMarketStatus with data:', responseData);
+                            this.handleMarketStatus(responseData, name, bridgeMetadata);
+                        } else {
+                            this.log(`📊 → Routing to handleGenericData (fallback)`);
+                            console.log('📊 → Calling handleGenericData with data:', responseData);
+                            this.handleGenericData(responseData, name, bridgeMetadata);
+                        }
+                        
+                        this.log(`✅ Handler routing completed for: ${name}`);
+                        
+                    } catch (handlerError) {
+                        console.error('❌ Handler error:', handlerError);
+                        this.log(`❌ Data handler error: ${handlerError.message}`);
+                        this.log(`❌ Handler error stack: ${handlerError.stack}`);
+                    }
+
+                    return responseData;
+
+                } catch (error) {
+                    const responseTime = performance.now() - startTime;
+                    
+                    // 🚀 OPTIMIZATION: Track failed request performance too
+                    this.recordResponseTime(responseTime);
+                    
+                    // 🚀 OPTIMIZATION: Performance measurement for errors
+                    performance.mark(`${measureName}_error`);
+                    performance.measure(`${measureName}_error`, `${measureName}_start`, `${measureName}_error`);
+                    
+                    this.stats.errorCalls++;
+                    this.log(`❌ Bridge call failed: ${name} - ${error.message} (${responseTime.toFixed(1)}ms)`);
+                    console.error('❌ Bridge call failed:', name, error);
+                    
+                    // 🔧 FIXED: Direct error state update
+                    try {
+                        this.updateErrorState(error.message, name);
+                    } catch (errorUpdateError) {
+                        this.log(`⚠️ Error updating error state: ${errorUpdateError.message}`);
+                    }
+                    
+                    throw error;
+                } finally {
+                    this.activeRequests.delete(requestId);
+                    
+                    // 🔧 FIXED: Direct UI update
+                    try {
+                        this.updateUI();
+                    } catch (uiUpdateError) {
+                        this.log(`⚠️ UI update warning: ${uiUpdateError.message}`);
+                    }
+                    
+                    // Clean up performance marks
+                    try {
+                        performance.clearMarks(`${measureName}_start`);
+                        performance.clearMarks(`${measureName}_end`);
+                        performance.clearMarks(`${measureName}_error`);
+                        performance.clearMeasures(measureName);
+                        performance.clearMeasures(`${measureName}_error`);
+                    } catch (e) {
+                        // Ignore cleanup errors
+                    }
+                }
+            }
+
+            // 🚀 OPTIMIZATION: New optimized error state handler
+            updateErrorState(errorMessage, endpointName) {
+                const errorDisplay = this.getCachedElement('errorDisplay');
+                if (errorDisplay) {
+                    errorDisplay.textContent = `Error in ${endpointName}: ${errorMessage}`;
+                    errorDisplay.classList.add('error-highlight');
+                    
+                    // Auto-clear error after 5 seconds
+                    setTimeout(() => {
+                        errorDisplay.classList.remove('error-highlight');
+                    }, 5000);
+                }
+            }
+
+            recordBridgeCall() {
+                this.stats.totalBridgeCalls++;
+            }
+
+            recordSuccessfulBridgeCall(responseTime) {
+                try {
+                    this.stats.successCalls++;
+                    this.stats.responseTimes.push(responseTime);
+                    
+                    if (this.stats.responseTimes.length > 50) {
+                        this.stats.responseTimes = this.stats.responseTimes.slice(-50);
+                    }
+                    
+                    this.stats.lastUpdate = new Date();
+                    this.updateStatusIndicator('active');
+                } catch (error) {
+                    this.log(`❌ Error recording successful call: ${error.message}`);
+                }
+            }
+
+            recordFailedBridgeCall() {
+                this.stats.errorCalls++;
+            }
+
+            // Data handlers for bridge responses (restored)
+            handleMarketStatus(data, source, bridgeMetadata) {
+                try {
+                    if (data && data.market) {
+                        const market = data.market;
+                        this.marketStatus = market;
+                        
+                        const timestamp = new Date().toLocaleTimeString();
+                        const latency = bridgeMetadata ? `${(bridgeMetadata.processing_time_us/1000).toFixed(1)}ms` : 'N/A';
+                        
+                        // Update market status pill
+                        const statusPill = this.safeGetElement('marketStatusPill');
+                        const sessionElement = this.safeGetElement('marketSession');
+                        
+                        if (statusPill && sessionElement) {
+                            let statusText = 'Market Closed';
+                            let statusClass = 'closed';
+                            
+                            if (market === 'open') {
+                                statusText = 'Market Open';
+                                statusClass = 'open';
+                            } else if (market === 'extended-hours') {
+                                statusText = 'Extended Hours';
+                                statusClass = 'extended';
+                            }
+                            
+                            statusPill.textContent = statusText;
+                            statusPill.className = `market-status-pill ${statusClass}`;
+                            sessionElement.textContent = statusText;
+                        }
+                        
+                        // Update status bar
+                        const statusMarket = this.safeGetElement('statusMarketState');
+                        if (statusMarket) {
+                            statusMarket.textContent = market.charAt(0).toUpperCase() + market.slice(1);
+                        }
+                        
+                        this.log(`📊 Market status: ${market} (${timestamp} - ${latency})`);
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling market status: ${error.message}`);
+                }
+            }
+
+
+
+            handleMarketStatus(data, source, bridgeMetadata) {
+                try {
+                    console.log('🏛️ Processing market status data:', data);
+                    this.log(`🏛️ Market status data received from ${source}`);
+                    
+                    // 🔧 FIX: Extract actual data from bridge response
+                    const actualData = data.data || data; // Bridge wraps data in .data property
+                    console.log('🏛️ Extracted market status actual data:', actualData);
+                    
+                    if (actualData && typeof actualData === 'object') {
+                        // Update market status card
+                        const statusText = actualData.market || 'Unknown';
+                        const statusClass = statusText.toLowerCase() === 'open' ? 'positive' : 'neutral';
+                        this.updateMarketOverviewCard('nasdaq', statusText, 'Market Status', statusClass, true);
+                        
+                        // Reload current tab to show updated data
+                        this.loadTabData(this.activeTab);
+                        
+                        // 🔧 FIX: Also update main stock table immediately
+                        if (this.activeTab === 'overview') {
+                            this.populateMainStockTable();
+                        }
+                        
+                        this.log(`✅ Market status successfully processed: ${statusText}`);
+                    } else {
+                        this.log(`⚠️ Invalid market status format`);
+                        console.log('⚠️ Market status actual data:', actualData);
+                        console.log('⚠️ Original market status bridge data:', data);
+                    }
+                } catch (error) {
+                    console.error('❌ Error processing market status:', error);
+                    this.log(`❌ Error processing market status: ${error.message}`);
+                }
+            }
+
+            handleGenericData(data, source, bridgeMetadata) {
+                this.log(`📊 Generic data received for ${source}: ${this.safeStringify(data).substring(0, 50)}...`);
+                console.log('📊 Generic data:', data);
+            }
+
+            handleMarketHolidays(data, source, bridgeMetadata) {
+                // This handler is no longer used for a single pull
+            }
+
+            updateStockTable(stockData, bridgeMetadata, sourceContext = '') {
+                try {
+                    const tableContainer = this.getCachedElement('tableContainer');
+                    if (!tableContainer) return;
+
+                    // 🚀 OPTIMIZATION: Show loading state during processing
+                    if (!stockData || !Array.isArray(stockData) || stockData.length === 0) {
+                        tableContainer.innerHTML = this.createLoadingState('Processing stock data...');
+                        return;
+                    }
+                    
+                    // 🚀 OPTIMIZATION: Use requestAnimationFrame for smooth rendering
+                    requestAnimationFrame(() => {
+                        let tableHTML = '';
+                        
+                        // Handle different data types from free tier endpoints
+                        const firstItem = stockData[0];
+                        
+                        if (firstItem && firstItem.ticker) {
+                            // This is ticker reference data
+                            tableHTML = this.createTickerReferenceTable(stockData);
+                        } else if (firstItem && (firstItem.o !== undefined || firstItem.c !== undefined)) {
+                            // This is aggregate OHLCV data
+                            const stockSymbol = this.getStockSymbolFromContext(sourceContext);
+                            tableHTML = this.createAggregateDataTable(stockData, stockSymbol);
+                        } else {
+                            tableHTML = '<div class="loading">No data available from free tier endpoints</div>';
+                        }
+
+                        tableContainer.innerHTML = tableHTML;
+                        
+                        // Add bridge metadata info with throttling
+                        this.throttleUpdate('bridge_metadata', () => {
+                            this.addBridgeMetadataInfo(tableContainer, bridgeMetadata);
+                        }, 100);
+                    });
+                    
+                } catch (error) {
+                    this.log(`❌ Error updating stock table: ${error.message}`);
+                }
+            }
+
+            // 🚀 OPTIMIZATION: Create loading state component
+            createLoadingState(message = 'Loading...') {
+                return `
+                    <div class="loading-state" style="
+                        padding: 20px; 
+                        text-align: center; 
+                        color: #666;
+                        font-style: italic;
+                        background: linear-gradient(90deg, #f0f0f0 25%, rgba(255,255,255,0) 50%, #f0f0f0 75%);
+                        background-size: 200% 100%;
+                        animation: shimmer 1.5s infinite;
+                    ">
+                        <div style="margin-bottom: 10px;">⏳</div>
+                        <div>${message}</div>
+                    </div>
+                `;
+            }
+
+            // 🚀 OPTIMIZATION: Modular table creation for better maintainability
+            createTickerReferenceTable(stockData) {
+                let tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Market</th>
+                                <th>Type</th>
+                                <th>Currency</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                stockData.slice(0, 20).forEach((ticker, index) => {
+                    const statusClass = ticker.active ? 'positive' : 'negative';
+                    const rowClass = `data-blink`; // Add blink animation
+                    tableHTML += `
+                        <tr class="${rowClass}" style="animation-delay: ${index * 0.1}s;">
+                            <td class="symbol symbol-highlight">${this.sanitizeHTML(ticker.ticker || 'N/A')}</td>
+                            <td class="name">${this.sanitizeHTML(ticker.name ? ticker.name.substring(0, 25) + '...' : 'N/A')}</td>
+                            <td>${this.sanitizeHTML(ticker.market || 'N/A')}</td>
+                            <td>${this.sanitizeHTML(ticker.type || 'N/A')}</td>
+                            <td>${this.sanitizeHTML(ticker.currency_name || 'USD')}</td>
+                            <td class="${statusClass}">${ticker.active ? 'Active' : 'Inactive'}</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += `</tbody></table>`;
+                return tableHTML;
+            }
+
+            createAggregateDataTable(stockData, stockSymbol) {
+                let tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th colspan="7" style="background: #1976d2; color: white; text-align: center; font-size: 11px; padding: 8px;">
+                                    📈 ${stockSymbol} Stock Data - ${stockData.length} Trading Days
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>Date</th>
+                                <th>Open</th>
+                                <th>High</th>
+                                <th>Low</th>
+                                <th>Close</th>
+                                <th>Volume</th>
+                                <th>Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                // Show last 10 trading days with blinking animation
+                stockData.slice(-10).forEach((bar, index) => {
+                    const date = new Date(bar.t || 0).toLocaleDateString();
+                    const change = bar.o && bar.c ? ((bar.c - bar.o) / bar.o * 100).toFixed(2) : '0.00';
+                    const changeClass = parseFloat(change) >= 0 ? 'positive' : 'negative';
+                    const rowClass = `price-blink`; // Add price blink animation
+                    
+                    tableHTML += `
+                        <tr class="${rowClass}" style="animation-delay: ${index * 0.1}s;">
+                            <td>${date}</td>
+                            <td class="data-blink" style="animation-delay: ${index * 0.15}s;">$${(bar.o || 0).toFixed(2)}</td>
+                            <td class="data-blink" style="animation-delay: ${index * 0.2}s;">$${(bar.h || 0).toFixed(2)}</td>
+                            <td class="data-blink" style="animation-delay: ${index * 0.25}s;">$${(bar.l || 0).toFixed(2)}</td>
+                            <td class="data-blink symbol-highlight" style="animation-delay: ${index * 0.3}s;">$${(bar.c || 0).toFixed(2)}</td>
+                            <td class="data-blink" style="animation-delay: ${index * 0.35}s;">${(bar.v || 0).toLocaleString()}</td>
+                            <td class="${changeClass} data-blink" style="animation-delay: ${index * 0.4}s;">${change >= 0 ? '+' : ''}${change}%</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += `</tbody></table>`;
+                return tableHTML;
+            }
+
+            // 🚀 OPTIMIZATION: Optimized bridge metadata addition
+            addBridgeMetadataInfo(container, bridgeMetadata) {
+                if (!bridgeMetadata) return;
+                
+                const existingMetadata = container.querySelector('.bridge-metadata');
+                if (existingMetadata) {
+                    existingMetadata.remove();
+                }
+                
+                const metadataDiv = document.createElement('div');
+                metadataDiv.className = 'bridge-metadata data-blink';
+                metadataDiv.style.cssText = `
+                    font-size: 8px; color: #666; margin-top: 5px; padding: 4px;
+                    background: #f8f9fa; border-radius: 3px;
+                `;
+                metadataDiv.innerHTML = `
+                    🏗️ Bridge: ${this.sanitizeHTML(bridgeMetadata.architecture || 'Universal API Bridge')} | 
+                    ⚡ Latency: ${(bridgeMetadata.processing_time_us ? bridgeMetadata.processing_time_us/1000 : 0).toFixed(1)}ms | 
+                    🕒 ${new Date().toLocaleTimeString()}
+                `;
+                container.appendChild(metadataDiv);
+            }
+
+            getStockSymbolFromContext(sourceContext) {
+                if (sourceContext.includes('aapl')) return 'AAPL (Apple Inc.)';
+                if (sourceContext.includes('spy')) return 'SPY (SPDR S&P 500 ETF)';
+                if (sourceContext.includes('qqq')) return 'QQQ (Invesco QQQ Trust)';
+                if (sourceContext.includes('ticker_list')) return 'Stock Tickers';
+                if (sourceContext.includes('market_status')) return 'Market Status';
+                return 'Stock Data';
+            }
+
+            updateTickerStream(stockData, sourceContext = '') {
+                try {
+                    const tickerElement = this.safeGetElement('stockTicker');
+                    if (!tickerElement || !stockData || !Array.isArray(stockData)) return;
+
+                    let tickerContent = '';
+                    
+                    // Handle ticker reference data for the stream
+                    if (stockData.length > 0) {
+                        const firstItem = stockData[0];
+                        
+                        if (firstItem && firstItem.ticker) {
+                            // Ticker reference data - show active stocks with blink
+                            const activeStocks = stockData.filter(t => t.active).slice(0, 10);
+                            tickerContent = activeStocks.map((ticker, index) => 
+                                `<div class="ticker-item data-blink" style="animation-delay: ${index * 0.2}s;">
+                                    <span class="ticker-symbol symbol-highlight">${this.sanitizeHTML(ticker.ticker)}</span>
+                                    <span class="ticker-name">${this.sanitizeHTML(ticker.name ? ticker.name.substring(0, 15) + '...' : 'N/A')}</span>
+                                    <span class="ticker-market">${this.sanitizeHTML(ticker.market || 'stocks')}</span>
+                                </div>`
+                            ).join('');
+                        } else if (firstItem && firstItem.c !== undefined) {
+                            // Aggregate data - show price info with stock symbol
+                            const stockSymbol = this.getStockSymbolFromContext(sourceContext);
+                            const latestBars = stockData.slice(-5);
+                            tickerContent = latestBars.map((bar, index) => {
+                                const date = new Date(bar.t || 0).toLocaleDateString();
+                                const price = (bar.c || 0).toFixed(2);
+                                const change = bar.o && bar.c ? ((bar.c - bar.o) / bar.o * 100).toFixed(2) : '0.00';
+                                const changeClass = parseFloat(change) >= 0 ? 'positive' : 'negative';
+                                
+                                return `<div class="ticker-item price-blink" style="animation-delay: ${index * 0.3}s;">
+                                    <span class="ticker-symbol symbol-highlight">${stockSymbol.split(' ')[0]}</span>
+                                    <span class="ticker-price data-blink">$${price}</span>
+                                    <span class="ticker-change ${changeClass}">${change >= 0 ? '+' : ''}${change}%</span>
+                                    <span class="ticker-date">${date}</span>
+                                </div>`;
+                            }).join('');
+                        }
+                    }
+
+                    if (tickerContent) {
+                        tickerElement.innerHTML = tickerContent;
+                    }
+                    
+                } catch (error) {
+                    this.log(`❌ Error updating ticker stream: ${error.message}`);
+                }
+            }
+
+            calculateMarketStatistics(stockData, sourceContext = '') {
+                try {
+                    if (!stockData || !Array.isArray(stockData)) return;
+
+                    const firstItem = stockData[0];
+                    
+                    if (firstItem && firstItem.ticker) {
+                        // Ticker data statistics with blink animations
+                        const activeCount = stockData.filter(t => t.active).length;
+                        const inactiveCount = stockData.length - activeCount;
+                        
+                        this.log(`📊 Market Statistics: ${activeCount} active, ${inactiveCount} inactive tickers`);
+                        
+                        // Update market overview cards with blinking
+                        this.updateMarketOverviewCard('sp500', `${activeCount}`, 'Active Tickers', 'positive', true);
+                        this.updateMarketOverviewCard('dow', `${inactiveCount}`, 'Inactive Tickers', 'negative', true);
+                        this.updateMarketOverviewCard('nasdaq', `${stockData.length}`, 'Total Tickers', 'neutral', true);
+                        this.updateMarketOverviewCard('russell', `${Math.round(activeCount/stockData.length*100)}%`, 'Active Rate', 'positive', true);
+                        
+                    } else if (firstItem && firstItem.c !== undefined) {
+                        // Aggregate data statistics with stock symbol context
+                        const latestBar = stockData[stockData.length - 1];
+                        const previousBar = stockData[stockData.length - 2];
+                        const stockSymbol = this.getStockSymbolFromContext(sourceContext);
+                        
+                        if (latestBar && previousBar) {
+                            const change = ((latestBar.c - previousBar.c) / previousBar.c * 100).toFixed(2);
+                            const changeClass = parseFloat(change) >= 0 ? 'positive' : 'negative';
+                            const price = latestBar.c.toFixed(2);
+                            const volume = latestBar.v ? (latestBar.v / 1000000).toFixed(1) + 'M' : '0';
+                            
+                            // Update cards with stock-specific data and blinking
+                            this.updateMarketOverviewCard('sp500', `$${price}`, `${stockSymbol.split(' ')[0]} Price`, changeClass, true);
+                            this.updateMarketOverviewCard('dow', `${change >= 0 ? '+' : ''}${change}%`, 'Daily Change', changeClass, true);
+                            this.updateMarketOverviewCard('nasdaq', `${volume}`, 'Volume', 'neutral', true);
+                            this.updateMarketOverviewCard('russell', `$${latestBar.h?.toFixed(2) || '0.00'}`, 'Day High', 'positive', true);
+                            
+                            this.log(`📈 ${stockSymbol}: $${price} (${change >= 0 ? '+' : ''}${change}%) Vol: ${volume}`);
+                        }
+                    }
+                    
+                } catch (error) {
+                    this.log(`❌ Error calculating market statistics: ${error.message}`);
+                }
+            }
+
+            updateElementWithMetadata(elementId, value, metadataId, metadata) {
+                try {
+                    const element = this.safeGetElement(elementId);
+                    const metadataElement = this.safeGetElement(metadataId);
+                    
+                    if (element) {
+                        element.textContent = value;
+                        element.parentElement.classList.add('fresh');
+                        setTimeout(() => {
+                            if (element.parentElement) {
+                                element.parentElement.classList.remove('fresh');
+                            }
+                        }, 3000);
+                    }
+                    
+                    if (metadataElement) {
+                        metadataElement.textContent = metadata;
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating element ${elementId}: ${error.message}`);
+                }
+            }
+
+            updateMarketTime() {
+                try {
+                    const now = new Date();
+                    const timeElement = this.safeGetElement('marketTime');
+                    if (timeElement) {
+                        const timeString = now.toLocaleTimeString('en-US', {
+                            timeZone: 'America/New_York',
+                            hour12: true,
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                        timeElement.textContent = `${timeString} ET`;
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating market time: ${error.message}`);
+                }
+            }
+
+            updateLastUpdateTime() {
+                try {
+                    const now = new Date();
+                    const updateElement = this.safeGetElement('tableLastUpdate');
+                    const lastUpdateElement = this.safeGetElement('lastUpdate');
+                    
+                    const timeString = now.toLocaleTimeString();
+                    
+                    if (updateElement) updateElement.textContent = timeString;
+                    if (lastUpdateElement) lastUpdateElement.textContent = timeString;
+                } catch (error) {
+                    this.log(`❌ Error updating last update time: ${error.message}`);
+                }
+            }
+
+            // Rate limiting and statistics
+            // canMakeBridgeCall is no longer needed as calls are managed by executeMarketDataPull
+            // recordBridgeCall is no longer needed as calls are managed by executeMarketDataPull
+            // recordSuccessfulBridgeCall is no longer needed as calls are managed by executeMarketDataPull
+            // recordFailedBridgeCall is no longer needed as calls are managed by executeMarketDataPull
+
+            updateUI() {
+                try {
+                    // Update pull progress bar
+                    const rateFill = this.safeGetElement('rateFill');
+                    const rateText = this.safeGetElement('rateText');
+                    if (rateFill && rateText) {
+                        if (this.cycleActive) {
+                            const progress = (this.currentPullIndex / this.pullsPerCycle) * 100;
+                            rateFill.style.width = `${progress}%`;
+                            rateText.textContent = `${this.currentPullIndex}/${this.pullsPerCycle}`;
+                        } else {
+                            rateFill.style.width = '0%';
+                            rateText.textContent = 'Ready';
+                        }
+                    }
+                    
+                    // Update statistics
+                    const statsMap = {
+                        'totalPulls': this.stats.totalPulls,
+                        'bridgeCalls': this.stats.totalBridgeCalls,
+                        'statusBridgeCalls': this.stats.totalBridgeCalls,
+                        'statusSuccessCalls': this.stats.successCalls,
+                        'statusErrorCalls': this.stats.errorCalls,
+                        'grpcCalls': this.stats.grpcCalls,
+                        'grpcErrors': this.stats.errorCalls,
+                        'parallelCount': this.activeRequests.size,
+                        'mcpQueue': this.activeRequests.size
+                    };
+                    
+                    Object.entries(statsMap).forEach(([elementId, value]) => {
+                        const element = this.safeGetElement(elementId);
+                        if (element) {
+                            element.textContent = value;
+                        }
+                    });
+                    
+                    // Update success rate
+                    const successRate = this.stats.totalBridgeCalls > 0 ? 
+                        ((this.stats.successCalls / this.stats.totalBridgeCalls) * 100).toFixed(1) : '0';
+                    const successRateElement = this.safeGetElement('successRate');
+                    if (successRateElement) {
+                        successRateElement.textContent = `${successRate}%`;
+                    }
+                    
+                    // Update average response time
+                    if (this.stats.responseTimes.length > 0) {
+                        const avgResponse = this.stats.responseTimes.reduce((a, b) => a + b, 0) / this.stats.responseTimes.length;
+                        const avgElement = this.safeGetElement('avgResponse');
+                        if (avgElement) {
+                            avgElement.textContent = `${avgResponse.toFixed(0)}ms`;
+                        }
+                    }
+                    
+                    // Update bridge latency
+                    if (this.stats.lastUpdate) {
+                        const latency = Date.now() - this.stats.lastUpdate.getTime();
+                        const latencyElement = this.safeGetElement('bridgeLatency');
+                        if (latencyElement) {
+                            latencyElement.textContent = `${(latency/1000).toFixed(1)}s`;
+                        }
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating UI: ${error.message}`);
+                }
+            }
+
+            updateStatusIndicator(status) {
+                const indicator = this.safeGetElement('statusIndicator');
+                const statusText = this.safeGetElement('statusText');
+                const polygonStatus = this.safeGetElement('polygonApiStatus');
+                
+                if (indicator) {
+                    indicator.className = 'status-indicator';
+                    
+                    switch (status) {
+                        case 'active':
+                            indicator.classList.add('active');
+                            if (statusText) statusText.textContent = 'Universal Bridge executing pull cycle';
+                            if (polygonStatus) polygonStatus.textContent = 'Active';
+                            break;
+                        case 'error':
+                            indicator.classList.add('error');
+                            if (statusText) statusText.textContent = 'Bridge errors detected';
+                            if (polygonStatus) polygonStatus.textContent = 'Error';
+                            break;
+                        case 'warning':
+                            indicator.classList.add('warning');
+                            if (statusText) statusText.textContent = 'Bridge rate limit approaching';
+                            break;
+                        case 'idle':
+                        default:
+                            if (statusText) statusText.textContent = 'Universal Bridge ready for data pulls';
+                            if (polygonStatus) polygonStatus.textContent = 'Ready';
+                            break;
+                    }
+                }
+            }
+
+            updateMarketOverviewCard(cardId, value, label, statusClass = 'neutral', blink = false) {
+                try {
+                    const valueElement = this.safeGetElement(`${cardId}Value`);
+                    const labelElement = this.safeGetElement(`${cardId}Label`);
+                    
+                    if (valueElement) {
+                        valueElement.textContent = value;
+                        valueElement.className = `overview-value ${statusClass}`;
+                        
+                        if (blink) {
+                            valueElement.classList.add('data-blink');
+                            // Remove blink class after animation completes
+                            setTimeout(() => {
+                                valueElement.classList.remove('data-blink');
+                            }, 600);
+                        }
+                    }
+                    
+                    if (labelElement) {
+                        labelElement.textContent = label;
+                        
+                        if (blink) {
+                            labelElement.classList.add('data-blink');
+                            setTimeout(() => {
+                                labelElement.classList.remove('data-blink');
+                            }, 600);
+                        }
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating market overview card: ${error.message}`);
+                }
+            }
+
+            // Utility functions
+            formatLargeNumber(value) {
+                if (!value || isNaN(value)) return '0';
+                if (value >= 1e12) {
+                    return `${(value / 1e12).toFixed(2)}T`;
+                } else if (value >= 1e9) {
+                    return `${(value / 1e9).toFixed(2)}B`;
+                } else if (value >= 1e6) {
+                    return `${(value / 1e6).toFixed(2)}M`;
+                } else if (value >= 1e3) {
+                    return `${(value / 1e3).toFixed(2)}K`;
+                } else {
+                    return value.toLocaleString();
+                }
+            }
+
+            safeGetElement(elementId) {
+                try {
+                    return document.getElementById(elementId);
+                } catch (error) {
+                    this.log(`⚠️ Error accessing element ${elementId}: ${error.message}`);
+                    return null;
+                }
+            }
+
+            sanitizeHTML(str) {
+                if (typeof str !== 'string') return '';
+                return str.replace(/[&<>"']/g, function(match) {
+                    const escape = {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    };
+                    return escape[match];
+                });
+            }
+
+            safeStringify(obj) {
+                try {
+                    return JSON.stringify(obj);
+                } catch (error) {
+                    return `[Object: ${typeof obj}]`;
+                }
+            }
+
+            // Debug functions
+            toggleDebugPanel() {
+                this.debugEnabled = !this.debugEnabled;
+                const panel = this.safeGetElement('debugPanel');
+                const button = this.safeGetElement('debugToggle');
+                
+                if (this.debugEnabled) {
+                    if (panel) panel.classList.remove('hidden');
+                    if (button) button.textContent = 'Hide Debug';
+                    this.updateDebugLog();
+                } else {
+                    if (panel) panel.classList.add('hidden');
+                    if (button) button.textContent = 'Debug';
+                }
+            }
+
+            log(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] ${message}`;
+                
+                this.debugLog.push(logEntry);
+                if (this.debugLog.length > 100) {
+                    this.debugLog = this.debugLog.slice(-50);
+                }
+                
+                console.log(logEntry);
+                
+                if (this.debugEnabled) {
+                    this.updateDebugLog();
+                }
+            }
+
+            updateDebugLog() {
+                const debugElement = this.safeGetElement('debugLog');
+                if (debugElement) {
+                    debugElement.innerHTML = this.debugLog.slice(-20).join('<br>');
+                    debugElement.scrollTop = debugElement.scrollHeight;
+                }
+            }
+
+            // 📊 V3 TAB DATA LOADING
+            loadTabData(tabName) {
+                this.log(`🔄 Loading data for ${tabName} tab`);
+                
+                switch(tabName) {
+                    case 'overview':
+                        this.loadOverviewData();
+                        break;
+                    case 'tickers':
+                        this.loadTickersData();
+                        break;
+                    case 'analytics':
+                        this.loadAnalyticsData();
+                        break;
+                    case 'comparison':
+                        this.loadComparisonData();
+                        break;
+                    case 'technical':
+                        this.loadTechnicalData();
+                        break;
+                    case 'raw':
+                        this.loadRawData();
+                        break;
+                }
+            }
+
+            loadOverviewData() {
+                console.log('🔄 Loading overview data...');
+                this.log('🔄 Loading overview data...');
+                
+                // Update market analytics with cached data
+                const marketData = this.dataCache.get('ticker_list');
+                const aaplData = this.dataCache.get('aapl_aggregates');
+                const spyData = this.dataCache.get('spy_aggregates');
+                const qqqData = this.dataCache.get('qqq_aggregates');
+                
+                console.log('📊 Cache status:', {
+                    marketData: marketData ? `${marketData.length} tickers` : 'none',
+                    aaplData: aaplData ? `${aaplData.length} bars` : 'none',
+                    spyData: spyData ? `${spyData.length} bars` : 'none',
+                    qqqData: qqqData ? `${qqqData.length} bars` : 'none'
+                });
+                
+                if (marketData) {
+                    this.updateMarketAnalytics(marketData);
+                }
+                
+                if (aaplData || spyData || qqqData) {
+                    this.updatePortfolioMetrics(aaplData, spyData, qqqData);
+                }
+                
+                // 🔧 FIX: Populate main Live Stock Data table
+                this.populateMainStockTable();
+            }
+
+            // 🔧 NEW: Populate the main Live Stock Data table with cached data
+            populateMainStockTable() {
+                const tableContainer = this.safeGetElement('tableContainer');
+                if (!tableContainer) {
+                    console.log('❌ Main table container not found');
+                    return;
+                }
+
+                console.log('📋 Populating main stock table...');
+                this.log('📋 Populating main stock table...');
+
+                // Get all cached data
+                const marketData = this.dataCache.get('ticker_list');
+                const aaplData = this.dataCache.get('aapl_aggregates');
+                const spyData = this.dataCache.get('spy_aggregates');
+                const qqqData = this.dataCache.get('qqq_aggregates');
+
+                let tableHTML = '';
+
+                // Show aggregate data first (AAPL, SPY, QQQ prices)
+                if (aaplData || spyData || qqqData) {
+                    tableHTML += `
+                        <div class="table-section">
+                            <h3 style="color: #1976d2; margin: 10px 0;">📈 Key Stock Prices</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Latest Price</th>
+                                        <th>Daily Change</th>
+                                        <th>Volume</th>
+                                        <th>High</th>
+                                        <th>Low</th>
+                                        <th>Open</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+                    // Add AAPL data
+                    if (aaplData && aaplData.length > 0) {
+                        const latest = aaplData[aaplData.length - 1];
+                        const previous = aaplData[aaplData.length - 2];
+                        let change = 0;
+                        if (previous && latest.c && previous.c) {
+                            change = ((latest.c - previous.c) / previous.c * 100).toFixed(2);
+                        }
+                        const changeClass = change >= 0 ? 'positive' : 'negative';
+
+                        tableHTML += `
+                            <tr class="data-blink">
+                                <td><strong>AAPL</strong></td>
+                                <td class="price-blink">$${latest.c ? latest.c.toFixed(2) : 'N/A'}</td>
+                                <td class="${changeClass}">${change >= 0 ? '+' : ''}${change}%</td>
+                                <td>${latest.v ? latest.v.toLocaleString() : 'N/A'}</td>
+                                <td>$${latest.h ? latest.h.toFixed(2) : 'N/A'}</td>
+                                <td>$${latest.l ? latest.l.toFixed(2) : 'N/A'}</td>
+                                <td>$${latest.o ? latest.o.toFixed(2) : 'N/A'}</td>
+                            </tr>`;
+                    }
+
+                    // Add SPY data
+                    if (spyData && spyData.length > 0) {
+                        const latest = spyData[spyData.length - 1];
+                        const previous = spyData[spyData.length - 2];
+                        let change = 0;
+                        if (previous && latest.c && previous.c) {
+                            change = ((latest.c - previous.c) / previous.c * 100).toFixed(2);
+                        }
+                        const changeClass = change >= 0 ? 'positive' : 'negative';
+
+                        tableHTML += `
+                            <tr class="data-blink">
+                                <td><strong>SPY</strong></td>
+                                <td class="price-blink">$${latest.c ? latest.c.toFixed(2) : 'N/A'}</td>
+                                <td class="${changeClass}">${change >= 0 ? '+' : ''}${change}%</td>
+                                <td>${latest.v ? latest.v.toLocaleString() : 'N/A'}</td>
+                                <td>$${latest.h ? latest.h.toFixed(2) : 'N/A'}</td>
+                                <td>$${latest.l ? latest.l.toFixed(2) : 'N/A'}</td>
+                                <td>$${latest.o ? latest.o.toFixed(2) : 'N/A'}</td>
+                            </tr>`;
+                    }
+
+                    // Add QQQ data
+                    if (qqqData && qqqData.length > 0) {
+                        const latest = qqqData[qqqData.length - 1];
+                        const previous = qqqData[qqqData.length - 2];
+                        let change = 0;
+                        if (previous && latest.c && previous.c) {
+                            change = ((latest.c - previous.c) / previous.c * 100).toFixed(2);
+                        }
+                        const changeClass = change >= 0 ? 'positive' : 'negative';
+
+                        tableHTML += `
+                            <tr class="data-blink">
+                                <td><strong>QQQ</strong></td>
+                                <td class="price-blink">$${latest.c ? latest.c.toFixed(2) : 'N/A'}</td>
+                                <td class="${changeClass}">${change >= 0 ? '+' : ''}${change}%</td>
+                                <td>${latest.v ? latest.v.toLocaleString() : 'N/A'}</td>
+                                <td>$${latest.h ? latest.h.toFixed(2) : 'N/A'}</td>
+                                <td>$${latest.l ? latest.l.toFixed(2) : 'N/A'}</td>
+                                <td>$${latest.o ? latest.o.toFixed(2) : 'N/A'}</td>
+                            </tr>`;
+                    }
+
+                    tableHTML += `</tbody></table></div>`;
+                }
+
+                // Show market tickers
+                if (marketData && marketData.length > 0) {
+                    tableHTML += `
+                        <div class="table-section">
+                            <h3 style="color: #1976d2; margin: 15px 0 10px 0;">📊 Live Market Tickers (First 10)</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticker</th>
+                                        <th>Name</th>
+                                        <th>Market</th>
+                                        <th>Type</th>
+                                        <th>Currency</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+                    // Show first 10 tickers
+                    marketData.slice(0, 10).forEach(ticker => {
+                        const statusClass = ticker.active ? 'positive' : 'neutral';
+                        tableHTML += `
+                            <tr class="data-blink">
+                                <td><strong>${ticker.ticker || 'N/A'}</strong></td>
+                                <td>${ticker.name || 'N/A'}</td>
+                                <td>${ticker.market || 'N/A'}</td>
+                                <td>${ticker.type || 'N/A'}</td>
+                                <td>${ticker.currency_name || 'N/A'}</td>
+                                <td class="${statusClass}">${ticker.active ? 'Active' : 'Inactive'}</td>
+                            </tr>`;
+                    });
+
+                    tableHTML += `</tbody></table></div>`;
+                }
+
+                // If no data available
+                if (!tableHTML) {
+                    tableHTML = `
+                        <div style="padding: 40px; text-align: center; color: #666;">
+                            <div style="font-size: 18px; margin-bottom: 10px;">📊 No Live Stock Data Available</div>
+                            <div>Click "Start 5 Data Pulls" to fetch real-time data via Universal API Bridge</div>
+                        </div>`;
+                }
+
+                tableContainer.innerHTML = tableHTML;
+                
+                // Apply blinking animation
+                setTimeout(() => {
+                    const blinkElements = tableContainer.querySelectorAll('.data-blink, .price-blink');
+                    blinkElements.forEach(el => {
+                        el.classList.add('blink');
+                        setTimeout(() => el.classList.remove('blink'), 1000);
+                    });
+                }, 100);
+
+                console.log('✅ Main stock table populated with data');
+                this.log('✅ Main stock table populated with data');
+
+                // Update last update time
+                const lastUpdateElement = this.safeGetElement('tableLastUpdate');
+                if (lastUpdateElement) {
+                    lastUpdateElement.textContent = new Date().toLocaleTimeString();
+                }
+            }
+
+            loadTickersData() {
+                const tickersContainer = this.safeGetElement('tickersTableContainer');
+                if (!tickersContainer) return;
+                
+                const tickers = this.dataCache.get('ticker_list');
+                if (tickers && Array.isArray(tickers)) {
+                    this.createEnhancedTickerTable(tickers, tickersContainer);
+                } else {
+                    tickersContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No ticker data available. Click "Start Data Pulls" to fetch data.</div>';
+                }
+            }
+
+            loadAnalyticsData() {
+                const analyticsGrid = this.safeGetElement('analyticsGrid');
+                const analyticsTable = this.safeGetElement('analyticsTableContainer');
+                
+                if (analyticsGrid && analyticsTable) {
+                    this.generateComprehensiveAnalytics(analyticsGrid, analyticsTable);
+                }
+            }
+
+            loadComparisonData() {
+                const comparisonContainer = this.safeGetElement('comparisonContainer');
+                if (!comparisonContainer) return;
+                
+                const aaplData = this.dataCache.get('aapl_aggregates');
+                const spyData = this.dataCache.get('spy_aggregates');
+                const qqqData = this.dataCache.get('qqq_aggregates');
+                
+                if (aaplData && spyData && qqqData) {
+                    this.createStockComparison(comparisonContainer, aaplData, spyData, qqqData);
+                } else {
+                    comparisonContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Comparison requires AAPL, SPY, and QQQ data. Start data pulls to enable comparison.</div>';
+                }
+            }
+
+            loadTechnicalData() {
+                const technicalGrid = this.safeGetElement('technicalGrid');
+                const technicalTable = this.safeGetElement('technicalTableContainer');
+                
+                if (technicalGrid && technicalTable) {
+                    this.generateTechnicalAnalysis(technicalGrid, technicalTable);
+                }
+            }
+
+            loadRawData() {
+                const rawContainer = this.safeGetElement('rawDataContainer');
+                if (!rawContainer) return;
+                
+                this.displayRawApiData(rawContainer);
+            }
+
+            // 🔬 COMPREHENSIVE ANALYTICS GENERATION
+            updateMarketAnalytics(marketData) {
+                if (!marketData || !Array.isArray(marketData)) return;
+                
+                const activeStocks = marketData.filter(t => t.active).length;
+                const totalStocks = marketData.length;
+                const marketHealthPercentage = Math.round((activeStocks / totalStocks) * 100);
+                
+                // Update analytics cards
+                this.safeUpdateElement('marketHealthValue', `${marketHealthPercentage}%`);
+                this.safeUpdateElement('activeStocksValue', `${activeStocks}`);
+                this.safeUpdateElement('dataFreshnessValue', new Date().toLocaleTimeString());
+                
+                // Calculate market breadth
+                const marketTypes = {};
+                marketData.forEach(stock => {
+                    const type = stock.type || 'Unknown';
+                    marketTypes[type] = (marketTypes[type] || 0) + 1;
+                });
+                
+                this.analytics.marketData.set('breadth', {
+                    activeStocks,
+                    totalStocks,
+                    healthPercentage: marketHealthPercentage,
+                    types: marketTypes
+                });
+                
+                this.log(`📊 Market Analytics: ${activeStocks}/${totalStocks} active (${marketHealthPercentage}% health)`);
+            }
+
+            updatePortfolioMetrics(aaplData, spyData, qqqData) {
+                if (!aaplData && !spyData && !qqqData) return;
+                
+                const portfolioMetrics = this.calculatePortfolioMetrics(aaplData, spyData, qqqData);
+                this.analytics.stockMetrics.set('portfolio', portfolioMetrics);
+            }
+
+            calculatePortfolioMetrics(aaplData, spyData, qqqData) {
+                const metrics = {
+                    symbols: [],
+                    totalVolume: 0,
+                    avgPrice: 0,
+                    totalReturn: 0,
+                    volatility: 0
+                };
+                
+                [
+                    { symbol: 'AAPL', data: aaplData },
+                    { symbol: 'SPY', data: spyData },
+                    { symbol: 'QQQ', data: qqqData }
+                ].forEach(stock => {
+                    if (stock.data && Array.isArray(stock.data)) {
+                        const latest = stock.data[stock.data.length - 1];
+                        const previous = stock.data[stock.data.length - 2];
+                        
+                        if (latest && previous) {
+                            metrics.symbols.push({
+                                symbol: stock.symbol,
+                                price: latest.c,
+                                change: ((latest.c - previous.c) / previous.c * 100).toFixed(2),
+                                volume: latest.v,
+                                high: latest.h,
+                                low: latest.l
+                            });
+                            
+                            metrics.totalVolume += latest.v || 0;
+                            metrics.avgPrice += latest.c || 0;
+                        }
+                    }
+                });
+                
+                if (metrics.symbols.length > 0) {
+                    metrics.avgPrice = (metrics.avgPrice / metrics.symbols.length).toFixed(2);
+                }
+                
+                return metrics;
+            }
+
+            // 📈 ENHANCED TABLE CREATION METHODS
+            createEnhancedTickerTable(tickers, container) {
+                let tableHTML = `
+                    <table class="enhanced-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Company Name</th>
+                                <th>Market</th>
+                                <th>Type</th>
+                                <th>Currency</th>
+                                <th>Status</th>
+                                <th>Locale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                tickers.forEach((ticker, index) => {
+                    const statusClass = ticker.active ? 'positive' : 'negative';
+                    tableHTML += `
+                        <tr class="data-blink" style="animation-delay: ${index * 0.05}s;">
+                            <td class="symbol-highlight">${this.sanitizeHTML(ticker.ticker || 'N/A')}</td>
+                            <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${this.sanitizeHTML(ticker.name || 'N/A')}</td>
+                            <td>${this.sanitizeHTML(ticker.market || 'N/A')}</td>
+                            <td>${this.sanitizeHTML(ticker.type || 'N/A')}</td>
+                            <td>${this.sanitizeHTML(ticker.currency_name || 'USD')}</td>
+                            <td><span class="${statusClass}">${ticker.active ? 'Active' : 'Inactive'}</span></td>
+                            <td>${this.sanitizeHTML(ticker.locale || 'N/A')}</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += `
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = tableHTML;
+            }
+
+            createStockComparison(container, aaplData, spyData, qqqData) {
+                const stocks = [
+                    { symbol: 'AAPL', name: 'Apple Inc.', data: aaplData, color: '#1976d2' },
+                    { symbol: 'SPY', name: 'SPDR S&P 500 ETF', data: spyData, color: '#388e3c' },
+                    { symbol: 'QQQ', name: 'Invesco QQQ Trust', data: qqqData, color: '#f57c00' }
+                ];
+                
+                let comparisonHTML = '';
+                
+                stocks.forEach(stock => {
+                    if (stock.data && Array.isArray(stock.data)) {
+                        const latest = stock.data[stock.data.length - 1];
+                        const previous = stock.data[stock.data.length - 2];
+                        const monthAgo = stock.data[stock.data.length - 22]; // ~1 month
+                        
+                        if (latest && previous) {
+                            const dailyChange = ((latest.c - previous.c) / previous.c * 100).toFixed(2);
+                            const monthlyChange = monthAgo ? ((latest.c - monthAgo.c) / monthAgo.c * 100).toFixed(2) : 'N/A';
+                            const avgVolume = (stock.data.slice(-5).reduce((sum, bar) => sum + (bar.v || 0), 0) / 5 / 1000000).toFixed(1);
+                            
+                            comparisonHTML += `
+                                <div class="comparison-table">
+                                    <div class="comparison-header" style="background: ${stock.color};">
+                                        ${stock.symbol} - ${stock.name}
+                                    </div>
+                                    <div class="comparison-body">
+                                        <div class="comparison-row">
+                                            <span class="comparison-label">Current Price</span>
+                                            <span class="comparison-value">$${latest.c.toFixed(2)}</span>
+                                        </div>
+                                        <div class="comparison-row">
+                                            <span class="comparison-label">Daily Change</span>
+                                            <span class="comparison-value ${parseFloat(dailyChange) >= 0 ? 'positive' : 'negative'}">${dailyChange >= 0 ? '+' : ''}${dailyChange}%</span>
+                                        </div>
+                                        <div class="comparison-row">
+                                            <span class="comparison-label">Monthly Change</span>
+                                            <span class="comparison-value">${monthlyChange}%</span>
+                                        </div>
+                                        <div class="comparison-row">
+                                            <span class="comparison-label">Day High</span>
+                                            <span class="comparison-value">$${latest.h.toFixed(2)}</span>
+                                        </div>
+                                        <div class="comparison-row">
+                                            <span class="comparison-label">Day Low</span>
+                                            <span class="comparison-value">$${latest.l.toFixed(2)}</span>
+                                        </div>
+                                        <div class="comparison-row">
+                                            <span class="comparison-label">Volume</span>
+                                            <span class="comparison-value">${(latest.v / 1000000).toFixed(1)}M</span>
+                                        </div>
+                                        <div class="comparison-row">
+                                            <span class="comparison-label">Avg Volume (5d)</span>
+                                            <span class="comparison-value">${avgVolume}M</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                });
+                
+                container.innerHTML = comparisonHTML;
+            }
+
+            displayRawApiData(container) {
+                const allData = {
+                    market_status: this.dataCache.get('market_status'),
+                    ticker_list: this.dataCache.get('ticker_list'),
+                    aapl_aggregates: this.dataCache.get('aapl_aggregates'),
+                    spy_aggregates: this.dataCache.get('spy_aggregates'),
+                    qqq_aggregates: this.dataCache.get('qqq_aggregates')
+                };
+                
+                let rawHTML = '<div style="padding: 10px;">';
+                
+                Object.entries(allData).forEach(([key, value]) => {
+                    rawHTML += `
+                        <div style="margin-bottom: 20px; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden;">
+                            <div style="background: #f5f5f5; padding: 10px; font-weight: bold; color: #1976d2;">
+                                📊 ${key.toUpperCase().replace('_', ' ')}
+                            </div>
+                            <div style="padding: 10px; max-height: 300px; overflow-y: auto; background: #fafafa;">
+                                <pre style="margin: 0; font-size: 9px; color: #333; white-space: pre-wrap; word-wrap: break-word;">${value ? this.safeStringify(value, null, 2) : 'No data available'}</pre>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                rawHTML += '</div>';
+                container.innerHTML = rawHTML;
+            }
+
+            // 🔧 FIXED DATA HANDLER - Handle bridge data structure
+            handleTickerList(data, source, bridgeMetadata) {
+                try {
+                    console.log('📊 Processing ticker list data:', data);
+                    
+                    // 🔧 FIX: Extract actual data from bridge response
+                    const actualData = data.data || data; // Bridge wraps data in .data property
+                    console.log('📊 Extracted actual data:', actualData);
+                    
+                    if (actualData && actualData.results && Array.isArray(actualData.results)) {
+                        const tickers = actualData.results;
+                        this.log(`📊 Ticker list: ${tickers.length} tickers received!`);
+                        console.log('📊 Tickers sample:', tickers.slice(0, 3)); // Log first 3 for debugging
+                        
+                        // Store data in cache
+                        this.dataCache.set('ticker_list', tickers);
+                        
+                        // 🚀 V3: Update overview cards immediately with real data
+                        this.updateMarketOverviewCard('sp500', `${tickers.length}`, 'Live Tickers', 'positive', true);
+                        this.updateMarketOverviewCard('dow', `${tickers.filter(t => t.active).length}`, 'Active Stocks', 'positive', true);
+                        this.updateMarketOverviewCard('nasdaq', `${tickers.filter(t => t.market === 'stocks').length}`, 'Stock Market', 'neutral', true);
+                        this.updateMarketOverviewCard('russell', '📈 Live', 'Data Status', 'positive', true);
+                        
+                        // Reload current tab to show the new data
+                        this.loadTabData(this.activeTab);
+                        
+                        // 🔧 FIX: Also update main stock table immediately
+                        if (this.activeTab === 'overview') {
+                            this.populateMainStockTable();
+                        }
+                        
+                        // Update analytics if available
+                        try {
+                            this.updateMarketAnalytics(tickers);
+                        } catch (analyticsError) {
+                            this.log(`⚠️ Analytics update warning: ${analyticsError.message}`);
+                        }
+                        
+                        this.log(`✅ Ticker data successfully processed and displayed!`);
+                        
+                    } else {
+                        this.log(`⚠️ Invalid ticker data format: ${this.safeStringify(actualData).substring(0, 100)}...`);
+                        console.log('⚠️ Full actual data received:', actualData);
+                        console.log('⚠️ Original bridge data received:', data);
+                    }
+                } catch (error) {
+                    console.error('❌ Error processing ticker list:', error);
+                    this.log(`❌ Error processing ticker list: ${error.message}`);
+                }
+            }
+
+            handleAggregateData(data, source, bridgeMetadata) {
+                try {
+                    console.log('📊 Processing aggregate data:', data, 'source:', source);
+                    
+                    // 🔧 FIX: Extract actual data from bridge response
+                    const actualData = data.data || data; // Bridge wraps data in .data property
+                    console.log('📊 Extracted aggregate actual data:', actualData);
+                    
+                    if (actualData && actualData.results && Array.isArray(actualData.results)) {
+                        const aggregates = actualData.results;
+                        this.log(`📊 Aggregate data for ${source}: ${aggregates.length} bars received!`);
+                        this.dataCache.set(source, aggregates);
+                        
+                        // Process price data and display immediately
+                        if (aggregates.length > 0) {
+                            const latestBar = aggregates[aggregates.length - 1];
+                            const previousBar = aggregates[aggregates.length - 2];
+                            
+                            if (latestBar) {
+                                const symbol = source.includes('aapl') ? 'AAPL' : 
+                                             source.includes('spy') ? 'SPY' : 
+                                             source.includes('qqq') ? 'QQQ' : 'STOCK';
+                                const price = latestBar.c ? latestBar.c.toFixed(2) : '0.00';
+                                const volume = latestBar.v || 0;
+                                const high = latestBar.h ? latestBar.h.toFixed(2) : price;
+                                
+                                let change = 0;
+                                if (previousBar && latestBar.c && previousBar.c) {
+                                    change = ((latestBar.c - previousBar.c) / previousBar.c * 100).toFixed(2);
+                                }
+                                
+                                this.log(`📈 ${symbol}: $${price} (${change >= 0 ? '+' : ''}${change}%) Vol: ${volume}`);
+                                
+                                // 🚀 V3: Update overview cards with real stock data
+                                const changeClass = change >= 0 ? 'positive' : 'negative';
+                                if (symbol === 'AAPL') {
+                                    this.updateMarketOverviewCard('sp500', `$${price}`, 'AAPL Price', changeClass, true);
+                                    this.updateMarketOverviewCard('dow', `${change >= 0 ? '+' : ''}${change}%`, 'AAPL Change', changeClass, true);
+                                } else if (symbol === 'SPY') {
+                                    this.updateMarketOverviewCard('nasdaq', `$${price}`, 'SPY Price', changeClass, true);
+                                } else if (symbol === 'QQQ') {
+                                    this.updateMarketOverviewCard('russell', `$${price}`, 'QQQ Price', changeClass, true);
+                                }
+                            }
+                        }
+                        
+                                                // Reload current tab to show the new data
+                        this.loadTabData(this.activeTab);
+
+                        // 🔧 FIX: Also update main stock table immediately
+                        if (this.activeTab === 'overview') {
+                            this.populateMainStockTable();
+                        }
+
+                        // Update analytics if available
+                        try {
+                            this.updatePortfolioMetrics();
+                        } catch (analyticsError) {
+                            this.log(`⚠️ Portfolio metrics warning: ${analyticsError.message}`);
+                        }
+
+                        this.log(`✅ Aggregate data successfully processed and displayed!`);
+                        
+                    } else {
+                        this.log(`⚠️ Invalid aggregate data format: ${this.safeStringify(actualData).substring(0, 100)}...`);
+                        console.log('⚠️ Full aggregate actual data received:', actualData);
+                        console.log('⚠️ Original aggregate bridge data received:', data);
+                    }
+                } catch (error) {
+                    console.error('❌ Error processing aggregate data:', error);
+                    this.log(`❌ Error handling aggregate data: ${error.message}`);
+                }
+            }
+
+            // 🛠️ UTILITY FUNCTIONS for V3
+            safeUpdateElement(elementId, value) {
+                const element = this.safeGetElement(elementId);
+                if (element) {
+                    element.textContent = value;
+                    element.classList.add('data-blink');
+                    setTimeout(() => {
+                        element.classList.remove('data-blink');
+                    }, 600);
+                }
+            }
+
+            // 🔬 MISSING V3 ANALYTICS FUNCTIONS
+            generateComprehensiveAnalytics(analyticsGrid, analyticsTable) {
+                // Generate comprehensive analytics view
+                if (analyticsGrid) {
+                    const marketData = this.dataCache.get('ticker_list');
+                    const aaplData = this.dataCache.get('aapl_aggregates');
+                    const spyData = this.dataCache.get('spy_aggregates');
+                    const qqqData = this.dataCache.get('qqq_aggregates');
+                    
+                    let analyticsHTML = '';
+                    
+                    if (marketData && Array.isArray(marketData)) {
+                        const activeStocks = marketData.filter(t => t.active).length;
+                        const totalStocks = marketData.length;
+                        const marketTypes = {};
+                        marketData.forEach(stock => {
+                            const type = stock.type || 'Unknown';
+                            marketTypes[type] = (marketTypes[type] || 0) + 1;
+                        });
+                        
+                        analyticsHTML += `
+                            <div class="analytics-card">
+                                <div class="analytics-card-title">Market Breadth</div>
+                                <div class="analytics-card-value">${activeStocks}/${totalStocks}</div>
+                                <div class="analytics-card-subtitle">Active vs Total Stocks</div>
+                            </div>
+                        `;
+                        
+                        // Add stock type breakdown
+                        Object.entries(marketTypes).forEach(([type, count]) => {
+                            analyticsHTML += `
+                                <div class="analytics-card">
+                                    <div class="analytics-card-title">${type}</div>
+                                    <div class="analytics-card-value">${count}</div>
+                                    <div class="analytics-card-subtitle">Securities Count</div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    if (aaplData || spyData || qqqData) {
+                        const portfolioMetrics = this.calculatePortfolioMetrics(aaplData, spyData, qqqData);
+                        
+                        analyticsHTML += `
+                            <div class="analytics-card">
+                                <div class="analytics-card-title">Portfolio Size</div>
+                                <div class="analytics-card-value">${portfolioMetrics.symbols.length}</div>
+                                <div class="analytics-card-subtitle">Tracked Securities</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-card-title">Avg Price</div>
+                                <div class="analytics-card-value">$${portfolioMetrics.avgPrice}</div>
+                                <div class="analytics-card-subtitle">Portfolio Average</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-card-title">Total Volume</div>
+                                <div class="analytics-card-value">${(portfolioMetrics.totalVolume / 1000000).toFixed(1)}M</div>
+                                <div class="analytics-card-subtitle">Combined Trading Volume</div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (analyticsHTML) {
+                        analyticsGrid.innerHTML = analyticsHTML;
+                    } else {
+                        analyticsGrid.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No analytics data available. Start data pulls to generate analytics.</div>';
+                    }
+                }
+                
+                // Generate analytics table
+                if (analyticsTable) {
+                    this.createAnalyticsTable(analyticsTable);
+                }
+            }
+
+            generateTechnicalAnalysis(technicalGrid, technicalTable) {
+                // Generate technical analysis view
+                if (technicalGrid) {
+                    const aaplData = this.dataCache.get('aapl_aggregates');
+                    const spyData = this.dataCache.get('spy_aggregates');
+                    const qqqData = this.dataCache.get('qqq_aggregates');
+                    
+                    let technicalHTML = '';
+                    
+                    [
+                        { symbol: 'AAPL', data: aaplData, name: 'Apple Inc.' },
+                        { symbol: 'SPY', data: spyData, name: 'SPDR S&P 500' },
+                        { symbol: 'QQQ', data: qqqData, name: 'Invesco QQQ' }
+                    ].forEach(stock => {
+                        if (stock.data && Array.isArray(stock.data) && stock.data.length > 0) {
+                            const latest = stock.data[stock.data.length - 1];
+                            const previous = stock.data[stock.data.length - 2];
+                            const weekAgo = stock.data[stock.data.length - 7];
+                            
+                            if (latest && previous) {
+                                const dailyChange = ((latest.c - previous.c) / previous.c * 100).toFixed(2);
+                                const weeklyChange = weekAgo ? ((latest.c - weekAgo.c) / weekAgo.c * 100).toFixed(2) : 'N/A';
+                                const volatility = this.calculateVolatility(stock.data.slice(-20));
+                                const rsi = this.calculateRSI(stock.data.slice(-14));
+                                
+                                technicalHTML += `
+                                    <div class="analytics-card">
+                                        <div class="analytics-card-title">${stock.symbol} RSI</div>
+                                        <div class="analytics-card-value">${rsi.toFixed(1)}</div>
+                                        <div class="analytics-card-subtitle">Relative Strength Index</div>
+                                    </div>
+                                    <div class="analytics-card">
+                                        <div class="analytics-card-title">${stock.symbol} Volatility</div>
+                                        <div class="analytics-card-value">${volatility.toFixed(2)}%</div>
+                                        <div class="analytics-card-subtitle">20-Day Volatility</div>
+                                    </div>
+                                `;
+                            }
+                        }
+                    });
+                    
+                    if (technicalHTML) {
+                        technicalGrid.innerHTML = technicalHTML;
+                    } else {
+                        technicalGrid.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No technical data available. Start data pulls to generate technical indicators.</div>';
+                    }
+                }
+                
+                // Generate technical table
+                if (technicalTable) {
+                    this.createTechnicalTable(technicalTable);
+                }
+            }
+
+            createAnalyticsTable(container) {
+                const marketData = this.dataCache.get('ticker_list');
+                const aaplData = this.dataCache.get('aapl_aggregates');
+                const spyData = this.dataCache.get('spy_aggregates');
+                const qqqData = this.dataCache.get('qqq_aggregates');
+                
+                if (!marketData && !aaplData && !spyData && !qqqData) {
+                    container.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No data available for analytics table.</div>';
+                    return;
+                }
+                
+                let tableHTML = `
+                    <table class="enhanced-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Value</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                if (marketData && Array.isArray(marketData)) {
+                    const activeStocks = marketData.filter(t => t.active).length;
+                    const totalStocks = marketData.length;
+                    const healthPercentage = Math.round((activeStocks / totalStocks) * 100);
+                    
+                    tableHTML += `
+                        <tr class="data-blink">
+                            <td>Market Health</td>
+                            <td class="metric-cell">${healthPercentage}%</td>
+                            <td>Percentage of active stocks</td>
+                            <td><span class="${healthPercentage > 80 ? 'positive' : healthPercentage > 60 ? 'neutral' : 'negative'}">${healthPercentage > 80 ? 'Healthy' : healthPercentage > 60 ? 'Moderate' : 'Weak'}</span></td>
+                        </tr>
+                        <tr class="data-blink">
+                            <td>Active Securities</td>
+                            <td class="metric-cell">${activeStocks}</td>
+                            <td>Currently trading stocks</td>
+                            <td><span class="positive">Active</span></td>
+                        </tr>
+                        <tr class="data-blink">
+                            <td>Total Securities</td>
+                            <td class="metric-cell">${totalStocks}</td>
+                            <td>Total stocks in dataset</td>
+                            <td><span class="neutral">Complete</span></td>
+                        </tr>
+                    `;
+                }
+                
+                const portfolioMetrics = this.calculatePortfolioMetrics(aaplData, spyData, qqqData);
+                if (portfolioMetrics.symbols.length > 0) {
+                    tableHTML += `
+                        <tr class="data-blink">
+                            <td>Portfolio Avg Price</td>
+                            <td class="metric-cell">$${portfolioMetrics.avgPrice}</td>
+                            <td>Average price across tracked stocks</td>
+                            <td><span class="positive">Current</span></td>
+                        </tr>
+                        <tr class="data-blink">
+                            <td>Total Volume</td>
+                            <td class="metric-cell">${(portfolioMetrics.totalVolume / 1000000).toFixed(1)}M</td>
+                            <td>Combined trading volume</td>
+                            <td><span class="positive">Live</span></td>
+                        </tr>
+                    `;
+                }
+                
+                tableHTML += `
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = tableHTML;
+            }
+
+            createTechnicalTable(container) {
+                const aaplData = this.dataCache.get('aapl_aggregates');
+                const spyData = this.dataCache.get('spy_aggregates');
+                const qqqData = this.dataCache.get('qqq_aggregates');
+                
+                if (!aaplData && !spyData && !qqqData) {
+                    container.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No aggregate data available for technical analysis.</div>';
+                    return;
+                }
+                
+                let tableHTML = `
+                    <table class="enhanced-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>RSI (14)</th>
+                                <th>Volatility (20d)</th>
+                                <th>Trend</th>
+                                <th>Signal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                [
+                    { symbol: 'AAPL', data: aaplData },
+                    { symbol: 'SPY', data: spyData },
+                    { symbol: 'QQQ', data: qqqData }
+                ].forEach(stock => {
+                    if (stock.data && Array.isArray(stock.data) && stock.data.length > 14) {
+                        const rsi = this.calculateRSI(stock.data.slice(-14));
+                        const volatility = this.calculateVolatility(stock.data.slice(-20));
+                        const trend = this.calculateTrend(stock.data.slice(-10));
+                        const signal = this.getTechnicalSignal(rsi, trend);
+                        
+                        tableHTML += `
+                            <tr class="data-blink">
+                                <td class="symbol-highlight">${stock.symbol}</td>
+                                <td class="metric-cell">${rsi.toFixed(1)}</td>
+                                <td class="metric-cell">${volatility.toFixed(2)}%</td>
+                                <td class="${trend > 0 ? 'positive' : trend < 0 ? 'negative' : 'neutral'}">${trend > 0 ? 'Bullish' : trend < 0 ? 'Bearish' : 'Neutral'}</td>
+                                <td class="${signal.class}">${signal.text}</td>
+                            </tr>
+                        `;
+                    }
+                });
+                
+                tableHTML += `
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = tableHTML;
+            }
+
+            // 📊 TECHNICAL CALCULATION METHODS
+            calculateVolatility(data) {
+                if (!data || data.length < 2) return 0;
+                
+                const returns = [];
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].c && data[i-1].c) {
+                        returns.push((data[i].c - data[i-1].c) / data[i-1].c);
+                    }
+                }
+                
+                if (returns.length === 0) return 0;
+                
+                const mean = returns.reduce((sum, ret) => sum + ret, 0) / returns.length;
+                const variance = returns.reduce((sum, ret) => sum + Math.pow(ret - mean, 2), 0) / returns.length;
+                
+                return Math.sqrt(variance) * Math.sqrt(252) * 100; // Annualized volatility
+            }
+
+            calculateRSI(data, period = 14) {
+                if (!data || data.length < period + 1) return 50;
+                
+                let gains = 0;
+                let losses = 0;
+                
+                for (let i = 1; i <= period; i++) {
+                    if (data[i] && data[i-1] && data[i].c && data[i-1].c) {
+                        const change = data[i].c - data[i-1].c;
+                        if (change > 0) {
+                            gains += change;
+                        } else {
+                            losses += Math.abs(change);
+                        }
+                    }
+                }
+                
+                const avgGain = gains / period;
+                const avgLoss = losses / period;
+                
+                if (avgLoss === 0) return 100;
+                
+                const rs = avgGain / avgLoss;
+                return 100 - (100 / (1 + rs));
+            }
+
+            calculateTrend(data) {
+                if (!data || data.length < 2) return 0;
+                
+                const recent = data.slice(-5);
+                const earlier = data.slice(-10, -5);
+                
+                const recentAvg = recent.reduce((sum, bar) => sum + (bar.c || 0), 0) / recent.length;
+                const earlierAvg = earlier.reduce((sum, bar) => sum + (bar.c || 0), 0) / earlier.length;
+                
+                return ((recentAvg - earlierAvg) / earlierAvg) * 100;
+            }
+
+            getTechnicalSignal(rsi, trend) {
+                if (rsi > 70 && trend < -2) {
+                    return { text: 'Strong Sell', class: 'negative' };
+                } else if (rsi > 70) {
+                    return { text: 'Overbought', class: 'negative' };
+                } else if (rsi < 30 && trend > 2) {
+                    return { text: 'Strong Buy', class: 'positive' };
+                } else if (rsi < 30) {
+                    return { text: 'Oversold', class: 'positive' };
+                } else if (trend > 3) {
+                    return { text: 'Bullish', class: 'positive' };
+                } else if (trend < -3) {
+                    return { text: 'Bearish', class: 'negative' };
+                } else {
+                    return { text: 'Hold', class: 'neutral' };
+                }
+            }
+
+            // 🚀 OPTIMIZATION: Resource cleanup and memory management
+            cleanup() {
+                // Clear all timeouts
+                this.pullTimeouts.forEach(timeout => clearTimeout(timeout));
+                this.pullTimeouts = [];
+                
+                // Clear all throttled updates
+                this.updateThrottles.forEach(timeout => clearTimeout(timeout));
+                this.updateThrottles.clear();
+                
+                // Clear main timer
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+                
+                // Clear performance observer
+                if (this.performanceObserver) {
+                    this.performanceObserver.disconnect();
+                    this.performanceObserver = null;
+                }
+                
+                // Clear caches with size limits
+                if (this.dataCache.size > 10) {
+                    const keys = Array.from(this.dataCache.keys());
+                    keys.slice(0, -5).forEach(key => this.dataCache.delete(key));
+                }
+                
+                this.log('🧹 Resources cleaned up successfully');
+            }
+
+            // 🚀 OPTIMIZATION: Enhanced keyboard navigation support
+            setupKeyboardNavigation() {
+                document.addEventListener('keydown', (e) => {
+                    // Tab navigation with Ctrl+Number
+                    if (e.ctrlKey && e.key >= '1' && e.key <= '6') {
+                        e.preventDefault();
+                        const tabs = ['overview', 'tickers', 'analytics', 'comparison', 'technical', 'raw'];
+                        const tabIndex = parseInt(e.key) - 1;
+                        if (tabs[tabIndex]) {
+                            this.switchTab(tabs[tabIndex]);
+                        }
+                    }
+                    
+                    // Start pull cycle with Ctrl+Enter
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        e.preventDefault();
+                        if (!this.cycleActive) {
+                            this.startPullCycle();
+                        }
+                    }
+                    
+                    // Toggle debug with Ctrl+D
+                    if (e.ctrlKey && e.key === 'd') {
+                        e.preventDefault();
+                        this.toggleDebugPanel();
+                    }
+                    
+                    // Escape to close debug panel
+                    if (e.key === 'Escape') {
+                        const debugPanel = this.getCachedElement('debugPanel');
+                        if (debugPanel && !debugPanel.classList.contains('hidden')) {
+                            this.toggleDebugPanel();
+                        }
+                    }
+                });
+
+                // Add keyboard navigation hints
+                const keyboardHints = document.createElement('div');
+                keyboardHints.style.cssText = `
+                    position: fixed; bottom: 10px; right: 10px; 
+                    background: rgba(0,0,0,0.8); color: white; 
+                    padding: 8px; border-radius: 4px; font-size: 10px;
+                    opacity: 0; transition: opacity 0.3s ease;
+                    pointer-events: none; z-index: 1000;
+                `;
+                keyboardHints.innerHTML = `
+                    <div>🎹 Keyboard Shortcuts:</div>
+                    <div>Ctrl+1-6: Switch Tabs</div>
+                    <div>Ctrl+Enter: Start Pulls</div>
+                    <div>Ctrl+D: Toggle Debug</div>
+                    <div>Esc: Close Debug</div>
+                `;
+                keyboardHints.id = 'keyboardHints';
+                document.body.appendChild(keyboardHints);
+
+                // Show hints on Alt key
+                document.addEventListener('keydown', (e) => {
+                    if (e.altKey) {
+                        keyboardHints.style.opacity = '1';
+                    }
+                });
+                
+                document.addEventListener('keyup', (e) => {
+                    if (!e.altKey) {
+                        keyboardHints.style.opacity = '0';
+                    }
+                });
+            }
+
+            // 🚀 OPTIMIZATION: Enhanced visibility change handling
+            setupVisibilityHandling() {
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        this.log('📱 Page hidden - pausing non-critical operations');
+                        // Pause animations and reduce update frequency
+                        this.pauseOptimizations = true;
+                        
+                        // Clear pending throttled updates (except critical ones)
+                        this.updateThrottles.forEach((timeout, key) => {
+                            if (!key.includes('critical')) {
+                                clearTimeout(timeout);
+                                this.updateThrottles.delete(key);
+                            }
+                        });
+                    } else {
+                        this.log('👁️ Page visible - resuming normal operations');
+                        this.pauseOptimizations = false;
+                        
+                        // Force UI refresh when becoming visible
+                        requestAnimationFrame(() => {
+                            this.updateUI();
+                            this.loadTabData(this.activeTab);
+                        });
+                    }
+                });
+            }
+
+            // 🚀 OPTIMIZATION: Smart update scheduling based on browser performance
+            smartUpdateScheduler(updateFn, priority = 'normal') {
+                if (this.pauseOptimizations && priority !== 'critical') {
+                    return; // Skip non-critical updates when optimizing
+                }
+                
+                const now = performance.now();
+                const timeSinceLastRender = now - this.lastRenderTime;
+                
+                if (timeSinceLastRender >= this.renderThreshold || priority === 'critical') {
+                    // Browser is idle, execute immediately
+                    requestAnimationFrame(() => {
+                        updateFn();
+                        this.lastRenderTime = performance.now();
+                    });
+                } else {
+                    // Browser is busy, defer update
+                    setTimeout(() => {
+                        requestAnimationFrame(() => {
+                            updateFn();
+                            this.lastRenderTime = performance.now();
+                        });
+                    }, this.renderThreshold - timeSinceLastRender);
+                }
+            }
+
+            // 🚀 REMOVED DUPLICATE - The correct setupEventListeners is above
+        }
+
+        // 🌐 GLOBAL FUNCTIONS for V3
+        function switchTab(tabName) {
+            if (window.polygonDashboard) {
+                window.polygonDashboard.switchTab(tabName);
+            }
+        }
+
+        // Initialize Universal Bridge Stock Dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Dashboard is already initialized at the bottom - this is redundant
+            console.log('DOM loaded - V3 Dashboard already initialized');
+        });
+
+        // Enhanced error handling for bridge operations
+        window.addEventListener('error', (event) => {
+            console.error('Global error in Stock Bridge Dashboard:', event.error);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection in Stock Bridge:', event.reason);
+        });
+
+        // 🎯 V3 COMPREHENSIVE ANALYTICS PLATFORM
+        console.log('🚀 Initializing V3 Dashboard...');
+        window.polygonDashboard = new PolygonBridgeDashboard();
+        
+        // Add delay to ensure DOM is fully loaded
+        setTimeout(() => {
+            console.log('🔧 Starting V3 initialization...');
+            window.polygonDashboard.init();
+        }, 500);
+    </script>
+</body>
+</html> 

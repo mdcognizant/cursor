@@ -253,10 +253,11 @@ class UltraServiceRegistry:
             
             operation_time = time.perf_counter_ns() - start_time
             
-            # Update average discovery latency
-            current_avg = self.registry_metrics['avg_discovery_latency_ns'].value
-            new_avg = (current_avg + operation_time) // 2
-            self.registry_metrics['avg_discovery_latency_ns'].value = new_avg
+            # Update average discovery latency with thread safety
+            with self._registry_metrics_lock:
+                current_avg = self.registry_metrics['avg_discovery_latency_ns']
+                new_avg = (current_avg + operation_time) // 2
+                self.registry_metrics['avg_discovery_latency_ns'] = new_avg
             
             logger.debug(f"Service discovery completed in {operation_time/1000:.1f}μs, found {len(healthy_instances)} instances")
             
@@ -268,14 +269,15 @@ class UltraServiceRegistry:
     
     def get_registry_metrics(self) -> Dict[str, Any]:
         """Get comprehensive registry performance metrics."""
-        return {
-            "total_services": self.registry_metrics['total_services'].value,
-            "total_instances": self.registry_metrics['total_instances'].value,
-            "discovery_operations": self.registry_metrics['discovery_operations'].value,
-            "avg_discovery_latency_us": self.registry_metrics['avg_discovery_latency_ns'].value / 1000,
-            "shard_count": self.shard_count,
-            "registry_version": "ultra_optimized_v2.0"
-        }
+        with self._registry_metrics_lock:
+            return {
+                "total_services": self.registry_metrics['total_services'],
+                "total_instances": self.registry_metrics['total_instances'],
+                "discovery_operations": self.registry_metrics['discovery_operations'],
+                "avg_discovery_latency_us": self.registry_metrics['avg_discovery_latency_ns'] / 1000,
+                "shard_count": self.shard_count,
+                "registry_version": "ultra_optimized_v2.0"
+            }
 
 
 # =====================================================================================
@@ -333,10 +335,11 @@ class UltraLoadBalancer:
             
             decision_time = time.perf_counter_ns() - start_time
             
-            # Update average decision latency
-            current_avg = self.lb_metrics['avg_decision_latency_ns'].value
-            new_avg = (current_avg + decision_time) // 2
-            self.lb_metrics['avg_decision_latency_ns'].value = new_avg
+            # Update average decision latency with thread safety
+            with self._lb_metrics_lock:
+                current_avg = self.lb_metrics['avg_decision_latency_ns']
+                new_avg = (current_avg + decision_time) // 2
+                self.lb_metrics['avg_decision_latency_ns'] = new_avg
             
             logger.debug(f"Load balancing decision completed in {decision_time/1000:.1f}μs")
             
@@ -444,25 +447,7 @@ class UltraMCPLayer:
     def __init__(self, config: Optional[UltraMCPConfig] = None):
         self.config = config or UltraMCPConfig()
         
-        # Initialize service registry with dummy services for testing
-        self.service_registry = {
-            "test": [
-                {"id": "test-1", "host": "localhost", "port": 8001, "health": "healthy", "weight": 1.0},
-                {"id": "test-2", "host": "localhost", "port": 8002, "health": "healthy", "weight": 1.0}
-            ],
-            "api": [
-                {"id": "api-1", "host": "localhost", "port": 8003, "health": "healthy", "weight": 1.0},
-                {"id": "api-2", "host": "localhost", "port": 8004, "health": "healthy", "weight": 1.0}
-            ],
-            "latest": [
-                {"id": "latest-1", "host": "localhost", "port": 8005, "health": "healthy", "weight": 1.0}
-            ]
-        }
-        
-        # Pre-register common test services
-        self._register_test_services()
-        
-        # Initialize core components
+        # Initialize core components FIRST (before any service registration)
         self.service_registry = UltraServiceRegistry(self.config)
         self.load_balancer = UltraLoadBalancer(self.config)
         self.grpc_backend = Phase2UltraOptimizedEngine()
@@ -486,76 +471,140 @@ class UltraMCPLayer:
         self.latency_samples = deque(maxlen=1000)
         self.request_history = deque(maxlen=10000)
         
+        # Register test services to the proper UltraServiceRegistry
+        self._register_test_services_to_registry()
+        
         logger.info("🚀 Ultra-MCP Layer v2.0 initialized")
         logger.info(f"   Target Service Discovery Latency: < {self.config.service_discovery_latency_us}μs")
         logger.info(f"   Target Load Balancing Latency: < {self.config.load_balancing_decision_us}μs")
         logger.info(f"   Mathematical Model Accuracy: {self.config.mathematical_model_accuracy*100}%")
     
-    def _register_test_services(self):
-        """Register dummy services for testing purposes."""
+    def _register_test_services_to_registry(self):
+        """Register test services to the UltraServiceRegistry properly."""
         test_services = [
-            {"service": "test", "instance": "test-instance-1", "endpoint": "http://localhost:8001"},
-            {"service": "api", "instance": "api-instance-1", "endpoint": "http://localhost:8003"},
-            {"service": "latest", "instance": "latest-instance-1", "endpoint": "http://localhost:8005"},
+            {"service": "test", "instance": "test-1", "host": "localhost", "port": 8001},
+            {"service": "test", "instance": "test-2", "host": "localhost", "port": 8002},
+            {"service": "api", "instance": "api-1", "host": "localhost", "port": 8003},
+            {"service": "api", "instance": "api-2", "host": "localhost", "port": 8004},
+            {"service": "latest", "instance": "latest-1", "host": "localhost", "port": 8005},
             {"service": "newsdata", "instance": "newsdata-1", "endpoint": "https://newsdata.io/api/1/latest"},
             {"service": "currents", "instance": "currents-1", "endpoint": "https://api.currentsapi.services/v1/latest-news"},
             {"service": "newsapi", "instance": "newsapi-1", "endpoint": "https://newsapi.org/v2/top-headlines"}
         ]
         
-        for service_info in test_services:
-            if service_info["service"] not in self.service_registry:
-                self.service_registry[service_info["service"]] = []
+        # Use asyncio to register services properly
+        import asyncio
+        
+        async def register_services():
+            for service_info in test_services:
+                # Extract host and port from endpoint if provided
+                if "endpoint" in service_info:
+                    endpoint = service_info["endpoint"]
+                    if "://" in endpoint:
+                        host = endpoint.split("//")[1].split("/")[0].split(":")[0]
+                        port = 443 if "https://" in endpoint else 80
+                    else:
+                        host = endpoint
+                        port = 80
+                else:
+                    host = service_info["host"]
+                    port = service_info["port"]
+                
+                # Create UltraServiceInstance
+                instance = UltraServiceInstance(
+                    id=service_info["instance"],
+                    host=host,
+                    port=port,
+                    protocol="https" if "https://" in service_info.get("endpoint", "") else "http",
+                    weight=1.0,
+                    health_score=1.0
+                )
+                
+                # Register with the service registry
+                try:
+                    await self.service_registry.register_service_instance(service_info["service"], instance)
+                    logger.debug(f"Registered test service: {service_info['service']}:{service_info['instance']}")
+                except Exception as e:
+                    logger.warning(f"Failed to register test service {service_info['service']}: {e}")
+        
+        # Schedule the async registration
+        try:
+            loop = asyncio.get_event_loop()
+            loop.create_task(register_services())
+        except RuntimeError:
+            # If no event loop is running, create one
+            asyncio.create_task(register_services())
+
+    async def register_service(self, service_name: str, instance_id: str, host: str, port: int, 
+                              protocol: str = "grpc", metadata: Dict[str, Any] = None):
+        """Register a service instance with the UltraServiceRegistry."""
+        try:
+            # Create UltraServiceInstance
+            instance = UltraServiceInstance(
+                id=instance_id,
+                host=host,
+                port=port,
+                protocol=protocol,
+                weight=1.0,
+                health_score=1.0
+            )
             
-            self.service_registry[service_info["service"]].append({
-                "id": service_info["instance"],
-                "host": service_info["endpoint"].split("//")[1].split("/")[0].split(":")[0],
-                "port": 80 if "https://" in service_info["endpoint"] else 8080,
+            # Register with the UltraServiceRegistry
+            success = await self.service_registry.register_service_instance(service_name, instance)
+            
+            if success:
+                logger.info(f"Registered service {service_name}:{instance_id} at {host}:{port}")
+            else:
+                logger.error(f"Failed to register service {service_name}:{instance_id}")
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"Service registration failed for {service_name}:{instance_id}: {e}")
+            return False
+
+    async def discover_service(self, service_name: str) -> Optional[Dict[str, Any]]:
+        """Discover and return a healthy service instance using UltraServiceRegistry."""
+        try:
+            # Use the UltraServiceRegistry to discover service instances
+            instances = await self.service_registry.discover_service_instances(service_name)
+            
+            if not instances:
+                logger.warning(f"No instances found for service {service_name}")
+                return None
+            
+            # Filter for healthy instances (health_score > 0.5 indicates healthy)
+            healthy_instances = [
+                instance for instance in instances 
+                if instance.health_score > 0.5
+            ]
+            
+            if not healthy_instances:
+                logger.warning(f"No healthy instances found for service {service_name}")
+                return None
+            
+            # Use power-of-two-choices load balancing
+            if len(healthy_instances) == 1:
+                selected = healthy_instances[0]
+            else:
+                # Select two random instances and pick the one with better mathematical score
+                import random
+                candidates = random.sample(healthy_instances, min(2, len(healthy_instances)))
+                selected = max(candidates, key=lambda x: x.mathematical_score)
+            
+            # Convert UltraServiceInstance to dictionary format for backward compatibility
+            return {
+                "id": selected.id,
+                "host": selected.host,
+                "port": selected.port,
                 "health": "healthy",
-                "weight": 1.0,
-                "endpoint": service_info["endpoint"]
-            })
-
-    def register_service(self, service_name: str, instance_id: str, host: str, port: int, metadata: Dict[str, Any] = None):
-        """Register a service instance."""
-        if service_name not in self.service_registry:
-            self.service_registry[service_name] = []
-        
-        instance = {
-            "id": instance_id,
-            "host": host,
-            "port": port,
-            "health": "healthy",
-            "weight": 1.0,
-            "metadata": metadata or {},
-            "registered_at": time.time()
-        }
-        
-        self.service_registry[service_name].append(instance)
-        logger.info(f"Registered service {service_name}:{instance_id} at {host}:{port}")
-
-    def discover_service(self, service_name: str) -> Optional[Dict[str, Any]]:
-        """Discover and return a healthy service instance."""
-        if service_name not in self.service_registry:
-            logger.warning(f"Service {service_name} not found in registry")
+                "weight": selected.weight,
+                "endpoint": f"{selected.protocol}://{selected.host}:{selected.port}"
+            }
+            
+        except Exception as e:
+            logger.error(f"Service discovery failed for {service_name}: {e}")
             return None
-        
-        healthy_instances = [
-            instance for instance in self.service_registry[service_name] 
-            if instance.get("health") == "healthy"
-        ]
-        
-        if not healthy_instances:
-            logger.warning(f"No healthy instances found for service {service_name}")
-            return None
-        
-        # Use power-of-two-choices load balancing
-        if len(healthy_instances) == 1:
-            return healthy_instances[0]
-        
-        # Select two random instances and pick the one with better weight
-        import random
-        candidates = random.sample(healthy_instances, min(2, len(healthy_instances)))
-        return max(candidates, key=lambda x: x.get("weight", 1.0))
 
     async def route_request(self, service_name: str, request_data: Any, **kwargs) -> Dict[str, Any]:
         """Route a request through the MCP layer with performance tracking."""
@@ -564,7 +613,7 @@ class UltraMCPLayer:
         
         try:
             # Service discovery
-            service_instance = self.discover_service(service_name)
+            service_instance = await self.discover_service(service_name)
             if not service_instance:
                 logger.error(f"MCP request {request_id} failed: No healthy instances found for service: {service_name}")
                 return {
@@ -749,10 +798,11 @@ class UltraMCPLayer:
         total_latency_us = total_latency_ns / 1000
         self.latency_samples.append(total_latency_us)
         
-        # Update average latency
-        current_avg = self.mcp_metrics['avg_request_latency_ns'].value
-        new_avg = (current_avg + total_latency_ns) // 2
-        self.mcp_metrics['avg_request_latency_ns'].value = new_avg
+        # Update average latency with thread safety
+        with self._mcp_metrics_lock:
+            current_avg = self.mcp_metrics['avg_request_latency_ns']
+            new_avg = (current_avg + total_latency_ns) // 2
+            self.mcp_metrics['avg_request_latency_ns'] = new_avg
         
         # Log performance warnings if targets are missed
         if discovery_ns / 1000 > self.config.service_discovery_latency_us:
@@ -773,32 +823,33 @@ class UltraMCPLayer:
         else:
             avg_latency = p99_latency = min_latency = max_latency = 0.0
         
-        total_requests = self.mcp_metrics['total_requests'].value
-        cache_total = self.mcp_metrics['cache_hits'].value + self.mcp_metrics['cache_misses'].value
-        
-        return {
-            "mcp_layer_version": "ultra_optimized_v2.0",
-            "performance_targets": {
-                "service_discovery_target_us": self.config.service_discovery_latency_us,
-                "load_balancing_target_us": self.config.load_balancing_decision_us,
-                "mathematical_model_accuracy": self.config.mathematical_model_accuracy
-            },
-            "request_metrics": {
-                "total_requests": total_requests,
-                "successful_requests": self.mcp_metrics['successful_requests'].value,
-                "failed_requests": self.mcp_metrics['failed_requests'].value,
-                "success_rate": self.mcp_metrics['successful_requests'].value / max(total_requests, 1),
-                "avg_latency_us": avg_latency,
-                "p99_latency_us": p99_latency,
-                "min_latency_us": min_latency,
-                "max_latency_us": max_latency
-            },
-            "cache_metrics": {
-                "cache_hits": self.mcp_metrics['cache_hits'].value,
-                "cache_misses": self.mcp_metrics['cache_misses'].value,
-                "cache_hit_rate": self.mcp_metrics['cache_hits'].value / max(cache_total, 1),
-                "cache_size": len(self.request_cache)
-            },
+        with self._mcp_metrics_lock:
+            total_requests = self.mcp_metrics['total_requests']
+            cache_total = self.mcp_metrics['cache_hits'] + self.mcp_metrics['cache_misses']
+            
+            return {
+                "mcp_layer_version": "ultra_optimized_v2.0",
+                "performance_targets": {
+                    "service_discovery_target_us": self.config.service_discovery_latency_us,
+                    "load_balancing_target_us": self.config.load_balancing_decision_us,
+                    "mathematical_model_accuracy": self.config.mathematical_model_accuracy
+                },
+                "request_metrics": {
+                    "total_requests": total_requests,
+                    "successful_requests": self.mcp_metrics['successful_requests'],
+                    "failed_requests": self.mcp_metrics['failed_requests'],
+                    "success_rate": self.mcp_metrics['successful_requests'] / max(total_requests, 1),
+                    "avg_latency_us": avg_latency,
+                    "p99_latency_us": p99_latency,
+                    "min_latency_us": min_latency,
+                    "max_latency_us": max_latency
+                },
+                "cache_metrics": {
+                    "cache_hits": self.mcp_metrics['cache_hits'],
+                    "cache_misses": self.mcp_metrics['cache_misses'],
+                    "cache_hit_rate": self.mcp_metrics['cache_hits'] / max(cache_total, 1),
+                    "cache_size": len(self.request_cache)
+                },
             "service_registry": self.service_registry.get_registry_metrics(),
             "load_balancer": self.load_balancer.get_load_balancer_metrics(),
             "grpc_backend": self.grpc_backend.get_comprehensive_metrics()

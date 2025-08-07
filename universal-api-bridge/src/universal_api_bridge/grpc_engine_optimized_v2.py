@@ -44,7 +44,27 @@ from dataclasses import dataclass, field
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from urllib.parse import urlparse
-import numpy as np
+# Make numpy optional - CRITICAL: Must not crash if unavailable
+try:
+    import numpy as np
+    NUMPY_AVAILABLE = True
+except ImportError:
+    NUMPY_AVAILABLE = False
+    # Create minimal numpy-like interface for compatibility
+    class _MinimalNumpy:
+        def array(self, data): return data
+        def mean(self, data): return sum(data) / len(data) if data else 0
+        def std(self, data): 
+            if not data: return 0
+            mean_val = sum(data) / len(data)
+            return (sum((x - mean_val) ** 2 for x in data) / len(data)) ** 0.5
+        def percentile(self, data, q): 
+            if not data: return 0
+            sorted_data = sorted(data)
+            k = (len(sorted_data) - 1) * q / 100
+            return sorted_data[int(k)]
+    np = _MinimalNumpy()
+
 from collections import defaultdict, deque
 import statistics
 import math

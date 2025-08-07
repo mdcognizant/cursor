@@ -8,9 +8,19 @@ import sys
 # Add the llm-agent-bridge directory to Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..', 'llm-agent-bridge'))
 
-# Import the generated proto files
-import agent_service_pb2
-import agent_service_pb2_grpc
+# Import the generated proto files (optional for testing)
+try:
+    import agent_service_pb2
+    import agent_service_pb2_grpc
+    GRPC_AVAILABLE = True
+except ImportError:
+    GRPC_AVAILABLE = False
+    # Define minimal fallback classes
+    class MockServicer:
+        pass
+    agent_service_pb2_grpc = type('MockModule', (), {
+        'AgentCommunicationServiceServicer': MockServicer
+    })()
 
 # Monerium API Configuration
 CLIENT_ID = os.environ.get("MONERIUM_CLIENT_ID") or "your_client_id"

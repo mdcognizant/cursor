@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge Connection Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .connected { background: #e8f5e8; color: green; }
+        .disconnected { background: #ffeaea; color: red; }
+        .checking { background: #fff3cd; color: orange; }
+        button { padding: 10px 20px; margin: 10px 0; }
+        #log { background: #f8f9fa; padding: 10px; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>Bridge Connection Fix</h1>
+    <div id="status" class="status disconnected">🔗 Bridge Disconnected</div>
+    <button onclick="testConnection()">Test Bridge Connection</button>
+    <button onclick="fixConnection()">Fix Connection</button>
+    <div id="log"></div>
+
+    <script>
+        let bridgeUrl = 'http://localhost:8001';
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        async function testConnection() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status checking';
+            statusDiv.innerHTML = '🔄 Checking Bridge Connection...';
+            
+            log('🚀 Testing bridge connectivity...');
+            log(`🌐 Bridge URL: ${bridgeUrl}/health`);
+            
+            try {
+                const response = await fetch(`${bridgeUrl}/health`, {
+                    method: 'GET',
+                    headers: { 
+                        'Accept': 'application/json',
+                        'X-Bridge-Client': 'polygon-dashboard-v4',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                
+                log(`📡 Response: ${response.status} ${response.statusText}`);
+                
+                if (response.ok) {
+                    const healthData = await response.json();
+                    statusDiv.className = 'status connected';
+                    statusDiv.innerHTML = '✅ Bridge Connected';
+                    
+                    log('✅ Bridge connection successful!');
+                    log(`📊 Status: ${healthData.status}`);
+                    log(`📊 Service: ${healthData.service}`);
+                    log(`📊 Port: ${healthData.port}`);
+                    
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                statusDiv.className = 'status disconnected';
+                statusDiv.innerHTML = '❌ Bridge Connection Failed';
+                
+                log(`❌ Connection failed: ${error.message}`);
+                
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    log('🔍 Possible causes:');
+                    log('   • Server not running on port 8001');
+                    log('   • CORS blocking the request');
+                    log('   • Network connectivity issue');
+                }
+                
+                return false;
+            }
+        }
+        
+        async function fixConnection() {
+            log('🔧 Attempting to fix bridge connection...');
+            
+            // Test multiple connection methods
+            const methods = [
+                { name: 'Standard Health Check', url: `${bridgeUrl}/health` },
+                { name: 'Services Endpoint', url: `${bridgeUrl}/api/services` },
+                { name: 'No-Cache Health Check', url: `${bridgeUrl}/health?t=${Date.now()}` }
+            ];
+            
+            for (const method of methods) {
+                log(`🧪 Testing: ${method.name}`);
+                try {
+                    const response = await fetch(method.url, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' },
+                        cache: 'no-cache'
+                    });
+                    
+                    if (response.ok) {
+                        log(`✅ ${method.name}: SUCCESS`);
+                        await testConnection(); // Retest main connection
+                        return;
+                    } else {
+                        log(`❌ ${method.name}: Failed (${response.status})`);
+                    }
+                } catch (error) {
+                    log(`❌ ${method.name}: Error - ${error.message}`);
+                }
+            }
+            
+            log('❌ All connection methods failed');
+            log('🔧 Try: 1) Refresh page, 2) Check if server is running, 3) Clear browser cache');
+        }
+        
+        // Auto-test on page load
+        window.onload = () => {
+            log('📄 Bridge Connection Fix page loaded');
+            setTimeout(testConnection, 1000);
+        };
+        
+        // Auto-retry every 5 seconds if disconnected
+        setInterval(() => {
+            const statusDiv = document.getElementById('status');
+            if (statusDiv.className.includes('disconnected')) {
+                log('🔄 Auto-retry connection...');
+                testConnection();
+            }
+        }, 5000);
+    </script>
+</body>
+</html> 

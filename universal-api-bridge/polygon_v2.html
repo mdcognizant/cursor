@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polygon Bridge Dashboard V2 | Optimized Free-Tier Compatible</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: #333;
+            font-size: 11px;
+            line-height: 1.3;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 8px;
+        }
+
+        .bridge-header {
+            background: rgba(26, 35, 126, 0.95);
+            color: white;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .bridge-header strong {
+            color: #64b5f6;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(25, 118, 210, 0.3);
+        }
+
+        .start-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(25, 118, 210, 0.4);
+        }
+
+        .start-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .control-item {
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .control-label {
+            display: block;
+            color: #666;
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+
+        .control-value {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .bridge-status {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 6px;
+            border-radius: 3px;
+            background: #ecf0f1;
+            font-size: 10px;
+        }
+
+        .bridge-status.connected {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .bridge-status.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .rate-monitor {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rate-bar {
+            width: 60px;
+            height: 4px;
+            background: #ecf0f1;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .rate-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #ff9800 50%, #f44336 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .market-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .market-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .market-title h1 {
+            font-size: 18px;
+            color: #1976d2;
+            margin-right: 10px;
+        }
+
+        .market-status-pill {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .market-status-pill.open {
+            background: #4caf50;
+        }
+
+        .market-status-pill.closed {
+            background: #f44336;
+        }
+
+        .market-status-pill.extended {
+            background: #ff9800;
+        }
+
+        .market-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .overview-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #1976d2;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .overview-card.fresh {
+            border-left-color: #4caf50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .overview-card.loading {
+            border-left-color: #ff9800;
+        }
+
+        .overview-card.error {
+            border-left-color: #f44336;
+        }
+
+        .overview-label {
+            font-size: 9px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .overview-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .overview-change {
+            font-size: 9px;
+            margin-top: 1px;
+        }
+
+        .overview-meta {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 8px;
+            color: #999;
+        }
+
+        .ticker-stream {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            height: 28px;
+            position: relative;
+        }
+
+        .ticker {
+            display: flex;
+            align-items: center;
+            animation: scroll 45s linear infinite;
+            white-space: nowrap;
+            height: 100%;
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .ticker-symbol {
+            font-weight: 700;
+            margin-right: 5px;
+            color: #64b5f6;
+        }
+
+        .ticker-price {
+            margin-right: 6px;
+        }
+
+        .ticker-change {
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        .ticker-change.positive {
+            background: #4caf50;
+        }
+
+        .ticker-change.negative {
+            background: #f44336;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
+        }
+
+        .stocks-table {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            background: #1976d2;
+            color: white;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .table-info {
+            font-size: 9px;
+            opacity: 0.9;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 6px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 10px;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .symbol-col { width: 80px; }
+        .name-col { width: 150px; }
+        .price-col { width: 80px; text-align: right; }
+        .change-col { width: 70px; text-align: right; }
+        .volume-col { width: 90px; text-align: right; }
+        .market-cap-col { width: 100px; text-align: right; }
+
+        .stock-symbol {
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .stock-name {
+            color: #666;
+            font-size: 9px;
+        }
+
+        .stock-price {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .change-value {
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 9px;
+        }
+
+        .change-positive {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+
+        .change-negative {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bridge-monitor {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .monitor-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .monitor-item {
+            text-align: center;
+            padding: 6px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .monitor-label {
+            font-size: 8px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .monitor-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .performance-chart {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .chart-container {
+            height: 150px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 10px;
+        }
+
+        .debug-panel {
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            padding: 8px;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .debug-panel.hidden {
+            display: none;
+        }
+
+        .debug-toggle {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            cursor: pointer;
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-width: 280px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.error {
+            background: #f44336;
+        }
+
+        .status-indicator.warning {
+            background: #ff9800;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .bridge-metadata {
+            background: rgba(25, 118, 210, 0.1);
+            color: #1976d2;
+            padding: 4px 6px;
+            border-radius: 3px;
+            font-size: 8px;
+            margin-top: 4px;
+        }
+
+        .positive { color: #4caf50; }
+        .negative { color: #f44336; }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 11px;
+        }
+
+        .error-state {
+            background: #f44336;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 4px 6px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .data-table .symbol, .data-table .name {
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .data-table .market, .data-table .type, .data-table .currency_name, .data-table .status {
+            font-size: 9px;
+            color: #666;
+        }
+
+        .data-table .positive, .data-table .negative {
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        .data-table .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0 10px;
+        }
+
+        .data-table .ticker-name {
+            font-weight: 500;
+            color: #64b5f6;
+        }
+
+        .data-table .ticker-market {
+            font-size: 8px;
+            color: #999;
+        }
+
+        .data-table .ticker-date {
+            font-size: 8px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 4px; }
+            .main-content { grid-template-columns: 1fr; }
+            .control-grid { grid-template-columns: repeat(3, 1fr); }
+            .market-overview { grid-template-columns: repeat(2, 1fr); }
+            th, td { padding: 4px 6px; font-size: 9px; }
+        }
+
+        .data-table .positive {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        .data-table .negative {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        .data-table .neutral {
+            background: #f5f5f5;
+            color: #666;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 9px;
+        }
+
+        /* ✨ BLINKING ANIMATION for updated data */
+        .data-blink {
+            animation: dataUpdate 0.6s ease-in-out;
+        }
+
+        @keyframes dataUpdate {
+            0% { background-color: #fff3cd; transform: scale(1); }
+            50% { background-color: #ffc107; transform: scale(1.02); }
+            100% { background-color: transparent; transform: scale(1); }
+        }
+
+        .price-blink {
+            animation: priceUpdate 0.8s ease-in-out;
+        }
+
+        @keyframes priceUpdate {
+            0% { background-color: #d4edda; color: #155724; }
+            25% { background-color: #28a745; color: white; transform: scale(1.05); }
+            75% { background-color: #28a745; color: white; transform: scale(1.05); }
+            100% { background-color: transparent; color: inherit; transform: scale(1); }
+        }
+
+        .symbol-highlight {
+            font-weight: 800;
+            color: #1976d2;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #90caf9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bridge-header">
+            🏗️ <strong>Universal API Bridge V2 - Free Tier Optimized</strong> - REST Frontend → Ultra-MCP Layer → Phase 2 gRPC Backend | 
+            Bridge Endpoint: <strong>localhost:8001</strong> | 
+            Service: <strong>polygon-stocks</strong> | 
+            ✅ <strong>Compatible with Polygon.io Free Tier (5 calls/min)</strong>
+        </div>
+
+        <div class="control-panel">
+            <div>
+                <div id="pullTimer" style="font-size: 14px; font-weight: bold; color: #1976d2; margin-bottom: 8px; text-align: center;">Ready to Pull Data</div>
+                <button id="startButton" class="start-button">🚀 Start 5 Data Pulls (12s intervals)</button>
+                <button id="debugToggle" class="debug-toggle">Debug</button>
+                <div id="pullProgress" style="font-size: 10px; color: #666; margin-top: 4px; text-align: center;"></div>
+            </div>
+            <div class="control-grid">
+                <div class="control-item">
+                    <span class="control-label">Bridge Status</span>
+                    <div class="bridge-status" id="bridgeStatus">
+                        <span>🔗</span>
+                        <span>Disconnected</span>
+                    </div>
+                </div>
+                <div class="control-item">
+                    <span class="control-label">Pull Progress</span>
+                    <div class="rate-monitor">
+                        <div class="rate-bar">
+                            <div class="rate-fill" id="rateFill"></div>
+                        </div>
+                        <span id="rateText">Ready</span>
+                    </div>
+                </div>
+                <div class="control-item">
+                    <span class="control-label">Active Requests</span>
+                    <span class="control-value" id="parallelCount">0</span>
+                </div>
+                <div class="control-item">
+                    <span class="control-label">Market Session</span>
+                    <span class="control-value" id="marketSession">Checking...</span>
+                </div>
+                <div class="control-item">
+                    <span class="control-label">Total Pulls</span>
+                    <span class="control-value" id="totalPulls">0</span>
+                </div>
+                <div class="control-item">
+                    <span class="control-label">Last Update</span>
+                    <span class="control-value" id="lastUpdate">Never</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="market-header">
+            <div class="market-title">
+                <h1>📈 US Stock Market</h1>
+                <div class="market-status-pill closed" id="marketStatusPill">Market Closed</div>
+                <div style="margin-left: auto; font-size: 10px; color: #666;" id="marketTime">Loading...</div>
+            </div>
+            <div class="market-overview" id="marketOverview">
+                <div class="overview-card">
+                    <div class="overview-meta" id="marketCapMeta"></div>
+                    <div class="overview-label">S&P 500</div>
+                    <div class="overview-value" id="sp500Value">Bridge Not Started</div>
+                    <div class="overview-change" id="sp500Change"></div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-meta" id="dowMeta"></div>
+                    <div class="overview-label">Dow Jones</div>
+                    <div class="overview-value" id="dowValue">Bridge Not Started</div>
+                    <div class="overview-change" id="dowChange"></div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-meta" id="nasdaqMeta"></div>
+                    <div class="overview-label">NASDAQ</div>
+                    <div class="overview-value" id="nasdaqValue">Bridge Not Started</div>
+                    <div class="overview-change" id="nasdaqChange"></div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-meta" id="volumeMeta"></div>
+                    <div class="overview-label">Total Volume</div>
+                    <div class="overview-value" id="totalVolume">Bridge Not Started</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-meta" id="advanceMeta"></div>
+                    <div class="overview-label">Advancing</div>
+                    <div class="overview-value" id="advancingStocks">Bridge Not Started</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-meta" id="declineMeta"></div>
+                    <div class="overview-label">Declining</div>
+                    <div class="overview-value" id="decliningStocks">Bridge Not Started</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticker-stream">
+            <div class="ticker" id="stockTicker">
+                <div class="ticker-item">Click "Pull Market Data" to fetch live stock data via Universal API Bridge...</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="stocks-table">
+                <div class="table-header">
+                    <div class="table-title">Live Stock Data (via Universal Bridge)</div>
+                    <div class="table-info">
+                        <div>Last updated: <span id="tableLastUpdate">Never</span></div>
+                        <div>Bridge latency: <span id="bridgeLatency">-</span></div>
+                        <div>gRPC calls: <span id="grpcCalls">0</span></div>
+                    </div>
+                </div>
+                <div id="tableContainer">
+                    <div class="loading">Click "Pull Market Data" to execute 5 API calls via Universal API Bridge...</div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="bridge-monitor">
+                    <div class="monitor-title">🌉 Bridge Monitor</div>
+                    <div class="monitor-grid">
+                        <div class="monitor-item">
+                            <div class="monitor-label">Success Rate</div>
+                            <div class="monitor-value" id="successRate">0%</div>
+                        </div>
+                        <div class="monitor-item">
+                            <div class="monitor-label">Avg Response</div>
+                            <div class="monitor-value" id="avgResponse">0ms</div>
+                        </div>
+                        <div class="monitor-item">
+                            <div class="monitor-label">MCP Queue</div>
+                            <div class="monitor-value" id="mcpQueue">0</div>
+                        </div>
+                        <div class="monitor-item">
+                            <div class="monitor-label">gRPC Errors</div>
+                            <div class="monitor-value" id="grpcErrors">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="performance-chart">
+                    <div class="chart-title">⚡ Performance Metrics</div>
+                    <div class="chart-container">
+                        <div>Bridge performance visualization will appear here once data flows</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="debug-panel hidden" id="debugPanel">
+            <div id="debugLog">Universal API Bridge V2 Debug Console initialized. Free-tier optimized endpoints.<br>Architecture: REST → MCP → gRPC → Polygon.io | Compatible with free tier limitations</div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-row">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="statusText">Universal Bridge Ready - Click to Pull Data</span>
+            </div>
+            <div class="status-row">
+                <span>Bridge Calls: <span id="statusBridgeCalls">0</span></span>
+                <span>|</span>
+                <span>Success: <span id="statusSuccessCalls">0</span></span>
+                <span>|</span>
+                <span>Errors: <span id="statusErrorCalls">0</span></span>
+            </div>
+            <div class="status-row">
+                <span>Polygon API: <span id="polygonApiStatus">Ready</span></span>
+                <span>|</span>
+                <span>Market: <span id="statusMarketState">Closed</span></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PolygonBridgeDashboard {
+            constructor() {
+                // Universal API Bridge Configuration
+                this.bridgeUrl = 'http://localhost:8001';
+                this.serviceName = 'polygon-stocks';
+                this.apiKey = 'fTcpMTE80ahFJ6SRFz984onpzTkLkAq8'; // Updated API key from user
+                
+                // New pull system: 5 pulls spread over 1 minute
+                this.pullsPerCycle = 5;
+                this.pullIntervalMs = 12000; // 12 seconds between pulls (60s / 5 = 12s)
+                this.cycleActive = false;
+                this.currentPullIndex = 0;
+                this.pullTimeouts = [];
+                this.activeRequests = new Set();
+                
+                // Timing
+                this.lastCycleTime = 0;
+                this.nextCycleTime = 0;
+                this.timerInterval = null;
+                
+                // Statistics
+                this.stats = {
+                    totalCycles: 0,
+                    totalPulls: 0,
+                    totalBridgeCalls: 0,
+                    successCalls: 0,
+                    errorCalls: 0,
+                    responseTimes: [],
+                    lastUpdate: null,
+                    grpcCalls: 0
+                }
+    detectBridgeUrl() {
+        const currentHost = window.location.hostname || 'localhost';
+        const bridgePort = 8001;
+        const bridgeUrl = `http://${currentHost}:${bridgePort}`;
+        console.log(`🔍 Auto-detected bridge URL: ${bridgeUrl}`);
+        return bridgeUrl;
+    }
+;
+                
+                // System state
+                this.bridgeConnected = false;
+                this.dataCache = new Map();
+                this.marketStatus = 'closed';
+                
+                // Debug
+                this.debugEnabled = false;
+                this.debugLog = [];
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.log('🏗️ Universal API Bridge V2 Stock Platform initialized (Free-Tier Optimized)');
+                this.log('🔧 Architecture: REST Frontend → Ultra-MCP → Phase 2 gRPC → Polygon.io');
+                this.log('📊 Pull System: 5 API calls over 1 minute (12s intervals) - FREE TIER COMPATIBLE');
+                this.log('✅ Endpoints: Market Status, Ticker List, AAPL/SPY/QQQ Aggregates (No 403 errors)');
+                this.log('🔗 Bridge URL: ' + this.bridgeUrl);
+                this.log('🎯 API Key: ' + this.apiKey.substring(0, 10) + '...');
+                this.checkBridgeConnectivity();
+                this.updateUI();
+                this.updateMarketTime();
+                setInterval(() => this.updateMarketTime(), 1000);
+                this.startMainTimer();
+                
+                // Add global error handler for debugging
+                window.addEventListener('error', (e) => {
+                    this.log(`❌ JavaScript Error: ${e.message} at ${e.filename}:${e.lineno}`);
+                });
+                
+                // Add unhandled promise rejection handler
+                window.addEventListener('unhandledrejection', (e) => {
+                    this.log(`❌ Unhandled Promise Rejection: ${e.reason}`);
+                });
+            }
+
+            setupEventListeners() {
+                const startButton = this.safeGetElement('startButton');
+                if (startButton) {
+                    startButton.addEventListener('click', () => {
+                        this.startPullCycle();
+                    });
+                }
+
+                const debugToggle = this.safeGetElement('debugToggle');
+                if (debugToggle) {
+                    debugToggle.addEventListener('click', () => {
+                        this.toggleDebugPanel();
+                    });
+                }
+
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        this.log('📱 Page hidden - maintaining bridge connections');
+                    } else {
+                        this.log('👁️ Page visible - resuming operations');
+                    }
+                });
+            }
+
+            async startPullCycle() {
+                if (this.cycleActive) {
+                    this.log('⏱️ Pull cycle already in progress');
+                    return;
+                }
+
+                if (!this.bridgeConnected) {
+                    this.log('❌ Cannot start - Bridge not connected');
+                    await this.checkBridgeConnectivity();
+                    if (!this.bridgeConnected) {
+                        return;
+                    }
+                }
+
+                this.cycleActive = true;
+                this.currentPullIndex = 0;
+                this.lastCycleTime = Date.now();
+                this.nextCycleTime = this.lastCycleTime + 60000; // Next cycle in 1 minute
+                this.stats.totalCycles++;
+
+                this.log('🚀 Starting new pull cycle (5 pulls over 60 seconds)...');
+                
+                // Update button state
+                this.updateButtonForCycle();
+                
+                // Schedule all 5 pulls
+                this.schedulePullSequence();
+                
+                this.updateUI();
+            }
+
+            schedulePullSequence() {
+                // Clear any existing timeouts
+                this.pullTimeouts.forEach(timeout => clearTimeout(timeout));
+                this.pullTimeouts = [];
+
+                // Define 5 endpoints that work with FREE TIER (avoid 403 errors)
+                const endpoints = [
+                    { name: 'market_status', endpoint: 'v1/marketstatus/now', delay: 0 },
+                    { name: 'ticker_list', endpoint: 'v3/reference/tickers?market=stocks&active=true&limit=50', delay: 12000 },
+                    { name: 'aapl_aggregates', endpoint: 'v2/aggs/ticker/AAPL/range/1/day/2024-01-01/2024-12-31', delay: 24000 },
+                    { name: 'spy_aggregates', endpoint: 'v2/aggs/ticker/SPY/range/1/day/2024-01-01/2024-12-31', delay: 36000 },
+                    { name: 'qqq_aggregates', endpoint: 'v2/aggs/ticker/QQQ/range/1/day/2024-01-01/2024-12-31', delay: 48000 }
+                ];
+
+                // Schedule each pull
+                endpoints.forEach((endpointConfig, index) => {
+                    const timeout = setTimeout(async () => {
+                        this.currentPullIndex = index + 1;
+                        await this.executeSinglePull(endpointConfig, index + 1);
+                        
+                        // Check if this was the last pull
+                        if (index === endpoints.length - 1) {
+                            setTimeout(() => this.completePullCycle(), 2000); // Wait 2s after last pull
+                        }
+                    }, endpointConfig.delay);
+
+                    this.pullTimeouts.push(timeout);
+                });
+            }
+
+            async executeSinglePull(endpointConfig, pullNumber) {
+                this.log(`📡 Executing pull ${pullNumber}/5: ${endpointConfig.name}`);
+                
+                try {
+                    const result = await this.makeBridgeApiCall(
+                        endpointConfig.name, 
+                        endpointConfig.endpoint, 
+                        this.getHandlerForEndpoint(endpointConfig.name)
+                    );
+                    
+                    if (result) {
+                        this.stats.totalPulls++;
+                        this.log(`✅ Pull ${pullNumber}/5 completed: ${endpointConfig.name}`);
+                    } else {
+                        this.log(`❌ Pull ${pullNumber}/5 failed: ${endpointConfig.name}`);
+                    }
+                } catch (error) {
+                    this.log(`❌ Pull ${pullNumber}/5 error: ${endpointConfig.name} - ${error.message}`);
+                }
+                
+                this.updatePullProgress(pullNumber);
+                this.updateUI();
+            }
+
+            getHandlerForEndpoint(endpointName) {
+                const handlerMap = {
+                    'market_status': 'handleMarketStatus',
+                    'ticker_list': 'handleTickerList',
+                    'aapl_aggregates': 'handleAggregateData',
+                    'spy_aggregates': 'handleAggregateData',
+                    'qqq_aggregates': 'handleAggregateData'
+                };
+                return handlerMap[endpointName] || 'handleGenericData';
+            }
+
+            updatePullProgress(pullNumber) {
+                const progressElement = this.safeGetElement('pullProgress');
+                if (progressElement) {
+                    const remaining = this.pullsPerCycle - pullNumber;
+                    if (remaining > 0) {
+                        const nextPullSeconds = Math.ceil((remaining * this.pullIntervalMs) / 1000);
+                        progressElement.textContent = `Pull ${pullNumber}/5 complete. Next pull in ${nextPullSeconds}s`;
+                        progressElement.style.color = '#4caf50';
+                    } else {
+                        progressElement.textContent = 'All 5 pulls completed! Waiting for next cycle...';
+                        progressElement.style.color = '#2196f3';
+                    }
+                }
+            }
+
+            completePullCycle() {
+                this.cycleActive = false;
+                this.currentPullIndex = 0;
+                
+                // Clear timeouts
+                this.pullTimeouts.forEach(timeout => clearTimeout(timeout));
+                this.pullTimeouts = [];
+                
+                this.log('✅ Pull cycle completed successfully');
+                this.updateLastUpdateTime();
+                this.updateButtonForReady();
+                this.updateUI();
+            }
+
+            updateButtonForCycle() {
+                const startButton = this.safeGetElement('startButton');
+                if (startButton) {
+                    startButton.textContent = '⏳ Pull Cycle Active...';
+                    startButton.style.background = 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)';
+                    startButton.disabled = true;
+                }
+            }
+
+            updateButtonForReady() {
+                const startButton = this.safeGetElement('startButton');
+                if (startButton) {
+                    startButton.textContent = '🚀 Start 5 Data Pulls (12s intervals)';
+                    startButton.style.background = 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)';
+                    startButton.disabled = false;
+                }
+            }
+
+            startMainTimer() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                }
+                
+                this.timerInterval = setInterval(() => {
+                    this.updateTimer();
+                    this.updateUI();
+                }, 1000);
+            }
+
+            updateTimer() {
+                const timerElement = this.safeGetElement('pullTimer');
+                if (!timerElement) return;
+
+                if (this.cycleActive) {
+                    const elapsed = Date.now() - this.lastCycleTime;
+                    const remaining = Math.max(0, 60000 - elapsed);
+                    const seconds = Math.ceil(remaining / 1000);
+                    
+                    if (remaining > 0) {
+                        timerElement.textContent = `Pull Cycle: ${this.currentPullIndex}/5 | ${seconds}s remaining`;
+                        timerElement.style.color = '#ff9800';
+                    } else {
+                        timerElement.textContent = `Finalizing pull cycle...`;
+                        timerElement.style.color = '#4caf50';
+                    }
+                } else {
+                    timerElement.textContent = 'Ready to Start Next Pull Cycle';
+                    timerElement.style.color = '#1976d2';
+                }
+            }
+
+            async checkBridgeConnectivity() {
+                this.log('🔍 Checking Universal API Bridge connectivity...');
+                
+                try {
+                    const response = await fetch(`${this.bridgeUrl}/health`, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' },
+                        signal: AbortSignal.timeout(5000)
+                    });
+                    
+                    if (response.ok) {
+                        const healthData = await response.json();
+                        this.bridgeConnected = true;
+                        this.log('✅ Universal API Bridge is healthy and accessible');
+                        this.log(`📊 Bridge Health: ${this.safeStringify(healthData).substring(0, 100)}...`);
+                        this.updateBridgeStatus('connected');
+                        
+                        await this.checkServiceRegistration();
+                    } else {
+                        throw new Error(`Bridge health check failed: ${response.status}`);
+                    }
+                } catch (error) {
+                    this.bridgeConnected = false;
+                    this.log(`❌ Bridge connectivity failed: ${error.message}`);
+                    this.updateBridgeStatus('error');
+                    this.showBridgeError(error.message);
+                }
+            }
+
+            async checkServiceRegistration() {
+                try {
+                    const response = await fetch(`${this.bridgeUrl}/api/services`, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' },
+                        signal: AbortSignal.timeout(5000)
+                    });
+                    
+                    if (response.ok) {
+                        const servicesData = await response.json();
+                        const polygonService = servicesData.services?.find(s => s.name === this.serviceName);
+                        
+                        if (polygonService) {
+                            this.log(`✅ Polygon service registered in bridge: ${this.safeStringify(polygonService)}`);
+                        } else {
+                            this.log('⚠️ Polygon service not found in bridge registry');
+                            this.log('💡 Bridge will auto-register service on first request');
+                        }
+                    }
+                } catch (error) {
+                    this.log(`⚠️ Service check failed: ${error.message}`);
+                }
+            }
+
+            updateBridgeStatus(status) {
+                const statusElement = this.safeGetElement('bridgeStatus');
+                if (!statusElement) return;
+                
+                statusElement.className = `bridge-status ${status}`;
+                
+                switch (status) {
+                    case 'connected':
+                        statusElement.innerHTML = '<span>✅</span><span>Connected</span>';
+                        break;
+                    case 'error':
+                        statusElement.innerHTML = '<span>❌</span><span>Error</span>';
+                        break;
+                    default:
+                        statusElement.innerHTML = '<span>🔗</span><span>Disconnected</span>';
+                }
+            }
+
+            showBridgeError(message) {
+                try {
+                    const container = this.safeGetElement('tableContainer');
+                    if (!container) return;
+                    
+                    const sanitizedMessage = this.sanitizeHTML(message);
+                    
+                    container.innerHTML = `
+                        <div class="error-state" style="margin: 15px; padding: 15px;">
+                            <h3>🌉 Universal API Bridge Connection Error</h3>
+                            <p><strong>Cannot connect to Universal API Bridge at localhost:8000</strong></p>
+                            <p>Error: ${sanitizedMessage}</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul style="text-align: left; margin: 8px 0; font-size: 10px;">
+                                <li>Start the Universal API Bridge: <code>python -m universal_api_bridge</code></li>
+                                <li>Verify bridge is running: <code>curl http://localhost:8000/health</code></li>
+                                <li>Check bridge service registration</li>
+                                <li>Ensure Polygon.io service is configured in the bridge</li>
+                            </ul>
+                            <p><em>The bridge provides REST→gRPC→External API routing with optimizations.</em></p>
+                        </div>
+                    `;
+                } catch (error) {
+                    this.log(`❌ Error showing bridge error: ${error.message}`);
+                }
+            }
+
+
+
+            async makeBridgeApiCall(name, endpoint, handlerName) {
+                const requestId = `bridge_${name}_${Date.now()}`;
+                this.activeRequests.add(requestId);
+                
+                const startTime = performance.now();
+                let response = null;
+                
+                try {
+                    this.recordBridgeCall();
+                    this.log(`📤 Making Universal Bridge call: ${name}`);
+                    
+                    // Call through Universal API Bridge with Polygon.io parameters
+                    const bridgeEndpoint = `${this.bridgeUrl}/api/${this.serviceName}/${endpoint}`;
+                    
+                    // ✅ FIX: Properly handle URL construction to avoid double ?
+                    const hasQueryParams = endpoint.includes('?');
+                    const separator = hasQueryParams ? '&' : '?';
+                    const fullUrl = `${bridgeEndpoint}${separator}apikey=${this.apiKey}`;
+                    
+                    this.log(`🔗 Bridge URL: ${bridgeEndpoint}`);
+                    this.log(`🎯 Full URL: ${fullUrl}`);
+                    
+                    response = await fetch(fullUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-Bridge-Client': 'polygon-dashboard-v2',
+                            'X-Service-Name': this.serviceName
+                        },
+                        signal: AbortSignal.timeout(15000)
+                    });
+
+                    if (!response.ok) {
+                        let errorText = '';
+                        try {
+                            errorText = await response.text();
+                        } catch (textError) {
+                            errorText = `Could not read error response: ${textError.message}`;
+                        }
+                        
+                        this.log(`❌ Bridge HTTP ${response.status}: ${response.statusText}`);
+                        this.log(`📄 Bridge error response: ${errorText.substring(0, 150)}...`);
+                        throw new Error(`Bridge Error ${response.status}: ${response.statusText}`);
+                    }
+
+                    let responseData = null;
+                    try {
+                        const responseText = await response.text();
+                        if (responseText.trim()) {
+                            responseData = JSON.parse(responseText);
+                        } else {
+                            throw new Error('Empty response from bridge');
+                        }
+                    } catch (jsonError) {
+                        this.log(`❌ Bridge JSON parsing error: ${jsonError.message}`);
+                        throw new Error(`Invalid JSON response from bridge: ${jsonError.message}`);
+                    }
+
+                    const responseTime = performance.now() - startTime;
+                    
+                    this.recordSuccessfulBridgeCall(responseTime);
+                    this.log(`✅ Bridge ${name} completed in ${responseTime.toFixed(2)}ms`);
+                    
+                    // Log bridge metadata if present
+                    if (responseData && responseData._bridge_metadata) {
+                        const metadata = responseData._bridge_metadata;
+                        this.log(`🏗️ Bridge metadata: latency=${metadata.processing_time_us}μs, arch=${metadata.architecture}`);
+                        this.stats.grpcCalls += 1;
+                    }
+                    
+                    // Extract actual data from bridge response
+                    const actualData = responseData && responseData.data ? responseData.data : responseData;
+                    this.log(`📊 Bridge data received: ${this.safeStringify(actualData).substring(0, 80)}...`);
+                    
+                    // Handle the data using the specified handler
+                    if (this[handlerName] && typeof this[handlerName] === 'function') {
+                        try {
+                            this[handlerName](actualData, name, responseData._bridge_metadata);
+                        } catch (handlerError) {
+                            this.log(`❌ Data handler error for ${name}: ${handlerError.message}`);
+                        }
+                    } else {
+                        this.log(`⚠️ Handler ${handlerName} not found or not a function`);
+                    }
+                    
+                    return actualData;
+                    
+                } catch (error) {
+                    const responseTime = performance.now() - startTime;
+                    this.recordFailedBridgeCall();
+                    this.log(`❌ Bridge ${name} failed: ${error.message} (${responseTime.toFixed(2)}ms)`);
+                    
+                    // Enhanced bridge error detection
+                    if (error.message.includes('Failed to fetch') || 
+                        error.message.includes('net::ERR_') ||
+                        error.name === 'TypeError' ||
+                        error.name === 'AbortError') {
+                        this.log('🚨 Bridge connectivity issues detected');
+                        this.bridgeConnected = false;
+                        this.updateBridgeStatus('error');
+                    }
+                    
+                    this.updateStatusIndicator('error');
+                    return null;
+                } finally {
+                    this.activeRequests.delete(requestId);
+                    this.updateUI();
+                }
+            }
+
+            recordBridgeCall() {
+                this.stats.totalBridgeCalls++;
+            }
+
+            recordSuccessfulBridgeCall(responseTime) {
+                try {
+                    this.stats.successCalls++;
+                    this.stats.responseTimes.push(responseTime);
+                    
+                    if (this.stats.responseTimes.length > 50) {
+                        this.stats.responseTimes = this.stats.responseTimes.slice(-50);
+                    }
+                    
+                    this.stats.lastUpdate = new Date();
+                    this.updateStatusIndicator('active');
+                } catch (error) {
+                    this.log(`❌ Error recording successful call: ${error.message}`);
+                }
+            }
+
+            recordFailedBridgeCall() {
+                this.stats.errorCalls++;
+            }
+
+            // Data handlers for bridge responses (restored)
+            handleMarketStatus(data, source, bridgeMetadata) {
+                try {
+                    if (data && data.market) {
+                        const market = data.market;
+                        this.marketStatus = market;
+                        
+                        const timestamp = new Date().toLocaleTimeString();
+                        const latency = bridgeMetadata ? `${(bridgeMetadata.processing_time_us/1000).toFixed(1)}ms` : 'N/A';
+                        
+                        // Update market status pill
+                        const statusPill = this.safeGetElement('marketStatusPill');
+                        const sessionElement = this.safeGetElement('marketSession');
+                        
+                        if (statusPill && sessionElement) {
+                            let statusText = 'Market Closed';
+                            let statusClass = 'closed';
+                            
+                            if (market === 'open') {
+                                statusText = 'Market Open';
+                                statusClass = 'open';
+                            } else if (market === 'extended-hours') {
+                                statusText = 'Extended Hours';
+                                statusClass = 'extended';
+                            }
+                            
+                            statusPill.textContent = statusText;
+                            statusPill.className = `market-status-pill ${statusClass}`;
+                            sessionElement.textContent = statusText;
+                        }
+                        
+                        // Update status bar
+                        const statusMarket = this.safeGetElement('statusMarketState');
+                        if (statusMarket) {
+                            statusMarket.textContent = market.charAt(0).toUpperCase() + market.slice(1);
+                        }
+                        
+                        this.log(`📊 Market status: ${market} (${timestamp} - ${latency})`);
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling market status: ${error.message}`);
+                }
+            }
+
+            handleTickerList(data, source, bridgeMetadata) {
+                try {
+                    if (data && data.results && Array.isArray(data.results)) {
+                        const tickers = data.results;
+                        this.log(`📊 Ticker list: ${tickers.length} tickers`);
+                        this.dataCache.set('ticker_list', tickers);
+                        
+                        // ✅ FIX: Actually display the ticker data
+                        this.updateStockTable(tickers, bridgeMetadata, 'ticker_list');
+                        this.updateTickerStream(tickers, 'ticker_list');
+                        this.calculateMarketStatistics(tickers, 'ticker_list');
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling ticker list: ${error.message}`);
+                }
+            }
+
+            handleAggregateData(data, source, bridgeMetadata) {
+                try {
+                    if (data && data.results && Array.isArray(data.results)) {
+                        const aggregates = data.results;
+                        this.log(`📊 Aggregate data for ${source}: ${aggregates.length} bars`);
+                        this.dataCache.set(source, aggregates);
+                        
+                        // ✅ FIX: Actually display the aggregate data
+                        this.updateStockTable(aggregates, bridgeMetadata, source);
+                        this.updateTickerStream(aggregates, source);
+                        this.calculateMarketStatistics(aggregates, source);
+                        
+                        // Update market overview with latest price data
+                        if (aggregates.length > 0) {
+                            const latestBar = aggregates[aggregates.length - 1];
+                            const previousBar = aggregates[aggregates.length - 2];
+                            
+                            if (latestBar && previousBar) {
+                                const symbol = source.includes('aapl') ? 'AAPL' : 
+                                             source.includes('spy') ? 'SPY' : 
+                                             source.includes('qqq') ? 'QQQ' : 'DATA';
+                                const price = latestBar.c ? latestBar.c.toFixed(2) : '0.00';
+                                const change = ((latestBar.c - previousBar.c) / previousBar.c * 100).toFixed(2);
+                                const changeClass = parseFloat(change) >= 0 ? 'positive' : 'negative';
+                                
+                                this.log(`📈 ${symbol}: $${price} (${change >= 0 ? '+' : ''}${change}%)`);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    this.log(`❌ Error handling aggregate data: ${error.message}`);
+                }
+            }
+
+            handleGenericData(data, source, bridgeMetadata) {
+                this.log(`📊 Generic data received for ${source}: ${this.safeStringify(data).substring(0, 50)}...`);
+            }
+
+            handleMarketHolidays(data, source, bridgeMetadata) {
+                // This handler is no longer used for a single pull
+            }
+
+            updateStockTable(stockData, bridgeMetadata, sourceContext = '') {
+                try {
+                    const tableContainer = this.safeGetElement('tableContainer');
+                    if (!tableContainer) return;
+
+                    let tableHTML = '';
+                    
+                    // Handle different data types from free tier endpoints
+                    if (stockData && Array.isArray(stockData)) {
+                        // Check if this is ticker reference data or aggregate data
+                        const firstItem = stockData[0];
+                        
+                        if (firstItem && firstItem.ticker) {
+                            // This is ticker reference data
+                            tableHTML = `
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Symbol</th>
+                                            <th>Name</th>
+                                            <th>Market</th>
+                                            <th>Type</th>
+                                            <th>Currency</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            `;
+                            
+                            stockData.slice(0, 20).forEach((ticker, index) => {
+                                const statusClass = ticker.active ? 'positive' : 'negative';
+                                const rowClass = `data-blink`; // Add blink animation
+                                tableHTML += `
+                                    <tr class="${rowClass}" style="animation-delay: ${index * 0.1}s;">
+                                        <td class="symbol symbol-highlight">${this.sanitizeHTML(ticker.ticker || 'N/A')}</td>
+                                        <td class="name">${this.sanitizeHTML(ticker.name ? ticker.name.substring(0, 25) + '...' : 'N/A')}</td>
+                                        <td>${this.sanitizeHTML(ticker.market || 'N/A')}</td>
+                                        <td>${this.sanitizeHTML(ticker.type || 'N/A')}</td>
+                                        <td>${this.sanitizeHTML(ticker.currency_name || 'USD')}</td>
+                                        <td class="${statusClass}">${ticker.active ? 'Active' : 'Inactive'}</td>
+                                    </tr>
+                                `;
+                            });
+                            
+                        } else if (firstItem && (firstItem.o !== undefined || firstItem.c !== undefined)) {
+                            // This is aggregate OHLCV data - show stock symbol prominently
+                            const stockSymbol = this.getStockSymbolFromContext(sourceContext);
+                            tableHTML = `
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="7" style="background: #1976d2; color: white; text-align: center; font-size: 11px; padding: 8px;">
+                                                📈 ${stockSymbol} Stock Data - ${stockData.length} Trading Days
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Open</th>
+                                            <th>High</th>
+                                            <th>Low</th>
+                                            <th>Close</th>
+                                            <th>Volume</th>
+                                            <th>Change</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            `;
+                            
+                            // Show last 10 trading days with blinking animation
+                            stockData.slice(-10).forEach((bar, index) => {
+                                const date = new Date(bar.t || 0).toLocaleDateString();
+                                const change = bar.o && bar.c ? ((bar.c - bar.o) / bar.o * 100).toFixed(2) : '0.00';
+                                const changeClass = parseFloat(change) >= 0 ? 'positive' : 'negative';
+                                const rowClass = `price-blink`; // Add price blink animation
+                                
+                                tableHTML += `
+                                    <tr class="${rowClass}" style="animation-delay: ${index * 0.1}s;">
+                                        <td>${date}</td>
+                                        <td class="data-blink" style="animation-delay: ${index * 0.15}s;">$${(bar.o || 0).toFixed(2)}</td>
+                                        <td class="data-blink" style="animation-delay: ${index * 0.2}s;">$${(bar.h || 0).toFixed(2)}</td>
+                                        <td class="data-blink" style="animation-delay: ${index * 0.25}s;">$${(bar.l || 0).toFixed(2)}</td>
+                                        <td class="data-blink symbol-highlight" style="animation-delay: ${index * 0.3}s;">$${(bar.c || 0).toFixed(2)}</td>
+                                        <td class="data-blink" style="animation-delay: ${index * 0.35}s;">${(bar.v || 0).toLocaleString()}</td>
+                                        <td class="${changeClass} data-blink" style="animation-delay: ${index * 0.4}s;">${change >= 0 ? '+' : ''}${change}%</td>
+                                    </tr>
+                                `;
+                            });
+                        }
+                        
+                        tableHTML += `
+                                    </tbody>
+                                </table>
+                            `;
+                    } else {
+                        tableHTML = '<div class="loading">No data available from free tier endpoints</div>';
+                    }
+
+                    tableContainer.innerHTML = tableHTML;
+                    
+                    // Add bridge metadata info
+                    if (bridgeMetadata) {
+                        const metadataDiv = document.createElement('div');
+                        metadataDiv.className = 'bridge-metadata data-blink';
+                        metadataDiv.style.fontSize = '8px';
+                        metadataDiv.style.color = '#666';
+                        metadataDiv.style.marginTop = '5px';
+                        metadataDiv.style.padding = '4px';
+                        metadataDiv.style.background = '#f8f9fa';
+                        metadataDiv.style.borderRadius = '3px';
+                        metadataDiv.innerHTML = `
+                            🏗️ Bridge: ${this.sanitizeHTML(bridgeMetadata.architecture || 'Universal API Bridge')} | 
+                            ⚡ Latency: ${(bridgeMetadata.processing_time_us ? bridgeMetadata.processing_time_us/1000 : 0).toFixed(1)}ms | 
+                            🕒 ${new Date().toLocaleTimeString()}
+                        `;
+                        tableContainer.appendChild(metadataDiv);
+                    }
+                    
+                } catch (error) {
+                    this.log(`❌ Error updating stock table: ${error.message}`);
+                }
+            }
+
+            getStockSymbolFromContext(sourceContext) {
+                if (sourceContext.includes('aapl')) return 'AAPL (Apple Inc.)';
+                if (sourceContext.includes('spy')) return 'SPY (SPDR S&P 500 ETF)';
+                if (sourceContext.includes('qqq')) return 'QQQ (Invesco QQQ Trust)';
+                if (sourceContext.includes('ticker_list')) return 'Stock Tickers';
+                if (sourceContext.includes('market_status')) return 'Market Status';
+                return 'Stock Data';
+            }
+
+            updateTickerStream(stockData, sourceContext = '') {
+                try {
+                    const tickerElement = this.safeGetElement('stockTicker');
+                    if (!tickerElement || !stockData || !Array.isArray(stockData)) return;
+
+                    let tickerContent = '';
+                    
+                    // Handle ticker reference data for the stream
+                    if (stockData.length > 0) {
+                        const firstItem = stockData[0];
+                        
+                        if (firstItem && firstItem.ticker) {
+                            // Ticker reference data - show active stocks with blink
+                            const activeStocks = stockData.filter(t => t.active).slice(0, 10);
+                            tickerContent = activeStocks.map((ticker, index) => 
+                                `<div class="ticker-item data-blink" style="animation-delay: ${index * 0.2}s;">
+                                    <span class="ticker-symbol symbol-highlight">${this.sanitizeHTML(ticker.ticker)}</span>
+                                    <span class="ticker-name">${this.sanitizeHTML(ticker.name ? ticker.name.substring(0, 15) + '...' : 'N/A')}</span>
+                                    <span class="ticker-market">${this.sanitizeHTML(ticker.market || 'stocks')}</span>
+                                </div>`
+                            ).join('');
+                        } else if (firstItem && firstItem.c !== undefined) {
+                            // Aggregate data - show price info with stock symbol
+                            const stockSymbol = this.getStockSymbolFromContext(sourceContext);
+                            const latestBars = stockData.slice(-5);
+                            tickerContent = latestBars.map((bar, index) => {
+                                const date = new Date(bar.t || 0).toLocaleDateString();
+                                const price = (bar.c || 0).toFixed(2);
+                                const change = bar.o && bar.c ? ((bar.c - bar.o) / bar.o * 100).toFixed(2) : '0.00';
+                                const changeClass = parseFloat(change) >= 0 ? 'positive' : 'negative';
+                                
+                                return `<div class="ticker-item price-blink" style="animation-delay: ${index * 0.3}s;">
+                                    <span class="ticker-symbol symbol-highlight">${stockSymbol.split(' ')[0]}</span>
+                                    <span class="ticker-price data-blink">$${price}</span>
+                                    <span class="ticker-change ${changeClass}">${change >= 0 ? '+' : ''}${change}%</span>
+                                    <span class="ticker-date">${date}</span>
+                                </div>`;
+                            }).join('');
+                        }
+                    }
+
+                    if (tickerContent) {
+                        tickerElement.innerHTML = tickerContent;
+                    }
+                    
+                } catch (error) {
+                    this.log(`❌ Error updating ticker stream: ${error.message}`);
+                }
+            }
+
+            calculateMarketStatistics(stockData, sourceContext = '') {
+                try {
+                    if (!stockData || !Array.isArray(stockData)) return;
+
+                    const firstItem = stockData[0];
+                    
+                    if (firstItem && firstItem.ticker) {
+                        // Ticker data statistics with blink animations
+                        const activeCount = stockData.filter(t => t.active).length;
+                        const inactiveCount = stockData.length - activeCount;
+                        
+                        this.log(`📊 Market Statistics: ${activeCount} active, ${inactiveCount} inactive tickers`);
+                        
+                        // Update market overview cards with blinking
+                        this.updateMarketOverviewCard('sp500', `${activeCount}`, 'Active Tickers', 'positive', true);
+                        this.updateMarketOverviewCard('dow', `${inactiveCount}`, 'Inactive Tickers', 'negative', true);
+                        this.updateMarketOverviewCard('nasdaq', `${stockData.length}`, 'Total Tickers', 'neutral', true);
+                        this.updateMarketOverviewCard('russell', `${Math.round(activeCount/stockData.length*100)}%`, 'Active Rate', 'positive', true);
+                        
+                    } else if (firstItem && firstItem.c !== undefined) {
+                        // Aggregate data statistics with stock symbol context
+                        const latestBar = stockData[stockData.length - 1];
+                        const previousBar = stockData[stockData.length - 2];
+                        const stockSymbol = this.getStockSymbolFromContext(sourceContext);
+                        
+                        if (latestBar && previousBar) {
+                            const change = ((latestBar.c - previousBar.c) / previousBar.c * 100).toFixed(2);
+                            const changeClass = parseFloat(change) >= 0 ? 'positive' : 'negative';
+                            const price = latestBar.c.toFixed(2);
+                            const volume = latestBar.v ? (latestBar.v / 1000000).toFixed(1) + 'M' : '0';
+                            
+                            // Update cards with stock-specific data and blinking
+                            this.updateMarketOverviewCard('sp500', `$${price}`, `${stockSymbol.split(' ')[0]} Price`, changeClass, true);
+                            this.updateMarketOverviewCard('dow', `${change >= 0 ? '+' : ''}${change}%`, 'Daily Change', changeClass, true);
+                            this.updateMarketOverviewCard('nasdaq', `${volume}`, 'Volume', 'neutral', true);
+                            this.updateMarketOverviewCard('russell', `$${latestBar.h?.toFixed(2) || '0.00'}`, 'Day High', 'positive', true);
+                            
+                            this.log(`📈 ${stockSymbol}: $${price} (${change >= 0 ? '+' : ''}${change}%) Vol: ${volume}`);
+                        }
+                    }
+                    
+                } catch (error) {
+                    this.log(`❌ Error calculating market statistics: ${error.message}`);
+                }
+            }
+
+            updateElementWithMetadata(elementId, value, metadataId, metadata) {
+                try {
+                    const element = this.safeGetElement(elementId);
+                    const metadataElement = this.safeGetElement(metadataId);
+                    
+                    if (element) {
+                        element.textContent = value;
+                        element.parentElement.classList.add('fresh');
+                        setTimeout(() => {
+                            if (element.parentElement) {
+                                element.parentElement.classList.remove('fresh');
+                            }
+                        }, 3000);
+                    }
+                    
+                    if (metadataElement) {
+                        metadataElement.textContent = metadata;
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating element ${elementId}: ${error.message}`);
+                }
+            }
+
+            updateMarketTime() {
+                try {
+                    const now = new Date();
+                    const timeElement = this.safeGetElement('marketTime');
+                    if (timeElement) {
+                        const timeString = now.toLocaleTimeString('en-US', {
+                            timeZone: 'America/New_York',
+                            hour12: true,
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                        timeElement.textContent = `${timeString} ET`;
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating market time: ${error.message}`);
+                }
+            }
+
+            updateLastUpdateTime() {
+                try {
+                    const now = new Date();
+                    const updateElement = this.safeGetElement('tableLastUpdate');
+                    const lastUpdateElement = this.safeGetElement('lastUpdate');
+                    
+                    const timeString = now.toLocaleTimeString();
+                    
+                    if (updateElement) updateElement.textContent = timeString;
+                    if (lastUpdateElement) lastUpdateElement.textContent = timeString;
+                } catch (error) {
+                    this.log(`❌ Error updating last update time: ${error.message}`);
+                }
+            }
+
+            // Rate limiting and statistics
+            // canMakeBridgeCall is no longer needed as calls are managed by executeMarketDataPull
+            // recordBridgeCall is no longer needed as calls are managed by executeMarketDataPull
+            // recordSuccessfulBridgeCall is no longer needed as calls are managed by executeMarketDataPull
+            // recordFailedBridgeCall is no longer needed as calls are managed by executeMarketDataPull
+
+            updateUI() {
+                try {
+                    // Update pull progress bar
+                    const rateFill = this.safeGetElement('rateFill');
+                    const rateText = this.safeGetElement('rateText');
+                    if (rateFill && rateText) {
+                        if (this.cycleActive) {
+                            const progress = (this.currentPullIndex / this.pullsPerCycle) * 100;
+                            rateFill.style.width = `${progress}%`;
+                            rateText.textContent = `${this.currentPullIndex}/${this.pullsPerCycle}`;
+                        } else {
+                            rateFill.style.width = '0%';
+                            rateText.textContent = 'Ready';
+                        }
+                    }
+                    
+                    // Update statistics
+                    const statsMap = {
+                        'totalPulls': this.stats.totalPulls,
+                        'bridgeCalls': this.stats.totalBridgeCalls,
+                        'statusBridgeCalls': this.stats.totalBridgeCalls,
+                        'statusSuccessCalls': this.stats.successCalls,
+                        'statusErrorCalls': this.stats.errorCalls,
+                        'grpcCalls': this.stats.grpcCalls,
+                        'grpcErrors': this.stats.errorCalls,
+                        'parallelCount': this.activeRequests.size,
+                        'mcpQueue': this.activeRequests.size
+                    };
+                    
+                    Object.entries(statsMap).forEach(([elementId, value]) => {
+                        const element = this.safeGetElement(elementId);
+                        if (element) {
+                            element.textContent = value;
+                        }
+                    });
+                    
+                    // Update success rate
+                    const successRate = this.stats.totalBridgeCalls > 0 ? 
+                        ((this.stats.successCalls / this.stats.totalBridgeCalls) * 100).toFixed(1) : '0';
+                    const successRateElement = this.safeGetElement('successRate');
+                    if (successRateElement) {
+                        successRateElement.textContent = `${successRate}%`;
+                    }
+                    
+                    // Update average response time
+                    if (this.stats.responseTimes.length > 0) {
+                        const avgResponse = this.stats.responseTimes.reduce((a, b) => a + b, 0) / this.stats.responseTimes.length;
+                        const avgElement = this.safeGetElement('avgResponse');
+                        if (avgElement) {
+                            avgElement.textContent = `${avgResponse.toFixed(0)}ms`;
+                        }
+                    }
+                    
+                    // Update bridge latency
+                    if (this.stats.lastUpdate) {
+                        const latency = Date.now() - this.stats.lastUpdate.getTime();
+                        const latencyElement = this.safeGetElement('bridgeLatency');
+                        if (latencyElement) {
+                            latencyElement.textContent = `${(latency/1000).toFixed(1)}s`;
+                        }
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating UI: ${error.message}`);
+                }
+            }
+
+            updateStatusIndicator(status) {
+                const indicator = this.safeGetElement('statusIndicator');
+                const statusText = this.safeGetElement('statusText');
+                const polygonStatus = this.safeGetElement('polygonApiStatus');
+                
+                if (indicator) {
+                    indicator.className = 'status-indicator';
+                    
+                    switch (status) {
+                        case 'active':
+                            indicator.classList.add('active');
+                            if (statusText) statusText.textContent = 'Universal Bridge executing pull cycle';
+                            if (polygonStatus) polygonStatus.textContent = 'Active';
+                            break;
+                        case 'error':
+                            indicator.classList.add('error');
+                            if (statusText) statusText.textContent = 'Bridge errors detected';
+                            if (polygonStatus) polygonStatus.textContent = 'Error';
+                            break;
+                        case 'warning':
+                            indicator.classList.add('warning');
+                            if (statusText) statusText.textContent = 'Bridge rate limit approaching';
+                            break;
+                        case 'idle':
+                        default:
+                            if (statusText) statusText.textContent = 'Universal Bridge ready for data pulls';
+                            if (polygonStatus) polygonStatus.textContent = 'Ready';
+                            break;
+                    }
+                }
+            }
+
+            updateMarketOverviewCard(cardId, value, label, statusClass = 'neutral', blink = false) {
+                try {
+                    const valueElement = this.safeGetElement(`${cardId}Value`);
+                    const labelElement = this.safeGetElement(`${cardId}Label`);
+                    
+                    if (valueElement) {
+                        valueElement.textContent = value;
+                        valueElement.className = `overview-value ${statusClass}`;
+                        
+                        if (blink) {
+                            valueElement.classList.add('data-blink');
+                            // Remove blink class after animation completes
+                            setTimeout(() => {
+                                valueElement.classList.remove('data-blink');
+                            }, 600);
+                        }
+                    }
+                    
+                    if (labelElement) {
+                        labelElement.textContent = label;
+                        
+                        if (blink) {
+                            labelElement.classList.add('data-blink');
+                            setTimeout(() => {
+                                labelElement.classList.remove('data-blink');
+                            }, 600);
+                        }
+                    }
+                } catch (error) {
+                    this.log(`❌ Error updating market overview card: ${error.message}`);
+                }
+            }
+
+            // Utility functions
+            formatLargeNumber(value) {
+                if (!value || isNaN(value)) return '0';
+                if (value >= 1e12) {
+                    return `${(value / 1e12).toFixed(2)}T`;
+                } else if (value >= 1e9) {
+                    return `${(value / 1e9).toFixed(2)}B`;
+                } else if (value >= 1e6) {
+                    return `${(value / 1e6).toFixed(2)}M`;
+                } else if (value >= 1e3) {
+                    return `${(value / 1e3).toFixed(2)}K`;
+                } else {
+                    return value.toLocaleString();
+                }
+            }
+
+            safeGetElement(elementId) {
+                try {
+                    return document.getElementById(elementId);
+                } catch (error) {
+                    this.log(`⚠️ Error accessing element ${elementId}: ${error.message}`);
+                    return null;
+                }
+            }
+
+            sanitizeHTML(str) {
+                if (typeof str !== 'string') return '';
+                return str.replace(/[&<>"']/g, function(match) {
+                    const escape = {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    };
+                    return escape[match];
+                });
+            }
+
+            safeStringify(obj) {
+                try {
+                    return JSON.stringify(obj);
+                } catch (error) {
+                    return `[Object: ${typeof obj}]`;
+                }
+            }
+
+            // Debug functions
+            toggleDebugPanel() {
+                this.debugEnabled = !this.debugEnabled;
+                const panel = this.safeGetElement('debugPanel');
+                const button = this.safeGetElement('debugToggle');
+                
+                if (this.debugEnabled) {
+                    if (panel) panel.classList.remove('hidden');
+                    if (button) button.textContent = 'Hide Debug';
+                    this.updateDebugLog();
+                } else {
+                    if (panel) panel.classList.add('hidden');
+                    if (button) button.textContent = 'Debug';
+                }
+            }
+
+            log(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] ${message}`;
+                
+                this.debugLog.push(logEntry);
+                if (this.debugLog.length > 100) {
+                    this.debugLog = this.debugLog.slice(-50);
+                }
+                
+                console.log(logEntry);
+                
+                if (this.debugEnabled) {
+                    this.updateDebugLog();
+                }
+            }
+
+            updateDebugLog() {
+                const debugElement = this.safeGetElement('debugLog');
+                if (debugElement) {
+                    debugElement.innerHTML = this.debugLog.slice(-20).join('<br>');
+                    debugElement.scrollTop = debugElement.scrollHeight;
+                }
+            }
+
+
+        }
+
+        // Initialize Universal Bridge Stock Dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new PolygonBridgeDashboard();
+        });
+
+        // Enhanced error handling for bridge operations
+        window.addEventListener('error', (event) => {
+            console.error('Global error in Stock Bridge Dashboard:', event.error);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection in Stock Bridge:', event.reason);
+        });
+    </script>
+</body>
+</html> 

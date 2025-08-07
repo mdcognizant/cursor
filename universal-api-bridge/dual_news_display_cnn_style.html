@@ -1439,7 +1439,7 @@
                 try {
                     console.log('🚀 Starting CNN-style news fetch...');
                     
-                    const [newsdataResult, currentsResult] = await Promise.all([
+                    const results = await Promise.allSettled([
                         this.fetchFromNewsData(),
                         this.fetchFromCurrents()
                     ]);
@@ -1451,13 +1451,17 @@
                     let liveArticles = 0;
                     let cachedArticles = 0;
                     
-                    if (newsdataResult.success) {
+                    // Handle Promise.allSettled results safely
+                    const newsdataResult = results[0].status === 'fulfilled' ? results[0].value : null;
+                    const currentsResult = results[1].status === 'fulfilled' ? results[1].value : null;
+                    
+                    if (newsdataResult && newsdataResult.success) {
                         allArticles = [...allArticles, ...newsdataResult.articles];
                         if (newsdataResult.source === 'live') liveArticles++;
                         else cachedArticles++;
                     }
                     
-                    if (currentsResult.success) {
+                    if (currentsResult && currentsResult.success) {
                         allArticles = [...allArticles, ...currentsResult.articles];
                         if (currentsResult.source === 'live') liveArticles++;
                         else cachedArticles++;

@@ -562,10 +562,11 @@ class UniversalRESTGateway:
         routing_latency_us = routing_ns / 1000
         self.routing_latency_samples.append(routing_latency_us)
         
-        # Update average routing latency
-        current_avg = self.gateway_metrics['avg_routing_latency_ns'].value
-        new_avg = (current_avg + routing_ns) // 2
-        self.gateway_metrics['avg_routing_latency_ns'].value = new_avg
+        # Update average routing latency with thread safety
+        with self._gateway_metrics_lock:
+            current_avg = self.gateway_metrics['avg_routing_latency_ns']
+            new_avg = (current_avg + routing_ns) // 2
+            self.gateway_metrics['avg_routing_latency_ns'] = new_avg
     
     async def get_service_schema(self, service_name: str) -> Dict[str, Any]:
         """Get auto-discovered schema for service."""
@@ -605,30 +606,31 @@ class UniversalRESTGateway:
         else:
             avg_routing = p99_routing = 0.0
         
-        total_requests = self.gateway_metrics['total_requests'].value
-        pattern_total = self.gateway_metrics['pattern_matches'].value + self.gateway_metrics['unknown_patterns'].value
-        
-        return {
-            "gateway_version": "universal_v2.0",
-            "request_metrics": {
-                "total_requests": total_requests,
-                "successful_requests": self.gateway_metrics['successful_requests'].value,
-                "failed_requests": self.gateway_metrics['failed_requests'].value,
-                "success_rate": self.gateway_metrics['successful_requests'].value / max(total_requests, 1)
-            },
-            "routing_metrics": {
-                "pattern_matches": self.gateway_metrics['pattern_matches'].value,
-                "unknown_patterns": self.gateway_metrics['unknown_patterns'].value,
-                "pattern_match_rate": self.gateway_metrics['pattern_matches'].value / max(pattern_total, 1),
-                "avg_routing_latency_us": avg_routing,
-                "p99_routing_latency_us": p99_routing,
-                "routing_cache_size": len(self.routing_cache)
-            },
-            "schema_discovery": {
-                "schema_discoveries": self.gateway_metrics['schema_discoveries'].value,
-                "discovered_services": len(self.schema_discovery.discovered_schemas),
-                "auto_discovery_enabled": self.config.enable_auto_schema_generation
-            },
+        with self._gateway_metrics_lock:
+            total_requests = self.gateway_metrics['total_requests']
+            pattern_total = self.gateway_metrics['pattern_matches'] + self.gateway_metrics['unknown_patterns']
+            
+            return {
+                "gateway_version": "universal_v2.0",
+                "request_metrics": {
+                    "total_requests": total_requests,
+                    "successful_requests": self.gateway_metrics['successful_requests'],
+                    "failed_requests": self.gateway_metrics['failed_requests'],
+                    "success_rate": self.gateway_metrics['successful_requests'] / max(total_requests, 1)
+                },
+                "routing_metrics": {
+                    "pattern_matches": self.gateway_metrics['pattern_matches'],
+                    "unknown_patterns": self.gateway_metrics['unknown_patterns'],
+                    "pattern_match_rate": self.gateway_metrics['pattern_matches'] / max(pattern_total, 1),
+                    "avg_routing_latency_us": avg_routing,
+                    "p99_routing_latency_us": p99_routing,
+                    "routing_cache_size": len(self.routing_cache)
+                },
+                "schema_discovery": {
+                    "schema_discoveries": self.gateway_metrics['schema_discoveries'],
+                    "discovered_services": len(self.schema_discovery.discovered_schemas),
+                    "auto_discovery_enabled": self.config.enable_auto_schema_generation
+                },
             "capabilities": {
                 "universal_pattern_support": True,
                 "auto_schema_generation": self.config.enable_auto_schema_generation,

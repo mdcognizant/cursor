@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polygon V5 Dashboard - Universal API Bridge (MCP + gRPC)</title>
+    <style>
+        /* Enhanced styling for Universal API Bridge */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .architecture-badge {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .status-panel {
+            background: rgba(255, 255, 255, 0.95);
+            margin: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .bridge-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .status-card.mcp {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+        }
+
+        .status-card.grpc {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-content {
+            background: rgba(255, 255, 255, 0.95);
+            margin: 0 20px 20px;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .data-grid {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .data-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .data-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .performance-metrics {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+
+        .log-container {
+            background: #1a1a1a;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Polygon V5 Dashboard</h1>
+        <div class="architecture-badge">Universal API Bridge (MCP + gRPC)</div>
+        <div class="architecture-badge">REST → MCP → gRPC → Polygon.io</div>
+    </div>
+
+    <div class="status-panel">
+        <h3>🏗️ Universal Bridge Architecture Status</h3>
+        <div class="bridge-status">
+            <div class="status-card">
+                <h4>REST Gateway</h4>
+                <div id="restStatus">Checking...</div>
+                <small>Universal Pattern Support</small>
+            </div>
+            <div class="status-card mcp">
+                <h4>MCP Layer</h4>
+                <div id="mcpStatus">Checking...</div>
+                <small>10K+ Connections</small>
+            </div>
+            <div class="status-card grpc">
+                <h4>gRPC Backend</h4>
+                <div id="grpcStatus">Checking...</div>
+                <small>Sub-100μs Latency</small>
+            </div>
+        </div>
+        
+        <div class="performance-metrics">
+            <h4>🔬 Bridge Performance Metrics</h4>
+            <div class="metric">
+                <span>Protocol Stack:</span>
+                <span id="protocolStack">REST → MCP → gRPC</span>
+            </div>
+            <div class="metric">
+                <span>Average Latency:</span>
+                <span id="avgLatency">- ms</span>
+            </div>
+            <div class="metric">
+                <span>Mathematical Optimization:</span>
+                <span id="mathOptimization">Enabled</span>
+            </div>
+            <div class="metric">
+                <span>Circuit Breaker:</span>
+                <span id="circuitBreaker">Active</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('overview')">📊 Market Overview</button>
+        <button class="tab" onclick="showTab('tickers')">📈 Stock Tickers</button>
+        <button class="tab" onclick="showTab('analytics')">🔬 Analytics</button>
+        <button class="tab" onclick="showTab('comparison')">⚖️ Comparison</button>
+        <button class="tab" onclick="showTab('technical')">📉 Technical</button>
+        <button class="tab" onclick="showTab('bridge')">🌉 Bridge Monitor</button>
+        <button class="tab" onclick="showTab('raw')">🔍 Raw Data</button>
+    </div>
+
+    <div id="overview" class="tab-content">
+        <h3>📊 Market Overview - Universal API Bridge</h3>
+        <div class="controls">
+            <button class="btn" onclick="startDataPulls()">🚀 Start 5 Data Pulls (MCP)</button>
+            <button class="btn" onclick="stopDataPulls()">🛑 Stop Pulls</button>
+            <button class="btn" onclick="testBridgeHealth()">🔧 Test Bridge Health</button>
+        </div>
+        <div id="marketStatus" class="data-card"></div>
+        <div id="overviewData" class="data-grid"></div>
+    </div>
+
+    <div id="tickers" class="tab-content" style="display: none;">
+        <h3>📈 Stock Tickers via gRPC Backend</h3>
+        <div id="tickersData" class="data-grid"></div>
+    </div>
+
+    <div id="analytics" class="tab-content" style="display: none;">
+        <h3>🔬 Analytics - MCP Layer Processing</h3>
+        <div id="analyticsData" class="data-grid"></div>
+    </div>
+
+    <div id="comparison" class="tab-content" style="display: none;">
+        <h3>⚖️ Stock Comparison</h3>
+        <div id="comparisonData" class="data-grid"></div>
+    </div>
+
+    <div id="technical" class="tab-content" style="display: none;">
+        <h3>📉 Technical Indicators</h3>
+        <div id="technicalData" class="data-grid"></div>
+    </div>
+
+    <div id="bridge" class="tab-content" style="display: none;">
+        <h3>🌉 Universal Bridge Monitor</h3>
+        <div class="performance-metrics">
+            <h4>Bridge Architecture Health</h4>
+            <div class="metric">
+                <span>MCP Service Registry:</span>
+                <span id="serviceRegistry">Active</span>
+            </div>
+            <div class="metric">
+                <span>Load Balancer:</span>
+                <span id="loadBalancer">Mathematical</span>
+            </div>
+            <div class="metric">
+                <span>gRPC Connection Pool:</span>
+                <span id="connectionPool">Optimized</span>
+            </div>
+        </div>
+        <div class="log-container" id="bridgeLogs">
+            Bridge initialization logs will appear here...
+        </div>
+    </div>
+
+    <div id="raw" class="tab-content" style="display: none;">
+        <h3>🔍 Raw Data & Bridge Metadata</h3>
+        <div id="rawData" class="data-grid"></div>
+    </div>
+
+    <script>
+        class PolygonUniversalBridgeDashboard {
+            constructor() {
+                // 🔒 UNIVERSAL API BRIDGE CONFIGURATION
+                this.BRIDGE_URL = 'http://localhost:8001';
+                this.SERVICE_NAME = 'polygon-stocks';
+                this.API_KEY = 'fTcpMTE80ahFJ6SRFz984onpzTkLkAq8';
+                
+                // Universal Bridge specific settings
+                this.bridgeHealthy = false;
+                this.mcpLayerActive = false;
+                this.grpcBackendActive = false;
+                
+                // Performance tracking
+                this.performanceMetrics = {
+                    requestCount: 0,
+                    totalLatency: 0,
+                    averageLatency: 0,
+                    protocolStack: 'REST → MCP → gRPC',
+                    mathOptimization: true
+                };
+                
+                // Data management
+                this.cachedData = new Map();
+                this.isRunning = false;
+                this.pullInterval = null;
+                this.currentPull = 0;
+                this.maxPulls = 5;
+                
+                this.init();
+            }
+            
+            async init() {
+                console.log('🚀 Initializing Polygon Universal Bridge Dashboard');
+                await this.checkBridgeHealth();
+                this.updateBridgeStatus();
+            }
+            
+            async checkBridgeHealth() {
+                try {
+                    const startTime = performance.now();
+                    const response = await fetch(`${this.BRIDGE_URL}/health`);
+                    const latency = performance.now() - startTime;
+                    
+                    if (response.ok) {
+                        const healthData = await response.json();
+                        this.bridgeHealthy = true;
+                        this.updatePerformanceMetrics(latency, true);
+                        
+                        // Check if it's the Universal Bridge
+                        if (healthData.architecture && healthData.architecture.includes('MCP')) {
+                            this.mcpLayerActive = true;
+                            this.grpcBackendActive = true;
+                        }
+                        
+                        this.logToBridge(`✅ Universal Bridge Health Check: ${latency.toFixed(2)}ms`);
+                        return true;
+                    }
+                } catch (error) {
+                    this.bridgeHealthy = false;
+                    this.logToBridge(`❌ Bridge Health Check Failed: ${error.message}`);
+                    return false;
+                }
+            }
+            
+            updateBridgeStatus() {
+                document.getElementById('restStatus').textContent = this.bridgeHealthy ? '✅ Active' : '❌ Down';
+                document.getElementById('mcpStatus').textContent = this.mcpLayerActive ? '✅ Active' : '❌ Down';
+                document.getElementById('grpcStatus').textContent = this.grpcBackendActive ? '✅ Active' : '❌ Down';
+                
+                document.getElementById('protocolStack').textContent = this.performanceMetrics.protocolStack;
+                document.getElementById('avgLatency').textContent = `${this.performanceMetrics.averageLatency.toFixed(2)} ms`;
+                document.getElementById('mathOptimization').textContent = this.performanceMetrics.mathOptimization ? 'Enabled' : 'Disabled';
+                document.getElementById('circuitBreaker').textContent = this.bridgeHealthy ? 'Active' : 'Open';
+            }
+            
+            updatePerformanceMetrics(latency, success) {
+                if (success) {
+                    this.performanceMetrics.requestCount++;
+                    this.performanceMetrics.totalLatency += latency;
+                    this.performanceMetrics.averageLatency = 
+                        this.performanceMetrics.totalLatency / this.performanceMetrics.requestCount;
+                }
+            }
+            
+            async makeUniversalBridgeRequest(endpoint, params = {}) {
+                const startTime = performance.now();
+                
+                try {
+                    // Add API key to params
+                    params.apikey = this.API_KEY;
+                    
+                    // Build URL for Universal Bridge
+                    const url = new URL(`${this.BRIDGE_URL}/api/${this.SERVICE_NAME}/${endpoint}`);
+                    Object.keys(params).forEach(key => {
+                        url.searchParams.append(key, params[key]);
+                    });
+                    
+                    const response = await fetch(url.toString());
+                    const latency = performance.now() - startTime;
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    this.updatePerformanceMetrics(latency, true);
+                    
+                    // Log bridge metadata if available
+                    if (data._bridge_metadata) {
+                        this.logToBridge(`📊 Bridge Request: ${endpoint} (${data._bridge_metadata.latency_ms}ms via ${data._bridge_metadata.protocol})`);
+                    }
+                    
+                    return data;
+                    
+                } catch (error) {
+                    const latency = performance.now() - startTime;
+                    this.updatePerformanceMetrics(latency, false);
+                    this.logToBridge(`❌ Bridge Request Failed: ${endpoint} - ${error.message}`);
+                    throw error;
+                }
+            }
+            
+            async startDataPulls() {
+                if (this.isRunning) return;
+                
+                this.isRunning = true;
+                this.currentPull = 0;
+                
+                this.logToBridge('🚀 Starting Universal Bridge data pulls...');
+                
+                this.pullInterval = setInterval(async () => {
+                    if (this.currentPull >= this.maxPulls) {
+                        this.stopDataPulls();
+                        return;
+                    }
+                    
+                    this.currentPull++;
+                    this.logToBridge(`📡 Data Pull ${this.currentPull}/${this.maxPulls} via MCP Layer`);
+                    
+                    await this.performDataPull();
+                    
+                }, 12000); // 12 second intervals
+                
+                // Immediate first pull
+                await this.performDataPull();
+            }
+            
+            async performDataPull() {
+                try {
+                    // Market Status via Universal Bridge
+                    const marketStatus = await this.makeUniversalBridgeRequest('v1/marketstatus/now');
+                    this.displayMarketStatus(marketStatus);
+                    
+                    // Stock Tickers via MCP
+                    const tickers = await this.makeUniversalBridgeRequest('v3/reference/tickers', {
+                        market: 'stocks',
+                        active: 'true',
+                        limit: '50'
+                    });
+                    this.displayTickers(tickers);
+                    
+                    // Individual stock data via gRPC backend
+                    const stocks = ['AAPL', 'SPY', 'QQQ'];
+                    for (const symbol of stocks) {
+                        const stockData = await this.makeUniversalBridgeRequest(
+                            `v2/aggs/ticker/${symbol}/range/1/day/2024-01-01/2024-12-31`
+                        );
+                        this.displayStockData(symbol, stockData);
+                    }
+                    
+                    this.updateBridgeStatus();
+                    
+                } catch (error) {
+                    this.logToBridge(`❌ Data pull failed: ${error.message}`);
+                }
+            }
+            
+            stopDataPulls() {
+                this.isRunning = false;
+                if (this.pullInterval) {
+                    clearInterval(this.pullInterval);
+                    this.pullInterval = null;
+                }
+                this.logToBridge('🛑 Data pulls stopped');
+            }
+            
+            displayMarketStatus(data) {
+                const container = document.getElementById('marketStatus');
+                const marketData = data.data || data;
+                
+                container.innerHTML = `
+                    <h4>📊 Market Status (via Universal Bridge)</h4>
+                    <p><strong>Market:</strong> ${marketData.market || 'Unknown'}</p>
+                    <p><strong>Status:</strong> ${marketData.serverTime ? 'Active' : 'Checking...'}</p>
+                    <p><strong>Bridge Protocol:</strong> ${data._bridge_metadata?.protocol || 'REST→MCP→gRPC'}</p>
+                    <p><strong>Response Time:</strong> ${data._bridge_metadata?.latency_ms || 'N/A'}ms</p>
+                `;
+            }
+            
+            displayTickers(data) {
+                const container = document.getElementById('tickersData');
+                const tickers = data.data?.results || data.results || [];
+                
+                container.innerHTML = `
+                    <h4>📈 Stock Tickers (${tickers.length} via gRPC Backend)</h4>
+                    ${tickers.slice(0, 10).map(ticker => `
+                        <div class="data-card">
+                            <strong>${ticker.ticker || ticker.symbol}</strong> - ${ticker.name || 'Unknown'}
+                            <br><small>Market: ${ticker.market || 'Unknown'}</small>
+                        </div>
+                    `).join('')}
+                `;
+            }
+            
+            displayStockData(symbol, data) {
+                const container = document.getElementById('analyticsData');
+                const results = data.data?.results || data.results || [];
+                
+                if (results.length > 0) {
+                    const latest = results[results.length - 1];
+                    const div = document.createElement('div');
+                    div.className = 'data-card';
+                    div.innerHTML = `
+                        <h4>${symbol} Data (MCP Processed)</h4>
+                        <p><strong>Close:</strong> $${latest.c}</p>
+                        <p><strong>High:</strong> $${latest.h}</p>
+                        <p><strong>Low:</strong> $${latest.l}</p>
+                        <p><strong>Volume:</strong> ${latest.v?.toLocaleString()}</p>
+                        <p><strong>Bridge Latency:</strong> ${data._bridge_metadata?.latency_ms || 'N/A'}ms</p>
+                        <small>Protocol: ${data._bridge_metadata?.protocol || 'Universal Bridge'}</small>
+                    `;
+                    container.appendChild(div);
+                }
+            }
+            
+            logToBridge(message) {
+                const logContainer = document.getElementById('bridgeLogs');
+                const timestamp = new Date().toLocaleTimeString();
+                logContainer.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+            
+            async testBridgeHealth() {
+                this.logToBridge('🔧 Testing Universal Bridge health...');
+                const healthy = await this.checkBridgeHealth();
+                
+                if (healthy) {
+                    this.logToBridge('✅ Universal Bridge is healthy and operational');
+                } else {
+                    this.logToBridge('❌ Universal Bridge health check failed');
+                }
+                
+                this.updateBridgeStatus();
+            }
+        }
+        
+        // Tab functionality
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => tab.style.display = 'none');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).style.display = 'block';
+            event.target.classList.add('active');
+        }
+        
+        // Global functions
+        function startDataPulls() {
+            window.dashboard.startDataPulls();
+        }
+        
+        function stopDataPulls() {
+            window.dashboard.stopDataPulls();
+        }
+        
+        function testBridgeHealth() {
+            window.dashboard.testBridgeHealth();
+        }
+        
+        // Initialize dashboard
+        window.dashboard = new PolygonUniversalBridgeDashboard();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,69 @@
+{
+  "cursor_nasa_commands": {
+    "description": "NASA Server command aliases for Cursor IDE",
+    "version": "1.0.0",
+    "commands": {
+      "run nasa server": {
+        "command": "python cursor_commands.py \"run nasa server\"",
+        "description": "Launch NASA server with automatic configuration",
+        "category": "nasa_server"
+      },
+      "run nasa server with mcp and grpc": {
+        "command": "python cursor_commands.py \"run nasa server with mcp and grpc\"",
+        "description": "Launch full MCP+gRPC NASA server",
+        "category": "nasa_server"
+      },
+      "open nasa server": {
+        "command": "python cursor_commands.py \"open nasa server\"",
+        "description": "Open NASA server",
+        "category": "nasa_server"
+      },
+      "start nasa server": {
+        "command": "python cursor_commands.py \"start nasa server\"",
+        "description": "Start NASA server",
+        "category": "nasa_server"
+      },
+      "nasa server": {
+        "command": "python cursor_commands.py \"run nasa server\"",
+        "description": "Quick NASA server launch",
+        "category": "nasa_server"
+      },
+      "launch nasa": {
+        "command": "python cursor_commands.py \"launch nasa server\"",
+        "description": "Launch NASA server",
+        "category": "nasa_server"
+      },
+      "run nasa server minimal": {
+        "command": "python cursor_commands.py \"run nasa server minimal\"",
+        "description": "Launch minimal NASA server (no dependencies)",
+        "category": "nasa_server"
+      },
+      "stop nasa server": {
+        "command": "python cursor_commands.py \"stop nasa server\"",
+        "description": "Stop NASA server",
+        "category": "nasa_server"
+      },
+      "nasa server status": {
+        "command": "python cursor_commands.py \"nasa server status\"",
+        "description": "Check NASA server status",
+        "category": "nasa_server"
+      },
+      "check nasa server": {
+        "command": "python cursor_commands.py \"nasa server status\"",
+        "description": "Check NASA server status",
+        "category": "nasa_server"
+      },
+      "nasa help": {
+        "command": "python cursor_commands.py \"nasa server help\"",
+        "description": "Show NASA server help",
+        "category": "nasa_server"
+      }
+    },
+    "shortcuts": {
+      "nasa": "python cursor_commands.py \"run nasa server\"",
+      "run nasa": "python cursor_commands.py \"run nasa server\"",
+      "start nasa": "python cursor_commands.py \"start nasa server\"",
+      "open nasa": "python cursor_commands.py \"open nasa server\""
+    }
+  }
+} 
