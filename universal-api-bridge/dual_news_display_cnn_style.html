@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal API Bridge - CNN-Style News Display</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'CNN Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f6f6f6;
+            color: #262626;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #cc0000, #8b0000);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            letter-spacing: -1px;
+        }
+
+        .status-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+
+        .badge.live { background: rgba(34, 197, 94, 0.9); }
+        .badge.cached { background: rgba(249, 115, 22, 0.9); }
+
+        .controls-section {
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 15px 0;
+        }
+
+        .controls-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .refresh-btn {
+            background: #cc0000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .refresh-btn:hover {
+            background: #a00000;
+            transform: translateY(-1px);
+        }
+
+        .refresh-btn:disabled {
+            background: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 0.85em;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #cc0000;
+        }
+
+        .api-usage-panel {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .usage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .usage-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #262626;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .usage-summary {
+            font-size: 0.9em;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .provider-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .provider-card.newsdata {
+            border-left: 4px solid #f97316;
+        }
+
+        .provider-card.currents {
+            border-left: 4px solid #22c55e;
+        }
+
+        .provider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .provider-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #262626;
+        }
+
+        .provider-status {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .provider-status.active {
+            background: rgba(34, 197, 94, 0.2);
+            color: #15803d;
+        }
+
+        .provider-status.limited {
+            background: rgba(249, 115, 22, 0.2);
+            color: #ea580c;
+        }
+
+        .provider-status.exhausted {
+            background: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+
+        .usage-meter {
+            margin-bottom: 15px;
+        }
+
+        .usage-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .usage-progress {
+            background: #f1f5f9;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .usage-progress-bar {
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-newsdata {
+            background: linear-gradient(90deg, #f97316, #fb923c);
+        }
+
+        .progress-currents {
+            background: linear-gradient(90deg, #22c55e, #4ade80);
+        }
+
+        .usage-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .usage-stat {
+            text-align: center;
+            padding: 8px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 6px;
+        }
+
+        .usage-stat-value {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #262626;
+        }
+
+        .usage-stat-label {
+            font-size: 0.75em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            background: linear-gradient(135deg, #f1f5f9, #ffffff);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #cc0000;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.75em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .reset-button {
+            background: linear-gradient(135deg, #6b7280, #9ca3af);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background: linear-gradient(135deg, #4b5563, #6b7280);
+            transform: translateY(-1px);
+        }
+
+        .news-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .breaking-news-banner {
+            background: #cc0000;
+            color: white;
+            padding: 8px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .hero-article {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .hero-article:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-article:hover .hero-image img {
+            transform: scale(1.05);
+        }
+
+        .article-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 30px 20px 20px;
+        }
+
+        .article-category {
+            background: #cc0000;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .hero-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            line-height: 1.3;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .hero-summary {
+            font-size: 0.95em;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .trending-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #cc0000;
+            color: #262626;
+        }
+
+        .trending-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .trending-item:hover {
+            background: #f8f8f8;
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+
+        .trending-number {
+            background: #cc0000;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .trending-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #262626;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .news-card:hover .news-image img {
+            transform: scale(1.05);
+        }
+
+        .provider-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .provider-badge.newsdata { background: rgba(249, 115, 22, 0.9); }
+        .provider-badge.currents { background: rgba(34, 197, 94, 0.9); }
+
+        .cache-indicator {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(249, 115, 22, 0.9);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .image-retry-indicator {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.6em;
+            font-weight: bold;
+        }
+
+        .image-retry-indicator.retrying {
+            background: rgba(249, 115, 22, 0.9);
+            animation: pulse 1s infinite;
+        }
+
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-category {
+            background: #f0f0f0;
+            color: #666;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .news-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            color: #262626;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-summary {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8em;
+            color: #999;
+        }
+
+        .news-time {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .news-source {
+            font-weight: 600;
+            color: #cc0000;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #cc0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #262626;
+        }
+
+        .error-message, .success-message {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .logo {
+                font-size: 2em;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .hero-title {
+                font-size: 1.4em;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .controls-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .stats-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+        }
+
+        /* Click indicator overlay */
+        .clickable-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(204, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .news-card:hover .clickable-overlay,
+        .hero-article:hover .clickable-overlay {
+            opacity: 1;
+        }
+
+        .image-loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🚀 NewsCenter</div>
+            <div class="status-badges">
+                <span class="badge" id="systemStatus">System Ready</span>
+                <span class="badge live" id="liveStatus" style="display: none;">Live</span>
+                <span class="badge cached" id="cachedStatus" style="display: none;">Cached</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Controls Section -->
+    <section class="controls-section">
+        <div class="controls-content">
+            <button class="refresh-btn" id="refreshBtn" onclick="refreshNews()">
+                🔄 Refresh News
+            </button>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span>📰 Articles:</span>
+                    <span class="stat-value" id="articleCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>🖼️ Images:</span>
+                    <span class="stat-value" id="imageCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>📦 Cache Hits:</span>
+                    <span class="stat-value" id="cacheHits">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>⚡ Response:</span>
+                    <span class="stat-value" id="responseTime">-</span>
+                </div>
+                <div class="stat-item">
+                    <span>🔄 API Calls:</span>
+                    <span class="stat-value" id="apiCalls">0</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Breaking News Banner -->
+    <div class="breaking-news-banner" id="breakingBanner" style="display: none;">
+        🚨 BREAKING: Live news updates with smart caching and enhanced performance
+    </div>
+
+    <!-- API Usage Dashboard -->
+    <section class="api-usage-panel">
+        <div class="usage-header">
+            <h2 class="usage-title">
+                📊 API Usage Dashboard
+            </h2>
+            <div class="usage-summary">
+                <span>Total Calls: <strong id="totalApiCalls">0</strong></span>
+                <span>Cache Rate: <strong id="cacheRate">0%</strong></span>
+                <button class="reset-button" onclick="app.resetUsageStats()">🔄 Reset Stats</button>
+            </div>
+        </div>
+
+        <div class="providers-grid">
+            <!-- NewsData.io Provider -->
+            <div class="provider-card newsdata">
+                <div class="provider-header">
+                    <div class="provider-name">📊 NewsData.io</div>
+                    <div class="provider-status active" id="newsdataStatus">Active</div>
+                </div>
+                <div class="usage-meter">
+                    <div class="usage-label">
+                        <span>Daily Usage</span>
+                        <span><strong id="newsdataUsed">0</strong> / <strong>200</strong></span>
+                    </div>
+                    <div class="usage-progress">
+                        <div class="usage-progress-bar progress-newsdata" id="newsdataProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="usage-stats">
+                    <div class="usage-stat">
+                        <div class="usage-stat-value" id="newsdataSuccess">0</div>
+                        <div class="usage-stat-label">Success</div>
+                    </div>
+                    <div class="usage-stat">
+                        <div class="usage-stat-value" id="newsdataCache">0</div>
+                        <div class="usage-stat-label">Cache</div>
+                    </div>
+                    <div class="usage-stat">
+                        <div class="usage-stat-value" id="newsdataRemaining">200</div>
+                        <div class="usage-stat-label">Remaining</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Currents API Provider -->
+            <div class="provider-card currents">
+                <div class="provider-header">
+                    <div class="provider-name">📈 Currents API</div>
+                    <div class="provider-status active" id="currentsStatus">Active</div>
+                </div>
+                <div class="usage-meter">
+                    <div class="usage-label">
+                        <span>Daily Usage</span>
+                        <span><strong id="currentsUsed">0</strong> / <strong>20</strong></span>
+                    </div>
+                    <div class="usage-progress">
+                        <div class="usage-progress-bar progress-currents" id="currentsProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="usage-stats">
+                    <div class="usage-stat">
+                        <div class="usage-stat-value" id="currentsSuccess">0</div>
+                        <div class="usage-stat-label">Success</div>
+                    </div>
+                    <div class="usage-stat">
+                        <div class="usage-stat-value" id="currentsCache">0</div>
+                        <div class="usage-stat-label">Cache</div>
+                    </div>
+                    <div class="usage-stat">
+                        <div class="usage-stat-value" id="currentsRemaining">20</div>
+                        <div class="usage-stat-label">Remaining</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="performance-metrics">
+            <div class="metric-item">
+                <span class="metric-value" id="metricArticles">0</span>
+                <span class="metric-label">Articles</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value" id="metricImages">0</span>
+                <span class="metric-label">Images</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value" id="metricCacheHits">0</span>
+                <span class="metric-label">Cache Hits</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value" id="metricResponseTime">-</span>
+                <span class="metric-label">Response</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value" id="metricSuccessRate">100%</span>
+                <span class="metric-label">Success</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value" id="metricUptime">Ready</span>
+                <span class="metric-label">Status</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="news-container">
+        <div id="newsContent">
+            <!-- Empty state initially -->
+            <div class="empty-state">
+                <h3>📰 Welcome to NewsCenter</h3>
+                <p>Click "Refresh News" to load the latest articles from NewsData.io and Currents API</p>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #999;">
+                    Featuring smart caching, image retry, and CNN-style professional layout
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div>Loading news with smart caching...</div>
+        </div>
+    </div>
+
+    <script>
+        class CNNStyleNewsApp {
+            constructor() {
+                this.apiKeys = {
+                    newsdata: 'pub_05c05ef3d5044b3fa7a3ab3b04d479e4',
+                    currents: 'zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah'
+                };
+                
+                this.apiEndpoints = {
+                    newsdata: 'https://newsdata.io/api/1/latest',
+                    currents: 'https://api.currentsapi.services/v1/latest-news'
+                };
+                
+                this.cacheKeys = {
+                    newsdata: 'cnn_news_cache_newsdata',
+                    currents: 'cnn_news_cache_currents',
+                    metadata: 'cnn_news_cache_metadata'
+                };
+
+                this.stats = {
+                    articles: 0,
+                    images: 0,
+                    cacheHits: 0,
+                    apiCalls: 0,
+                    responseTime: 0
+                };
+
+                // API Usage tracking with daily limits
+                this.apiUsage = {
+                    newsdata: {
+                        dailyLimit: 200,
+                        used: 0,
+                        successful: 0,
+                        cached: 0,
+                        errors: 0,
+                        lastReset: this.getTodayKey()
+                    },
+                    currents: {
+                        dailyLimit: 20,
+                        used: 0,
+                        successful: 0,
+                        cached: 0,
+                        errors: 0,
+                        lastReset: this.getTodayKey()
+                    },
+                    total: {
+                        successful: 0,
+                        cached: 0,
+                        errors: 0
+                    }
+                };
+
+                // Load usage stats from localStorage
+                this.loadUsageStats();
+
+                this.imageRetryConfig = {
+                    interval: 3000,
+                    maxRetries: 5,
+                    activeRetries: new Map()
+                };
+
+                this.isLoading = false;
+                this.loadedFromCache = false;
+
+                // Initialize app
+                this.init();
+            }
+
+            async init() {
+                console.log('🚀 Initializing CNN-Style News App...');
+                
+                // Check if we need to reset daily usage
+                this.checkDailyReset();
+                
+                // Load cache immediately on page load
+                await this.loadCachedNewsOnInit();
+                
+                // Update all stats and UI
+                this.updateStats();
+                this.updateUsageDashboard();
+                
+                console.log('✅ App initialized');
+            }
+
+            getTodayKey() {
+                return new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+            }
+
+            checkDailyReset() {
+                const today = this.getTodayKey();
+                
+                if (this.apiUsage.newsdata.lastReset !== today) {
+                    console.log('🔄 Resetting NewsData.io daily usage');
+                    this.apiUsage.newsdata = {
+                        ...this.apiUsage.newsdata,
+                        used: 0,
+                        successful: 0,
+                        cached: 0,
+                        errors: 0,
+                        lastReset: today
+                    };
+                }
+                
+                if (this.apiUsage.currents.lastReset !== today) {
+                    console.log('🔄 Resetting Currents API daily usage');
+                    this.apiUsage.currents = {
+                        ...this.apiUsage.currents,
+                        used: 0,
+                        successful: 0,
+                        cached: 0,
+                        errors: 0,
+                        lastReset: today
+                    };
+                }
+                
+                this.saveUsageStats();
+            }
+
+            loadUsageStats() {
+                try {
+                    const stored = localStorage.getItem('cnn_api_usage_stats');
+                    if (stored) {
+                        const parsedStats = JSON.parse(stored);
+                        this.apiUsage = { ...this.apiUsage, ...parsedStats };
+                        console.log('📊 Loaded usage stats from localStorage');
+                    }
+                } catch (e) {
+                    console.error('❌ Failed to load usage stats:', e);
+                }
+            }
+
+            saveUsageStats() {
+                try {
+                    localStorage.setItem('cnn_api_usage_stats', JSON.stringify(this.apiUsage));
+                } catch (e) {
+                    console.error('❌ Failed to save usage stats:', e);
+                }
+            }
+
+            updateUsageForProvider(provider, success, fromCache = false) {
+                if (this.apiUsage[provider]) {
+                    if (!fromCache) {
+                        this.apiUsage[provider].used++;
+                        if (success) {
+                            this.apiUsage[provider].successful++;
+                            this.apiUsage.total.successful++;
+                        } else {
+                            this.apiUsage[provider].errors++;
+                            this.apiUsage.total.errors++;
+                        }
+                    } else {
+                        this.apiUsage[provider].cached++;
+                        this.apiUsage.total.cached++;
+                    }
+                    this.saveUsageStats();
+                    this.updateUsageDashboard();
+                }
+            }
+
+            resetUsageStats() {
+                if (confirm('Are you sure you want to reset all API usage statistics?')) {
+                    const today = this.getTodayKey();
+                    this.apiUsage = {
+                        newsdata: {
+                            dailyLimit: 200,
+                            used: 0,
+                            successful: 0,
+                            cached: 0,
+                            errors: 0,
+                            lastReset: today
+                        },
+                        currents: {
+                            dailyLimit: 20,
+                            used: 0,
+                            successful: 0,
+                            cached: 0,
+                            errors: 0,
+                            lastReset: today
+                        },
+                        total: {
+                            successful: 0,
+                            cached: 0,
+                            errors: 0
+                        }
+                    };
+                    this.saveUsageStats();
+                    this.updateUsageDashboard();
+                    console.log('🔄 Usage statistics reset');
+                }
+            }
+
+            updateUsageDashboard() {
+                // Update provider-specific stats
+                this.updateProviderStats('newsdata');
+                this.updateProviderStats('currents');
+                
+                // Update totals
+                const totalCalls = this.apiUsage.newsdata.used + this.apiUsage.currents.used;
+                const totalCacheHits = this.apiUsage.newsdata.cached + this.apiUsage.currents.cached;
+                const cacheRate = totalCalls > 0 ? Math.round((totalCacheHits / (totalCalls + totalCacheHits)) * 100) : 0;
+                
+                document.getElementById('totalApiCalls').textContent = totalCalls;
+                document.getElementById('cacheRate').textContent = `${cacheRate}%`;
+                
+                // Update performance metrics
+                document.getElementById('metricArticles').textContent = this.stats.articles;
+                document.getElementById('metricImages').textContent = this.stats.images;
+                document.getElementById('metricCacheHits').textContent = this.stats.cacheHits;
+                document.getElementById('metricResponseTime').textContent = 
+                    this.stats.responseTime > 0 ? `${this.stats.responseTime.toFixed(0)}ms` : '-';
+                
+                const totalRequests = this.apiUsage.total.successful + this.apiUsage.total.errors;
+                const successRate = totalRequests > 0 ? Math.round((this.apiUsage.total.successful / totalRequests) * 100) : 100;
+                document.getElementById('metricSuccessRate').textContent = `${successRate}%`;
+                
+                // Update status
+                const isHealthy = successRate >= 80 && totalCalls < 150; // Conservative threshold
+                document.getElementById('metricUptime').textContent = isHealthy ? 'Healthy' : 'Limited';
+            }
+
+            updateProviderStats(provider) {
+                const usage = this.apiUsage[provider];
+                const remaining = Math.max(0, usage.dailyLimit - usage.used);
+                const usagePercent = Math.min(100, (usage.used / usage.dailyLimit) * 100);
+                
+                // Update usage numbers
+                document.getElementById(`${provider}Used`).textContent = usage.used;
+                document.getElementById(`${provider}Success`).textContent = usage.successful;
+                document.getElementById(`${provider}Cache`).textContent = usage.cached;
+                document.getElementById(`${provider}Remaining`).textContent = remaining;
+                
+                // Update progress bar
+                const progressBar = document.getElementById(`${provider}ProgressBar`);
+                if (progressBar) {
+                    progressBar.style.width = `${usagePercent}%`;
+                }
+                
+                // Update status badge
+                const statusElement = document.getElementById(`${provider}Status`);
+                if (statusElement) {
+                    if (remaining === 0) {
+                        statusElement.textContent = 'Exhausted';
+                        statusElement.className = 'provider-status exhausted';
+                    } else if (remaining < usage.dailyLimit * 0.2) {
+                        statusElement.textContent = 'Limited';
+                        statusElement.className = 'provider-status limited';
+                    } else {
+                        statusElement.textContent = 'Active';
+                        statusElement.className = 'provider-status active';
+                    }
+                }
+            }
+
+            async loadCachedNewsOnInit() {
+                console.log('📦 Loading cached news on initialization...');
+                
+                try {
+                    const cachedNewsdata = this.getCachedArticles('newsdata');
+                    const cachedCurrents = this.getCachedArticles('currents');
+                    const allCached = [...cachedNewsdata, ...cachedCurrents];
+
+                    if (allCached.length > 0) {
+                        console.log(`✅ Found ${allCached.length} cached articles`);
+                        
+                        // Mark as cached
+                        const cachedArticles = allCached.map(article => ({
+                            ...article,
+                            is_cached: true,
+                            cache_source: article.cache_source || article.source_provider
+                        }));
+
+                        // Display cached news immediately
+                        this.displayCNNStyleNews(cachedArticles);
+                        this.stats.cacheHits++;
+                        this.loadedFromCache = true;
+                        
+                        // Update UI to show cached status
+                        document.getElementById('cachedStatus').style.display = 'inline-block';
+                        document.getElementById('systemStatus').textContent = 'Cache Loaded';
+                        
+                        // Show breaking banner
+                        const banner = document.getElementById('breakingBanner');
+                        banner.textContent = `📦 Loaded ${allCached.length} cached articles - Click refresh for latest news`;
+                        banner.style.display = 'block';
+                        
+                        this.updateStats();
+                    } else {
+                        console.log('📭 No cached articles found');
+                        document.getElementById('systemStatus').textContent = 'Ready - No Cache';
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading cached news:', error);
+                }
+            }
+
+            getCachedArticles(provider) {
+                try {
+                    const cached = localStorage.getItem(this.cacheKeys[provider]);
+                    if (cached) {
+                        const cacheData = JSON.parse(cached);
+                        return cacheData.articles || [];
+                    }
+                } catch (e) {
+                    console.error(`❌ Failed to load ${provider} cache:`, e);
+                }
+                return [];
+            }
+
+            cacheArticles(provider, articles) {
+                try {
+                    const cacheData = {
+                        articles: articles.map(article => ({
+                            ...article,
+                            cached_at: new Date().toISOString(),
+                            cache_source: provider
+                        })),
+                        timestamp: new Date().toISOString(),
+                        provider: provider
+                    };
+
+                    localStorage.setItem(this.cacheKeys[provider], JSON.stringify(cacheData));
+                    console.log(`✅ Cached ${articles.length} articles from ${provider}`);
+                } catch (e) {
+                    console.error(`❌ Failed to cache ${provider} articles:`, e);
+                }
+            }
+
+            showLoading() {
+                this.isLoading = true;
+                document.getElementById('loadingOverlay').classList.add('show');
+                const btn = document.getElementById('refreshBtn');
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Loading...';
+            }
+
+            hideLoading() {
+                this.isLoading = false;
+                document.getElementById('loadingOverlay').classList.remove('show');
+                const btn = document.getElementById('refreshBtn');
+                btn.disabled = false;
+                btn.innerHTML = '🔄 Refresh News';
+            }
+
+            async fetchFromNewsData() {
+                try {
+                    console.log('🔄 Fetching from NewsData.io...');
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(`${this.apiEndpoints.newsdata}?apikey=${this.apiKeys.newsdata}&language=en&size=12`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`NewsData.io API error: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    const endTime = performance.now();
+                    
+                    const articles = data.results.map(article => ({
+                        ...article,
+                        source_provider: 'newsdata',
+                        fetch_time: new Date().toISOString(),
+                        response_time: endTime - startTime,
+                        is_cached: false,
+                        link: article.link || article.url || '#',
+                        image_url: article.image_url || article.urlToImage || null
+                    }));
+
+                    this.cacheArticles('newsdata', articles);
+                    this.stats.apiCalls++;
+                    this.updateUsageForProvider('newsdata', true, false);
+                    
+                    console.log(`✅ NewsData.io: ${articles.length} articles`);
+                    
+                    return {
+                        success: true,
+                        articles: articles,
+                        responseTime: endTime - startTime,
+                        provider: 'newsdata',
+                        source: 'live'
+                    };
+                } catch (error) {
+                    console.error('❌ NewsData.io error, using cache...', error);
+                    this.updateUsageForProvider('newsdata', false, false);
+                    
+                    const cachedArticles = this.getCachedArticles('newsdata');
+                    if (cachedArticles.length > 0) {
+                        this.stats.cacheHits++;
+                        this.updateUsageForProvider('newsdata', true, true);
+                        return {
+                            success: true,
+                            articles: cachedArticles.map(article => ({ ...article, is_cached: true })),
+                            responseTime: 25,
+                            provider: 'newsdata',
+                            source: 'cached'
+                        };
+                    }
+                    
+                    return {
+                        success: false,
+                        error: error.message,
+                        articles: [],
+                        provider: 'newsdata'
+                    };
+                }
+            }
+
+            async fetchFromCurrents() {
+                try {
+                    console.log('🔄 Fetching from Currents API...');
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(`${this.apiEndpoints.currents}?apiKey=${this.apiKeys.currents}&language=en&limit=8`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Currents API error: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    const endTime = performance.now();
+                    
+                    const articles = data.news.map(article => ({
+                        ...article,
+                        source_provider: 'currents',
+                        fetch_time: new Date().toISOString(),
+                        response_time: endTime - startTime,
+                        is_cached: false,
+                        link: article.url || article.link || '#',
+                        image_url: article.image || article.urlToImage || null
+                    }));
+
+                    this.cacheArticles('currents', articles);
+                    this.stats.apiCalls++;
+                    this.updateUsageForProvider('currents', true, false);
+                    
+                    console.log(`✅ Currents API: ${articles.length} articles`);
+                    
+                    return {
+                        success: true,
+                        articles: articles,
+                        responseTime: endTime - startTime,
+                        provider: 'currents',
+                        source: 'live'
+                    };
+                } catch (error) {
+                    console.error('❌ Currents API error, using cache...', error);
+                    this.updateUsageForProvider('currents', false, false);
+                    
+                    const cachedArticles = this.getCachedArticles('currents');
+                    if (cachedArticles.length > 0) {
+                        this.stats.cacheHits++;
+                        this.updateUsageForProvider('currents', true, true);
+                        return {
+                            success: true,
+                            articles: cachedArticles.map(article => ({ ...article, is_cached: true })),
+                            responseTime: 25,
+                            provider: 'currents',
+                            source: 'cached'
+                        };
+                    }
+                    
+                    return {
+                        success: false,
+                        error: error.message,
+                        articles: [],
+                        provider: 'currents'
+                    };
+                }
+            }
+
+            async refreshNews() {
+                if (this.isLoading) return;
+
+                this.showLoading();
+                const overallStartTime = performance.now();
+
+                try {
+                    console.log('🚀 Starting CNN-style news fetch...');
+                    
+                    const [newsdataResult, currentsResult] = await Promise.all([
+                        this.fetchFromNewsData(),
+                        this.fetchFromCurrents()
+                    ]);
+
+                    const overallEndTime = performance.now();
+                    this.stats.responseTime = overallEndTime - overallStartTime;
+
+                    let allArticles = [];
+                    let liveArticles = 0;
+                    let cachedArticles = 0;
+                    
+                    if (newsdataResult.success) {
+                        allArticles = [...allArticles, ...newsdataResult.articles];
+                        if (newsdataResult.source === 'live') liveArticles++;
+                        else cachedArticles++;
+                    }
+                    
+                    if (currentsResult.success) {
+                        allArticles = [...allArticles, ...currentsResult.articles];
+                        if (currentsResult.source === 'live') liveArticles++;
+                        else cachedArticles++;
+                    }
+
+                    if (allArticles.length > 0) {
+                        this.displayCNNStyleNews(allArticles);
+                        this.showSuccessMessage(liveArticles, cachedArticles, allArticles.length);
+                        this.loadedFromCache = false;
+                    } else {
+                        this.showError('No articles available from APIs or cache.');
+                    }
+
+                    // Update status badges
+                    if (liveArticles > 0) {
+                        document.getElementById('liveStatus').style.display = 'inline-block';
+                        document.getElementById('systemStatus').textContent = 'Live Updated';
+                    }
+                    if (cachedArticles > 0) {
+                        document.getElementById('cachedStatus').style.display = 'inline-block';
+                    }
+
+                } catch (error) {
+                    console.error('❌ News fetch error:', error);
+                    this.showError(`Failed to fetch news: ${error.message}`);
+                } finally {
+                    this.hideLoading();
+                    this.updateStats();
+                }
+            }
+
+            displayCNNStyleNews(articles) {
+                const container = document.getElementById('newsContent');
+                if (!articles || articles.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>📭 No News Available</h3>
+                            <p>No articles found. Try refreshing to fetch new content.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort articles by publish date
+                articles.sort((a, b) => {
+                    const dateA = new Date(a.pubDate || a.published || a.publishedAt || Date.now());
+                    const dateB = new Date(b.pubDate || b.published || b.publishedAt || Date.now());
+                    return dateB - dateA;
+                });
+
+                const heroArticle = articles[0];
+                const trendingArticles = articles.slice(1, 6);
+                const gridArticles = articles.slice(6);
+
+                const cnnLayout = `
+                    <div class="main-content">
+                        <!-- Hero Article -->
+                        <article class="hero-article" onclick="openArticle('${heroArticle.link}')">
+                            <div class="hero-image ${this.getImageClass(heroArticle.image_url)}" id="hero_image">
+                                ${this.createImageElement(heroArticle.image_url, 'hero')}
+                            </div>
+                            <div class="article-overlay">
+                                <span class="article-category">${this.getCategory(heroArticle)}</span>
+                                <h1 class="hero-title">${this.sanitizeText(heroArticle.title || 'Breaking News')}</h1>
+                                <p class="hero-summary">${this.sanitizeText(heroArticle.description || heroArticle.content || '')}</p>
+                            </div>
+                            <div class="clickable-overlay">🔗 Click to read full article</div>
+                            ${this.getCacheIndicator(heroArticle)}
+                            ${this.getProviderBadge(heroArticle)}
+                        </article>
+
+                        <!-- Sidebar -->
+                        <aside class="sidebar">
+                            <div class="trending-section">
+                                <h2 class="section-title">🔥 Trending Now</h2>
+                                ${trendingArticles.map((article, index) => `
+                                    <div class="trending-item" onclick="openArticle('${article.link}')">
+                                        <div class="trending-number">${index + 1}</div>
+                                        <div class="trending-title">${this.sanitizeText(article.title || 'News Update')}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </aside>
+                    </div>
+
+                    <!-- News Grid -->
+                    <div class="news-grid">
+                        ${gridArticles.map(article => this.createNewsCard(article)).join('')}
+                    </div>
+                `;
+
+                container.innerHTML = cnnLayout;
+                this.stats.articles = articles.length;
+                this.initializeImageLoading();
+            }
+
+            createNewsCard(article) {
+                const articleId = `article_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                
+                return `
+                    <article class="news-card" onclick="openArticle('${article.link}')">
+                        <div class="news-image ${this.getImageClass(article.image_url)}" id="${articleId}_image">
+                            ${this.createImageElement(article.image_url, articleId)}
+                        </div>
+                        <div class="news-content">
+                            <span class="news-category">${this.getCategory(article)}</span>
+                            <h3 class="news-title">${this.sanitizeText(article.title || 'News Update')}</h3>
+                            <p class="news-summary">${this.sanitizeText(article.description || article.content || '')}</p>
+                            <div class="news-meta">
+                                <div class="news-time">
+                                    ⏰ ${this.formatTime(article.pubDate || article.published || article.publishedAt)}
+                                </div>
+                                <div class="news-source">${this.getSourceName(article)}</div>
+                            </div>
+                        </div>
+                        <div class="clickable-overlay">🔗 Read Full Story</div>
+                        ${this.getCacheIndicator(article)}
+                        ${this.getProviderBadge(article)}
+                    </article>
+                `;
+            }
+
+            createImageElement(imageUrl, articleId) {
+                if (!imageUrl) {
+                    return '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">📰 No Image</div>';
+                }
+
+                this.stats.images++;
+                return `
+                    <img src="" data-src="${imageUrl}" alt="News image" 
+                         style="display: none;" 
+                         onload="app.handleImageLoad(this)" 
+                         onerror="app.handleImageError(this, '${articleId}')">
+                    <div class="image-retry-indicator" id="${articleId}_retry" style="display: none;">Loading...</div>
+                `;
+            }
+
+            getImageClass(imageUrl) {
+                return imageUrl ? 'image-loading' : '';
+            }
+
+            getCacheIndicator(article) {
+                return article.is_cached ? '<div class="cache-indicator">📦 CACHED</div>' : '';
+            }
+
+            getProviderBadge(article) {
+                const provider = article.source_provider || article.cache_source;
+                return `<div class="provider-badge ${provider}">${provider?.toUpperCase() || 'NEWS'}</div>`;
+            }
+
+            getCategory(article) {
+                return article.category || 'NEWS';
+            }
+
+            getSourceName(article) {
+                return article.source_id || article.source_provider || 'NewsCenter';
+            }
+
+            formatTime(dateString) {
+                if (!dateString) return 'Recently';
+                const date = new Date(dateString);
+                const now = new Date();
+                const diff = now - date;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                
+                if (hours < 1) return 'Just now';
+                if (hours < 24) return `${hours}h ago`;
+                return date.toLocaleDateString();
+            }
+
+            sanitizeText(text) {
+                if (typeof text !== 'string') return '';
+                return text.replace(/[<>]/g, '').trim().substring(0, 200);
+            }
+
+            initializeImageLoading() {
+                const images = document.querySelectorAll('img[data-src]');
+                images.forEach(img => {
+                    const src = img.dataset.src;
+                    if (src) {
+                        img.src = src;
+                    }
+                });
+            }
+
+            handleImageLoad(img) {
+                img.style.display = 'block';
+                img.parentElement.classList.remove('image-loading');
+                
+                const articleId = img.closest('[id*="_image"]')?.id.replace('_image', '');
+                if (articleId) {
+                    const retryIndicator = document.getElementById(`${articleId}_retry`);
+                    if (retryIndicator) retryIndicator.style.display = 'none';
+                }
+            }
+
+            handleImageError(img, articleId) {
+                const retryIndicator = document.getElementById(`${articleId}_retry`);
+                if (retryIndicator) {
+                    retryIndicator.style.display = 'block';
+                    retryIndicator.className = 'image-retry-indicator retrying';
+                    retryIndicator.textContent = 'Retrying...';
+                }
+                this.startImageRetry(img, articleId);
+            }
+
+            startImageRetry(img, articleId) {
+                if (this.imageRetryConfig.activeRetries.has(articleId)) return;
+
+                let retryCount = 0;
+                const originalSrc = img.dataset.src;
+
+                const retryTimer = setInterval(() => {
+                    retryCount++;
+                    console.log(`🔄 Image retry ${retryCount}/${this.imageRetryConfig.maxRetries} for: ${originalSrc}`);
+                    
+                    const retryIndicator = document.getElementById(`${articleId}_retry`);
+                    if (retryIndicator) {
+                        retryIndicator.textContent = `Retry ${retryCount}/${this.imageRetryConfig.maxRetries}`;
+                    }
+                    
+                    img.src = '';
+                    setTimeout(() => { img.src = originalSrc; }, 100);
+                    
+                    if (retryCount >= this.imageRetryConfig.maxRetries) {
+                        clearInterval(retryTimer);
+                        this.imageRetryConfig.activeRetries.delete(articleId);
+                        
+                        if (retryIndicator) {
+                            retryIndicator.textContent = 'Failed';
+                            retryIndicator.style.background = 'rgba(220, 38, 38, 0.9)';
+                        }
+                        
+                        img.style.display = 'none';
+                        img.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">📰 Image Unavailable</div>';
+                    }
+                }, this.imageRetryConfig.interval);
+                
+                this.imageRetryConfig.activeRetries.set(articleId, retryTimer);
+                
+                const onRetrySuccess = () => {
+                    clearInterval(retryTimer);
+                    this.imageRetryConfig.activeRetries.delete(articleId);
+                    img.removeEventListener('load', onRetrySuccess);
+                    this.handleImageLoad(img);
+                };
+                
+                img.addEventListener('load', onRetrySuccess);
+            }
+
+            updateStats() {
+                document.getElementById('articleCount').textContent = this.stats.articles;
+                document.getElementById('imageCount').textContent = this.stats.images;
+                document.getElementById('cacheHits').textContent = this.stats.cacheHits;
+                document.getElementById('responseTime').textContent = 
+                    this.stats.responseTime > 0 ? `${this.stats.responseTime.toFixed(0)}ms` : '-';
+                document.getElementById('apiCalls').textContent = this.stats.apiCalls;
+            }
+
+            showSuccessMessage(liveProviders, cachedProviders, totalArticles) {
+                const container = document.getElementById('newsContent');
+                const banner = document.getElementById('breakingBanner');
+                
+                if (liveProviders > 0 && cachedProviders > 0) {
+                    banner.textContent = `🔄 Updated: ${totalArticles} articles (${liveProviders} live + ${cachedProviders} cached providers)`;
+                } else if (liveProviders > 0) {
+                    banner.textContent = `✅ Live: ${totalArticles} fresh articles loaded`;
+                } else {
+                    banner.textContent = `📦 Cache: ${totalArticles} cached articles displayed`;
+                }
+                
+                banner.style.display = 'block';
+                
+                setTimeout(() => {
+                    banner.style.display = 'none';
+                }, 5000);
+            }
+
+            showError(message) {
+                const container = document.getElementById('newsContent');
+                container.innerHTML = `
+                    <div class="error-message">
+                        <h3>❌ Error Loading News</h3>
+                        <p>${this.sanitizeText(message)}</p>
+                        <button onclick="app.refreshNews()" class="refresh-btn" style="margin-top: 15px;">
+                            🔄 Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Global functions
+        let app;
+
+        function refreshNews() {
+            if (app) {
+                app.refreshNews();
+            }
+        }
+
+        function openArticle(url) {
+            if (url && url !== '#') {
+                window.open(url, '_blank', 'noopener,noreferrer');
+                console.log(`🔗 Opened article: ${url}`);
+            }
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            app = new CNNStyleNewsApp();
+            console.log('🚀 CNN-Style News App with cache loading initialized');
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (app && app.imageRetryConfig.activeRetries) {
+                app.imageRetryConfig.activeRetries.forEach(timer => clearInterval(timer));
+            }
+        });
+
+        // Error handling
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+        });
+    </script>
+</body>
+</html> 

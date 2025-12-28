@@ -1,0 +1,2146 @@
+{
+  "timestamp": 1753443968.2204988,
+  "analysis_summary": {
+    "codebase_metrics": {
+      "total_files": 13,
+      "total_lines": 6343,
+      "total_functions": 126,
+      "complex_functions": [
+        {
+          "file": "src\\universal_api_bridge\\bridge.py",
+          "function": "register_service",
+          "lines": 172,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\bridge.py",
+          "function": "configure_massive_scale",
+          "lines": 277,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\bridge.py",
+          "function": "run",
+          "lines": 208,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\bridge.py",
+          "function": "quick_bridge",
+          "lines": 73,
+          "complexity": "high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\config.py",
+          "function": "endpoint",
+          "lines": 263,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\config.py",
+          "function": "create_massive_scale_config",
+          "lines": 52,
+          "complexity": "high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\gateway.py",
+          "function": "setup_routes",
+          "lines": 335,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\schema.py",
+          "function": "_initialize_mappings",
+          "lines": 152,
+          "complexity": "high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\schema.py",
+          "function": "_set_nested_value",
+          "lines": 120,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\sdk.py",
+          "function": "__init__",
+          "lines": 54,
+          "complexity": "high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\security.py",
+          "function": "__init__",
+          "lines": 113,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\security.py",
+          "function": "_get_client_ip",
+          "lines": 105,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\utils.py",
+          "function": "validate_service_name",
+          "lines": 58,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\utils.py",
+          "function": "validate_endpoint",
+          "lines": 65,
+          "complexity": "high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\utils.py",
+          "function": "validate_endpoint_connectivity",
+          "lines": 53,
+          "complexity": "high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\utils.py",
+          "function": "validate_configuration",
+          "lines": 54,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\utils.py",
+          "function": "format_error_for_user",
+          "lines": 80,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\mcp\\circuit_breaker.py",
+          "function": "__init__",
+          "lines": 256,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\mcp\\circuit_breaker.py",
+          "function": "_get_adaptive_threshold",
+          "lines": 203,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\mcp\\circuit_breaker.py",
+          "function": "get_metrics",
+          "lines": 90,
+          "complexity": "high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\mcp\\connection_pool.py",
+          "function": "__init__",
+          "lines": 157,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\mcp\\layer.py",
+          "function": "__init__",
+          "lines": 344,
+          "complexity": "very_high"
+        },
+        {
+          "file": "src\\universal_api_bridge\\mcp\\registry.py",
+          "function": "__init__",
+          "lines": 624,
+          "complexity": "very_high"
+        }
+      ],
+      "duplicate_code_candidates": [],
+      "optimization_opportunities": [
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function 'register_service' has 172 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\bridge.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function 'configure_massive_scale' has 277 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\bridge.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function 'run' has 208 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\bridge.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function 'endpoint' has 263 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\config.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function 'setup_routes' has 335 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\gateway.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function '_initialize_mappings' has 152 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\schema.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function '_set_nested_value' has 120 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\schema.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function '__init__' has 113 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\security.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function '_get_client_ip' has 105 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\security.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function '__init__' has 256 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\mcp\\circuit_breaker.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function '_get_adaptive_threshold' has 203 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\mcp\\circuit_breaker.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function '__init__' has 157 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\mcp\\connection_pool.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function '__init__' has 344 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\mcp\\layer.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "function_decomposition",
+          "priority": "high",
+          "description": "Function '__init__' has 624 lines and should be decomposed",
+          "file": "src\\universal_api_bridge\\mcp\\registry.py",
+          "suggestion": "Break into smaller, focused functions following SRP"
+        },
+        {
+          "type": "import_optimization",
+          "priority": "medium",
+          "description": "File has 29 imports",
+          "file": "src\\universal_api_bridge\\security.py",
+          "suggestion": "Consider lazy imports or module restructuring"
+        }
+      ],
+      "file_analysis": {
+        "src\\universal_api_bridge\\bridge.py": {
+          "lines": 920,
+          "non_empty_lines": 747,
+          "comment_lines": 62,
+          "function_count": 14,
+          "class_count": 1,
+          "import_count": 15,
+          "functions": [
+            {
+              "name": "__init__",
+              "start_line": 50,
+              "end_line": 74,
+              "lines": 24,
+              "complexity": "low"
+            },
+            {
+              "name": "register_service",
+              "start_line": 74,
+              "end_line": 246,
+              "lines": 172,
+              "complexity": "very_high"
+            },
+            {
+              "name": "register_service_cluster",
+              "start_line": 246,
+              "end_line": 269,
+              "lines": 23,
+              "complexity": "medium"
+            },
+            {
+              "name": "auto_discover_services",
+              "start_line": 269,
+              "end_line": 285,
+              "lines": 16,
+              "complexity": "medium"
+            },
+            {
+              "name": "configure_massive_scale",
+              "start_line": 285,
+              "end_line": 562,
+              "lines": 277,
+              "complexity": "very_high"
+            },
+            {
+              "name": "run",
+              "start_line": 562,
+              "end_line": 770,
+              "lines": 208,
+              "complexity": "very_high"
+            },
+            {
+              "name": "enable_performance_mode",
+              "start_line": 770,
+              "end_line": 780,
+              "lines": 10,
+              "complexity": "low"
+            },
+            {
+              "name": "enable_memory_optimization",
+              "start_line": 780,
+              "end_line": 790,
+              "lines": 10,
+              "complexity": "low"
+            },
+            {
+              "name": "is_running",
+              "start_line": 790,
+              "end_line": 794,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "is_ready",
+              "start_line": 794,
+              "end_line": 798,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "get_service_count",
+              "start_line": 798,
+              "end_line": 802,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "get_supported_endpoints",
+              "start_line": 802,
+              "end_line": 813,
+              "lines": 11,
+              "complexity": "medium"
+            },
+            {
+              "name": "create_universal_bridge",
+              "start_line": 813,
+              "end_line": 847,
+              "lines": 34,
+              "complexity": "medium"
+            },
+            {
+              "name": "quick_bridge",
+              "start_line": 847,
+              "end_line": 920,
+              "lines": 73,
+              "complexity": "high"
+            }
+          ],
+          "classes": [
+            {
+              "name": "UniversalBridge",
+              "start_line": 37,
+              "end_line": 920,
+              "lines": 883
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\config.py": {
+          "lines": 633,
+          "non_empty_lines": 508,
+          "comment_lines": 69,
+          "function_count": 10,
+          "class_count": 16,
+          "import_count": 13,
+          "functions": [
+            {
+              "name": "endpoint",
+              "start_line": 182,
+              "end_line": 445,
+              "lines": 263,
+              "complexity": "very_high"
+            },
+            {
+              "name": "add_service_cluster",
+              "start_line": 445,
+              "end_line": 449,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "get_service_cluster",
+              "start_line": 449,
+              "end_line": 453,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "get_all_endpoints",
+              "start_line": 453,
+              "end_line": 460,
+              "lines": 7,
+              "complexity": "low"
+            },
+            {
+              "name": "get_total_service_count",
+              "start_line": 460,
+              "end_line": 464,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "validate_massive_scale",
+              "start_line": 464,
+              "end_line": 503,
+              "lines": 39,
+              "complexity": "very_high"
+            },
+            {
+              "name": "load_from_file",
+              "start_line": 503,
+              "end_line": 536,
+              "lines": 33,
+              "complexity": "very_high"
+            },
+            {
+              "name": "create_massive_scale_config",
+              "start_line": 536,
+              "end_line": 588,
+              "lines": 52,
+              "complexity": "high"
+            },
+            {
+              "name": "create_security_hardened_config",
+              "start_line": 588,
+              "end_line": 613,
+              "lines": 25,
+              "complexity": "medium"
+            },
+            {
+              "name": "create_cluster_from_endpoints",
+              "start_line": 613,
+              "end_line": 633,
+              "lines": 20,
+              "complexity": "low"
+            }
+          ],
+          "classes": [
+            {
+              "name": "AuthenticationType",
+              "start_line": 15,
+              "end_line": 25,
+              "lines": 10
+            },
+            {
+              "name": "RateLimitStrategy",
+              "start_line": 25,
+              "end_line": 33,
+              "lines": 8
+            },
+            {
+              "name": "SecurityConfig",
+              "start_line": 33,
+              "end_line": 106,
+              "lines": 73
+            },
+            {
+              "name": "LoadBalancingStrategy",
+              "start_line": 106,
+              "end_line": 119,
+              "lines": 13
+            },
+            {
+              "name": "ServiceDiscoveryBackend",
+              "start_line": 119,
+              "end_line": 129,
+              "lines": 10
+            },
+            {
+              "name": "CacheBackend",
+              "start_line": 129,
+              "end_line": 138,
+              "lines": 9
+            },
+            {
+              "name": "ProtocolType",
+              "start_line": 138,
+              "end_line": 148,
+              "lines": 10
+            },
+            {
+              "name": "CircuitBreakerState",
+              "start_line": 148,
+              "end_line": 156,
+              "lines": 8
+            },
+            {
+              "name": "ServiceEndpoint",
+              "start_line": 156,
+              "end_line": 187,
+              "lines": 31
+            },
+            {
+              "name": "ServiceCluster",
+              "start_line": 187,
+              "end_line": 205,
+              "lines": 18
+            },
+            {
+              "name": "MCPConfig",
+              "start_line": 205,
+              "end_line": 282,
+              "lines": 77
+            },
+            {
+              "name": "FrontendConfig",
+              "start_line": 282,
+              "end_line": 318,
+              "lines": 36
+            },
+            {
+              "name": "MonitoringConfig",
+              "start_line": 318,
+              "end_line": 385,
+              "lines": 67
+            },
+            {
+              "name": "PerformanceConfig",
+              "start_line": 385,
+              "end_line": 410,
+              "lines": 25
+            },
+            {
+              "name": "BridgeConfig",
+              "start_line": 410,
+              "end_line": 439,
+              "lines": 29
+            },
+            {
+              "name": "Config",
+              "start_line": 439,
+              "end_line": 633,
+              "lines": 194
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\exceptions.py": {
+          "lines": 134,
+          "non_empty_lines": 86,
+          "comment_lines": 0,
+          "function_count": 16,
+          "class_count": 16,
+          "import_count": 0,
+          "functions": [
+            {
+              "name": "__init__",
+              "start_line": 6,
+              "end_line": 16,
+              "lines": 10,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 16,
+              "end_line": 25,
+              "lines": 9,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 25,
+              "end_line": 34,
+              "lines": 9,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 34,
+              "end_line": 43,
+              "lines": 9,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 43,
+              "end_line": 52,
+              "lines": 9,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 52,
+              "end_line": 60,
+              "lines": 8,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 60,
+              "end_line": 69,
+              "lines": 9,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 69,
+              "end_line": 77,
+              "lines": 8,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 77,
+              "end_line": 85,
+              "lines": 8,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 85,
+              "end_line": 95,
+              "lines": 10,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 95,
+              "end_line": 103,
+              "lines": 8,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 103,
+              "end_line": 110,
+              "lines": 7,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 110,
+              "end_line": 117,
+              "lines": 7,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 117,
+              "end_line": 124,
+              "lines": 7,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 124,
+              "end_line": 131,
+              "lines": 7,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 131,
+              "end_line": 134,
+              "lines": 3,
+              "complexity": "low"
+            }
+          ],
+          "classes": [
+            {
+              "name": "BridgeError",
+              "start_line": 3,
+              "end_line": 13,
+              "lines": 10
+            },
+            {
+              "name": "GRPCConnectionError",
+              "start_line": 13,
+              "end_line": 22,
+              "lines": 9
+            },
+            {
+              "name": "SchemaTranslationError",
+              "start_line": 22,
+              "end_line": 31,
+              "lines": 9
+            },
+            {
+              "name": "LoadBalancingError",
+              "start_line": 31,
+              "end_line": 40,
+              "lines": 9
+            },
+            {
+              "name": "CircuitBreakerError",
+              "start_line": 40,
+              "end_line": 49,
+              "lines": 9
+            },
+            {
+              "name": "ServiceUnavailableError",
+              "start_line": 49,
+              "end_line": 57,
+              "lines": 8
+            },
+            {
+              "name": "ConnectionPoolExhaustedError",
+              "start_line": 57,
+              "end_line": 66,
+              "lines": 9
+            },
+            {
+              "name": "ServiceRegistryError",
+              "start_line": 66,
+              "end_line": 74,
+              "lines": 8
+            },
+            {
+              "name": "ConfigurationError",
+              "start_line": 74,
+              "end_line": 82,
+              "lines": 8
+            },
+            {
+              "name": "PerformanceError",
+              "start_line": 82,
+              "end_line": 92,
+              "lines": 10
+            },
+            {
+              "name": "RateLimitError",
+              "start_line": 92,
+              "end_line": 100,
+              "lines": 8
+            },
+            {
+              "name": "AuthenticationError",
+              "start_line": 100,
+              "end_line": 107,
+              "lines": 7
+            },
+            {
+              "name": "AuthorizationError",
+              "start_line": 107,
+              "end_line": 114,
+              "lines": 7
+            },
+            {
+              "name": "SecurityError",
+              "start_line": 114,
+              "end_line": 121,
+              "lines": 7
+            },
+            {
+              "name": "InputValidationError",
+              "start_line": 121,
+              "end_line": 128,
+              "lines": 7
+            },
+            {
+              "name": "TimeoutError",
+              "start_line": 128,
+              "end_line": 134,
+              "lines": 6
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\gateway.py": {
+          "lines": 431,
+          "non_empty_lines": 367,
+          "comment_lines": 29,
+          "function_count": 4,
+          "class_count": 2,
+          "import_count": 15,
+          "functions": [
+            {
+              "name": "__init__",
+              "start_line": 38,
+              "end_line": 52,
+              "lines": 14,
+              "complexity": "low"
+            },
+            {
+              "name": "setup_middleware",
+              "start_line": 52,
+              "end_line": 84,
+              "lines": 32,
+              "complexity": "low"
+            },
+            {
+              "name": "setup_routes",
+              "start_line": 84,
+              "end_line": 419,
+              "lines": 335,
+              "complexity": "very_high"
+            },
+            {
+              "name": "is_running",
+              "start_line": 419,
+              "end_line": 431,
+              "lines": 12,
+              "complexity": "low"
+            }
+          ],
+          "classes": [
+            {
+              "name": "RequestContext",
+              "start_line": 24,
+              "end_line": 35,
+              "lines": 11
+            },
+            {
+              "name": "UniversalGateway",
+              "start_line": 35,
+              "end_line": 431,
+              "lines": 396
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\schema.py": {
+          "lines": 407,
+          "non_empty_lines": 338,
+          "comment_lines": 30,
+          "function_count": 9,
+          "class_count": 3,
+          "import_count": 6,
+          "functions": [
+            {
+              "name": "__init__",
+              "start_line": 38,
+              "end_line": 41,
+              "lines": 3,
+              "complexity": "low"
+            },
+            {
+              "name": "_initialize_mappings",
+              "start_line": 41,
+              "end_line": 193,
+              "lines": 152,
+              "complexity": "high"
+            },
+            {
+              "name": "_determine_grpc_method",
+              "start_line": 193,
+              "end_line": 222,
+              "lines": 29,
+              "complexity": "high"
+            },
+            {
+              "name": "_match_endpoint_pattern",
+              "start_line": 222,
+              "end_line": 244,
+              "lines": 22,
+              "complexity": "high"
+            },
+            {
+              "name": "_translate_fields",
+              "start_line": 244,
+              "end_line": 272,
+              "lines": 28,
+              "complexity": "high"
+            },
+            {
+              "name": "_set_nested_value",
+              "start_line": 272,
+              "end_line": 392,
+              "lines": 120,
+              "complexity": "very_high"
+            },
+            {
+              "name": "get_service_schema",
+              "start_line": 392,
+              "end_line": 397,
+              "lines": 5,
+              "complexity": "low"
+            },
+            {
+              "name": "add_service_mapping",
+              "start_line": 397,
+              "end_line": 403,
+              "lines": 6,
+              "complexity": "low"
+            },
+            {
+              "name": "get_supported_services",
+              "start_line": 403,
+              "end_line": 407,
+              "lines": 4,
+              "complexity": "low"
+            }
+          ],
+          "classes": [
+            {
+              "name": "DataType",
+              "start_line": 13,
+              "end_line": 25,
+              "lines": 12
+            },
+            {
+              "name": "FieldSchema",
+              "start_line": 25,
+              "end_line": 35,
+              "lines": 10
+            },
+            {
+              "name": "SchemaTranslator",
+              "start_line": 35,
+              "end_line": 407,
+              "lines": 372
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\sdk.py": {
+          "lines": 68,
+          "non_empty_lines": 53,
+          "comment_lines": 0,
+          "function_count": 1,
+          "class_count": 1,
+          "import_count": 5,
+          "functions": [
+            {
+              "name": "__init__",
+              "start_line": 14,
+              "end_line": 68,
+              "lines": 54,
+              "complexity": "high"
+            }
+          ],
+          "classes": [
+            {
+              "name": "UniversalSDK",
+              "start_line": 11,
+              "end_line": 68,
+              "lines": 57
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\security.py": {
+          "lines": 725,
+          "non_empty_lines": 593,
+          "comment_lines": 33,
+          "function_count": 31,
+          "class_count": 11,
+          "import_count": 29,
+          "functions": [
+            {
+              "name": "__init__",
+              "start_line": 115,
+              "end_line": 121,
+              "lines": 6,
+              "complexity": "low"
+            },
+            {
+              "name": "consume",
+              "start_line": 121,
+              "end_line": 138,
+              "lines": 17,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 138,
+              "end_line": 144,
+              "lines": 6,
+              "complexity": "low"
+            },
+            {
+              "name": "create_token",
+              "start_line": 144,
+              "end_line": 156,
+              "lines": 12,
+              "complexity": "low"
+            },
+            {
+              "name": "verify_token",
+              "start_line": 156,
+              "end_line": 175,
+              "lines": 19,
+              "complexity": "medium"
+            },
+            {
+              "name": "__init__",
+              "start_line": 175,
+              "end_line": 207,
+              "lines": 32,
+              "complexity": "high"
+            },
+            {
+              "name": "__init__",
+              "start_line": 207,
+              "end_line": 212,
+              "lines": 5,
+              "complexity": "low"
+            },
+            {
+              "name": "_init_demo_keys",
+              "start_line": 212,
+              "end_line": 224,
+              "lines": 12,
+              "complexity": "low"
+            },
+            {
+              "name": "create_api_key",
+              "start_line": 224,
+              "end_line": 237,
+              "lines": 13,
+              "complexity": "low"
+            },
+            {
+              "name": "verify_api_key",
+              "start_line": 237,
+              "end_line": 256,
+              "lines": 19,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 256,
+              "end_line": 267,
+              "lines": 11,
+              "complexity": "low"
+            },
+            {
+              "name": "_get_key",
+              "start_line": 267,
+              "end_line": 271,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "check_rate_limit",
+              "start_line": 271,
+              "end_line": 288,
+              "lines": 17,
+              "complexity": "medium"
+            },
+            {
+              "name": "_check_token_bucket",
+              "start_line": 288,
+              "end_line": 298,
+              "lines": 10,
+              "complexity": "low"
+            },
+            {
+              "name": "_check_fixed_window",
+              "start_line": 298,
+              "end_line": 319,
+              "lines": 21,
+              "complexity": "medium"
+            },
+            {
+              "name": "_check_sliding_window",
+              "start_line": 319,
+              "end_line": 346,
+              "lines": 27,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 346,
+              "end_line": 350,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "_compile_rules",
+              "start_line": 350,
+              "end_line": 357,
+              "lines": 7,
+              "complexity": "medium"
+            },
+            {
+              "name": "scan_request",
+              "start_line": 357,
+              "end_line": 383,
+              "lines": 26,
+              "complexity": "high"
+            },
+            {
+              "name": "__init__",
+              "start_line": 383,
+              "end_line": 386,
+              "lines": 3,
+              "complexity": "low"
+            },
+            {
+              "name": "validate_request_size",
+              "start_line": 386,
+              "end_line": 390,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "sanitize_input",
+              "start_line": 390,
+              "end_line": 404,
+              "lines": 14,
+              "complexity": "high"
+            },
+            {
+              "name": "_sanitize_string",
+              "start_line": 404,
+              "end_line": 427,
+              "lines": 23,
+              "complexity": "medium"
+            },
+            {
+              "name": "__init__",
+              "start_line": 427,
+              "end_line": 540,
+              "lines": 113,
+              "complexity": "very_high"
+            },
+            {
+              "name": "_get_client_ip",
+              "start_line": 540,
+              "end_line": 645,
+              "lines": 105,
+              "complexity": "very_high"
+            },
+            {
+              "name": "_add_security_headers",
+              "start_line": 645,
+              "end_line": 683,
+              "lines": 38,
+              "complexity": "medium"
+            },
+            {
+              "name": "__init__",
+              "start_line": 683,
+              "end_line": 692,
+              "lines": 9,
+              "complexity": "low"
+            },
+            {
+              "name": "get_middleware",
+              "start_line": 692,
+              "end_line": 714,
+              "lines": 22,
+              "complexity": "low"
+            },
+            {
+              "name": "create_api_key",
+              "start_line": 714,
+              "end_line": 718,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "check_rate_limit",
+              "start_line": 718,
+              "end_line": 722,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "validate_input",
+              "start_line": 722,
+              "end_line": 725,
+              "lines": 3,
+              "complexity": "low"
+            }
+          ],
+          "classes": [
+            {
+              "name": "SecurityContext",
+              "start_line": 88,
+              "end_line": 104,
+              "lines": 16
+            },
+            {
+              "name": "RateLimitInfo",
+              "start_line": 104,
+              "end_line": 112,
+              "lines": 8
+            },
+            {
+              "name": "TokenBucket",
+              "start_line": 112,
+              "end_line": 135,
+              "lines": 23
+            },
+            {
+              "name": "JWTManager",
+              "start_line": 135,
+              "end_line": 172,
+              "lines": 37
+            },
+            {
+              "name": "OAuth2Manager",
+              "start_line": 172,
+              "end_line": 204,
+              "lines": 32
+            },
+            {
+              "name": "APIKeyManager",
+              "start_line": 204,
+              "end_line": 253,
+              "lines": 49
+            },
+            {
+              "name": "RateLimiter",
+              "start_line": 253,
+              "end_line": 343,
+              "lines": 90
+            },
+            {
+              "name": "WAFEngine",
+              "start_line": 343,
+              "end_line": 380,
+              "lines": 37
+            },
+            {
+              "name": "InputValidator",
+              "start_line": 380,
+              "end_line": 424,
+              "lines": 44
+            },
+            {
+              "name": "SecurityMiddleware",
+              "start_line": 424,
+              "end_line": 680,
+              "lines": 256
+            },
+            {
+              "name": "SecurityManager",
+              "start_line": 680,
+              "end_line": 725,
+              "lines": 45
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\utils.py": {
+          "lines": 685,
+          "non_empty_lines": 585,
+          "comment_lines": 17,
+          "function_count": 18,
+          "class_count": 4,
+          "import_count": 11,
+          "functions": [
+            {
+              "name": "add_error",
+              "start_line": 25,
+              "end_line": 32,
+              "lines": 7,
+              "complexity": "low"
+            },
+            {
+              "name": "add_warning",
+              "start_line": 32,
+              "end_line": 36,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "to_dict",
+              "start_line": 36,
+              "end_line": 50,
+              "lines": 14,
+              "complexity": "medium"
+            },
+            {
+              "name": "service_registration_help",
+              "start_line": 50,
+              "end_line": 85,
+              "lines": 35,
+              "complexity": "high"
+            },
+            {
+              "name": "connection_help",
+              "start_line": 85,
+              "end_line": 123,
+              "lines": 38,
+              "complexity": "medium"
+            },
+            {
+              "name": "performance_help",
+              "start_line": 123,
+              "end_line": 165,
+              "lines": 42,
+              "complexity": "very_high"
+            },
+            {
+              "name": "validate_service_name",
+              "start_line": 165,
+              "end_line": 223,
+              "lines": 58,
+              "complexity": "very_high"
+            },
+            {
+              "name": "validate_endpoint",
+              "start_line": 223,
+              "end_line": 288,
+              "lines": 65,
+              "complexity": "high"
+            },
+            {
+              "name": "validate_endpoint_connectivity",
+              "start_line": 288,
+              "end_line": 341,
+              "lines": 53,
+              "complexity": "high"
+            },
+            {
+              "name": "with_retry",
+              "start_line": 341,
+              "end_line": 349,
+              "lines": 8,
+              "complexity": "low"
+            },
+            {
+              "name": "decorator",
+              "start_line": 349,
+              "end_line": 381,
+              "lines": 32,
+              "complexity": "medium"
+            },
+            {
+              "name": "sync_wrapper",
+              "start_line": 381,
+              "end_line": 412,
+              "lines": 31,
+              "complexity": "medium"
+            },
+            {
+              "name": "log_performance",
+              "start_line": 412,
+              "end_line": 441,
+              "lines": 29,
+              "complexity": "low"
+            },
+            {
+              "name": "sync_wrapper",
+              "start_line": 441,
+              "end_line": 471,
+              "lines": 30,
+              "complexity": "medium"
+            },
+            {
+              "name": "__init__",
+              "start_line": 471,
+              "end_line": 506,
+              "lines": 35,
+              "complexity": "medium"
+            },
+            {
+              "name": "validate_configuration",
+              "start_line": 506,
+              "end_line": 560,
+              "lines": 54,
+              "complexity": "very_high"
+            },
+            {
+              "name": "format_error_for_user",
+              "start_line": 560,
+              "end_line": 640,
+              "lines": 80,
+              "complexity": "very_high"
+            },
+            {
+              "name": "create_integration_guide",
+              "start_line": 640,
+              "end_line": 685,
+              "lines": 45,
+              "complexity": "high"
+            }
+          ],
+          "classes": [
+            {
+              "name": "ValidationResult",
+              "start_line": 18,
+              "end_line": 46,
+              "lines": 28
+            },
+            {
+              "name": "HelpfulMessages",
+              "start_line": 46,
+              "end_line": 161,
+              "lines": 115
+            },
+            {
+              "name": "Validators",
+              "start_line": 161,
+              "end_line": 468,
+              "lines": 307
+            },
+            {
+              "name": "SafeAsyncOperation",
+              "start_line": 468,
+              "end_line": 685,
+              "lines": 217
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\mcp\\circuit_breaker.py": {
+          "lines": 817,
+          "non_empty_lines": 647,
+          "comment_lines": 59,
+          "function_count": 10,
+          "class_count": 8,
+          "import_count": 15,
+          "functions": [
+            {
+              "name": "__init__",
+              "start_line": 148,
+              "end_line": 174,
+              "lines": 26,
+              "complexity": "low"
+            },
+            {
+              "name": "release",
+              "start_line": 174,
+              "end_line": 178,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "get_stats",
+              "start_line": 178,
+              "end_line": 192,
+              "lines": 14,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 192,
+              "end_line": 448,
+              "lines": 256,
+              "complexity": "very_high"
+            },
+            {
+              "name": "_get_adaptive_threshold",
+              "start_line": 448,
+              "end_line": 651,
+              "lines": 203,
+              "complexity": "very_high"
+            },
+            {
+              "name": "get_state",
+              "start_line": 651,
+              "end_line": 655,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "get_metrics",
+              "start_line": 655,
+              "end_line": 745,
+              "lines": 90,
+              "complexity": "high"
+            },
+            {
+              "name": "__init__",
+              "start_line": 745,
+              "end_line": 774,
+              "lines": 29,
+              "complexity": "medium"
+            },
+            {
+              "name": "get_circuit_breaker",
+              "start_line": 774,
+              "end_line": 795,
+              "lines": 21,
+              "complexity": "medium"
+            },
+            {
+              "name": "get_all_metrics",
+              "start_line": 795,
+              "end_line": 817,
+              "lines": 22,
+              "complexity": "medium"
+            }
+          ],
+          "classes": [
+            {
+              "name": "CircuitState",
+              "start_line": 59,
+              "end_line": 66,
+              "lines": 7
+            },
+            {
+              "name": "FailureType",
+              "start_line": 66,
+              "end_line": 76,
+              "lines": 10
+            },
+            {
+              "name": "CircuitBreakerConfig",
+              "start_line": 76,
+              "end_line": 113,
+              "lines": 37
+            },
+            {
+              "name": "CallResult",
+              "start_line": 113,
+              "end_line": 124,
+              "lines": 11
+            },
+            {
+              "name": "CircuitMetrics",
+              "start_line": 124,
+              "end_line": 145,
+              "lines": 21
+            },
+            {
+              "name": "BulkheadSemaphore",
+              "start_line": 145,
+              "end_line": 189,
+              "lines": 44
+            },
+            {
+              "name": "AdvancedCircuitBreaker",
+              "start_line": 189,
+              "end_line": 742,
+              "lines": 553
+            },
+            {
+              "name": "CircuitBreakerManager",
+              "start_line": 742,
+              "end_line": 817,
+              "lines": 75
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\mcp\\connection_pool.py": {
+          "lines": 235,
+          "non_empty_lines": 193,
+          "comment_lines": 11,
+          "function_count": 3,
+          "class_count": 3,
+          "import_count": 8,
+          "functions": [
+            {
+              "name": "__init__",
+              "start_line": 29,
+              "end_line": 66,
+              "lines": 37,
+              "complexity": "medium"
+            },
+            {
+              "name": "is_healthy",
+              "start_line": 66,
+              "end_line": 78,
+              "lines": 12,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 78,
+              "end_line": 235,
+              "lines": 157,
+              "complexity": "very_high"
+            }
+          ],
+          "classes": [
+            {
+              "name": "ConnectionConfig",
+              "start_line": 16,
+              "end_line": 26,
+              "lines": 10
+            },
+            {
+              "name": "MockGrpcConnection",
+              "start_line": 26,
+              "end_line": 75,
+              "lines": 49
+            },
+            {
+              "name": "ConnectionPool",
+              "start_line": 75,
+              "end_line": 235,
+              "lines": 160
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\mcp\\layer.py": {
+          "lines": 408,
+          "non_empty_lines": 327,
+          "comment_lines": 43,
+          "function_count": 2,
+          "class_count": 2,
+          "import_count": 15,
+          "functions": [
+            {
+              "name": "update_request",
+              "start_line": 44,
+              "end_line": 64,
+              "lines": 20,
+              "complexity": "medium"
+            },
+            {
+              "name": "__init__",
+              "start_line": 64,
+              "end_line": 408,
+              "lines": 344,
+              "complexity": "very_high"
+            }
+          ],
+          "classes": [
+            {
+              "name": "ServiceStats",
+              "start_line": 35,
+              "end_line": 61,
+              "lines": 26
+            },
+            {
+              "name": "MCPLayer",
+              "start_line": 61,
+              "end_line": 408,
+              "lines": 347
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\mcp\\load_balancer.py": {
+          "lines": 115,
+          "non_empty_lines": 90,
+          "comment_lines": 1,
+          "function_count": 5,
+          "class_count": 2,
+          "import_count": 6,
+          "functions": [
+            {
+              "name": "__init__",
+              "start_line": 24,
+              "end_line": 53,
+              "lines": 29,
+              "complexity": "high"
+            },
+            {
+              "name": "_round_robin_select",
+              "start_line": 53,
+              "end_line": 62,
+              "lines": 9,
+              "complexity": "low"
+            },
+            {
+              "name": "_weighted_round_robin_select",
+              "start_line": 62,
+              "end_line": 80,
+              "lines": 18,
+              "complexity": "medium"
+            },
+            {
+              "name": "_random_select",
+              "start_line": 80,
+              "end_line": 84,
+              "lines": 4,
+              "complexity": "low"
+            },
+            {
+              "name": "_least_connections_select",
+              "start_line": 84,
+              "end_line": 115,
+              "lines": 31,
+              "complexity": "medium"
+            }
+          ],
+          "classes": [
+            {
+              "name": "LoadBalancingStrategy",
+              "start_line": 13,
+              "end_line": 21,
+              "lines": 8
+            },
+            {
+              "name": "LoadBalancer",
+              "start_line": 21,
+              "end_line": 115,
+              "lines": 94
+            }
+          ]
+        },
+        "src\\universal_api_bridge\\mcp\\registry.py": {
+          "lines": 765,
+          "non_empty_lines": 634,
+          "comment_lines": 38,
+          "function_count": 3,
+          "class_count": 3,
+          "import_count": 18,
+          "functions": [
+            {
+              "name": "to_dict",
+              "start_line": 79,
+              "end_line": 108,
+              "lines": 29,
+              "complexity": "low"
+            },
+            {
+              "name": "from_dict",
+              "start_line": 108,
+              "end_line": 141,
+              "lines": 33,
+              "complexity": "low"
+            },
+            {
+              "name": "__init__",
+              "start_line": 141,
+              "end_line": 765,
+              "lines": 624,
+              "complexity": "very_high"
+            }
+          ],
+          "classes": [
+            {
+              "name": "ServiceStatus",
+              "start_line": 37,
+              "end_line": 49,
+              "lines": 12
+            },
+            {
+              "name": "ServiceInstance",
+              "start_line": 49,
+              "end_line": 138,
+              "lines": 89
+            },
+            {
+              "name": "DistributedServiceRegistry",
+              "start_line": 138,
+              "end_line": 765,
+              "lines": 627
+            }
+          ]
+        }
+      }
+    },
+    "performance_benchmarks": [
+      {
+        "operation": "security_layer",
+        "duration_ms": 845.49,
+        "memory_usage_mb": 0.11,
+        "cpu_usage_percent": 0.0,
+        "ops_per_second": 11827.44,
+        "peak_memory_mb": 0.05,
+        "memory_efficiency": 182380.074
+      },
+      {
+        "operation": "service_registry_100k",
+        "duration_ms": 225.8,
+        "memory_usage_mb": 18.47,
+        "cpu_usage_percent": 19.7,
+        "ops_per_second": 48716.08,
+        "peak_memory_mb": 8.21,
+        "memory_efficiency": 1339.87
+      },
+      {
+        "operation": "circuit_breaker",
+        "duration_ms": 69962.78,
+        "memory_usage_mb": 0.22,
+        "cpu_usage_percent": 1.9,
+        "ops_per_second": 71.47,
+        "peak_memory_mb": 0.43,
+        "memory_efficiency": 11695.052
+      },
+      {
+        "operation": "concurrent_100k_simulation",
+        "duration_ms": 62.7,
+        "memory_usage_mb": 1.61,
+        "cpu_usage_percent": 0.0,
+        "ops_per_second": 1594901.55,
+        "peak_memory_mb": 1.55,
+        "memory_efficiency": 64706.783
+      }
+    ],
+    "optimization_suggestions": [
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\bridge.py",
+        "function": "register_service",
+        "current_lines": 172,
+        "target_lines": 20,
+        "suggested_split": 9,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\bridge.py",
+        "function": "configure_massive_scale",
+        "current_lines": 277,
+        "target_lines": 20,
+        "suggested_split": 14,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\bridge.py",
+        "function": "run",
+        "current_lines": 208,
+        "target_lines": 20,
+        "suggested_split": 11,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\bridge.py",
+        "function": "quick_bridge",
+        "current_lines": 73,
+        "target_lines": 20,
+        "suggested_split": 4,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\config.py",
+        "function": "endpoint",
+        "current_lines": 263,
+        "target_lines": 20,
+        "suggested_split": 14,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\config.py",
+        "function": "create_massive_scale_config",
+        "current_lines": 52,
+        "target_lines": 20,
+        "suggested_split": 3,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\gateway.py",
+        "function": "setup_routes",
+        "current_lines": 335,
+        "target_lines": 20,
+        "suggested_split": 17,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\schema.py",
+        "function": "_initialize_mappings",
+        "current_lines": 152,
+        "target_lines": 20,
+        "suggested_split": 8,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\schema.py",
+        "function": "_set_nested_value",
+        "current_lines": 120,
+        "target_lines": 20,
+        "suggested_split": 7,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\sdk.py",
+        "function": "__init__",
+        "current_lines": 54,
+        "target_lines": 20,
+        "suggested_split": 3,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\security.py",
+        "function": "__init__",
+        "current_lines": 113,
+        "target_lines": 20,
+        "suggested_split": 6,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\security.py",
+        "function": "_get_client_ip",
+        "current_lines": 105,
+        "target_lines": 20,
+        "suggested_split": 6,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\utils.py",
+        "function": "validate_service_name",
+        "current_lines": 58,
+        "target_lines": 20,
+        "suggested_split": 3,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\utils.py",
+        "function": "validate_endpoint",
+        "current_lines": 65,
+        "target_lines": 20,
+        "suggested_split": 4,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\utils.py",
+        "function": "validate_endpoint_connectivity",
+        "current_lines": 53,
+        "target_lines": 20,
+        "suggested_split": 3,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\utils.py",
+        "function": "validate_configuration",
+        "current_lines": 54,
+        "target_lines": 20,
+        "suggested_split": 3,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\utils.py",
+        "function": "format_error_for_user",
+        "current_lines": 80,
+        "target_lines": 20,
+        "suggested_split": 5,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\mcp\\circuit_breaker.py",
+        "function": "__init__",
+        "current_lines": 256,
+        "target_lines": 20,
+        "suggested_split": 13,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\mcp\\circuit_breaker.py",
+        "function": "_get_adaptive_threshold",
+        "current_lines": 203,
+        "target_lines": 20,
+        "suggested_split": 11,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\mcp\\circuit_breaker.py",
+        "function": "get_metrics",
+        "current_lines": 90,
+        "target_lines": 20,
+        "suggested_split": 5,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\mcp\\connection_pool.py",
+        "function": "__init__",
+        "current_lines": 157,
+        "target_lines": 20,
+        "suggested_split": 8,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\mcp\\layer.py",
+        "function": "__init__",
+        "current_lines": 344,
+        "target_lines": 20,
+        "suggested_split": 18,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      },
+      {
+        "type": "function_decomposition",
+        "file": "src\\universal_api_bridge\\mcp\\registry.py",
+        "function": "__init__",
+        "current_lines": 624,
+        "target_lines": 20,
+        "suggested_split": 32,
+        "benefits": [
+          "Improved readability",
+          "Better testability",
+          "Reduced complexity",
+          "Enhanced maintainability"
+        ]
+      }
+    ],
+    "impact_analysis": {
+      "current_metrics": {
+        "total_duration": 71.09677195549011,
+        "total_memory_mb": 20.41015625,
+        "avg_ops_per_sec": 413879.13610470947
+      },
+      "optimization_potential": {
+        "performance_gain": "15-30%",
+        "memory_reduction": "10-25%",
+        "throughput_increase": "20-40%",
+        "code_reduction": "10-20%",
+        "maintenance_improvement": "significant"
+      },
+      "priority_areas": [
+        "Async/await optimization",
+        "Memory pooling",
+        "Function decomposition",
+        "Import optimization",
+        "Code deduplication"
+      ]
+    }
+  },
+  "100k_scalability_validation": {
+    "max_services_supported": 100000,
+    "concurrent_request_capacity": 1594901.5521974887,
+    "memory_efficiency_score": 64706.78258122165,
+    "scalability_rating": "EXCELLENT"
+  },
+  "industry_standards_compliance": {
+    "async_programming": "\u2705 Implemented",
+    "distributed_architecture": "\u2705 Implemented",
+    "security_best_practices": "\u2705 Implemented",
+    "performance_monitoring": "\u2705 Implemented",
+    "scalability_patterns": "\u2705 Implemented"
+  },
+  "optimization_priorities": [
+    {
+      "priority": 1,
+      "area": "Memory Management",
+      "description": "Implement object pooling and memory optimization",
+      "expected_gain": "15-25% memory reduction"
+    },
+    {
+      "priority": 2,
+      "area": "Async Optimization",
+      "description": "Optimize async/await patterns and coroutine management",
+      "expected_gain": "20-30% throughput increase"
+    },
+    {
+      "priority": 3,
+      "area": "Code Simplification",
+      "description": "Apply DRY principles and function decomposition",
+      "expected_gain": "10-20% code reduction, better maintainability"
+    }
+  ]
+}

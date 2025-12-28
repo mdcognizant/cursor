@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-27T23:50:52.986324",
+  "sources": {
+    "newsdata": {
+      "status": "failed",
+      "error": "401 Client Error: UNAUTHORIZED for url: https://newsdata.io/api/1/latest?apikey=pub_591738e21b1e8d53f8baa5bf79e9a61b9adc8&language=en&category=top,business,technology,sports&size=50",
+      "articles": 0
+    },
+    "currents": {
+      "status": "failed",
+      "error": "HTTPSConnectionPool(host='api.currentsapi.services', port=443): Max retries exceeded with url: /v1/latest-news?apiKey=WOH5a2RUX_PgPu3sLJfm7tzzgFN6F_Vp9Tf0MhRSJXGdOgPn&language=en&limit=30&category=general (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))",
+      "articles": 0
+    },
+    "enhanced_scraper": {
+      "status": "success",
+      "articles": 100,
+      "sources": 6,
+      "response_time": 2.03801,
+      "source_list": [
+        "cnn",
+        "bbc",
+        "npr",
+        "guardian",
+        "sky_news",
+        "yahoo_news"
+      ]
+    }
+  },
+  "total_articles": 100,
+  "working_sources": 1,
+  "failed_sources": 2,
+  "validation": "passed"
+}

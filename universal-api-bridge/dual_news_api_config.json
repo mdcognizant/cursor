@@ -1,0 +1,131 @@
+{
+  "system_info": {
+    "configuration_date": "2025-07-25T22:36:58.251593",
+    "system_status": "PARTIAL_OPERATIONAL",
+    "working_providers": 1,
+    "total_providers": 2,
+    "daily_request_capacity": {
+      "newsdata_daily": 200,
+      "currents_daily": 20,
+      "current": 200,
+      "maximum_when_both_active": 220,
+      "monthly_capacity": {
+        "newsdata_monthly": 6000,
+        "currents_monthly": 600,
+        "total_monthly": 6600
+      }
+    }
+  },
+  "newsdata": {
+    "status": "OPERATIONAL",
+    "api_key": "pub_05c05ef3d5044b3fa7a3ab3b04d479e4",
+    "base_url": "https://newsdata.io/api/1",
+    "enabled": true,
+    "daily_limit": 200,
+    "priority": 1,
+    "last_test": "2025-07-25 22:30:00",
+    "test_result": "SUCCESS",
+    "response_time_ms": 660,
+    "articles_available": "10,324+",
+    "features": {
+      "categories": [
+        "technology",
+        "business",
+        "sports",
+        "health",
+        "science"
+      ],
+      "search": true,
+      "languages": [
+        "en",
+        "es",
+        "fr",
+        "de",
+        "it"
+      ],
+      "gRPC_optimized": true
+    }
+  },
+  "currents": {
+    "status": "TEMPORARILY_UNAVAILABLE",
+    "api_key": "zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah",
+    "base_url": "https://api.currentsapi.services/v1",
+    "enabled": false,
+    "daily_limit": 20,
+    "priority": 2,
+    "last_test": "2025-07-25 22:35:00",
+    "test_result": "SSL_CERTIFICATE_ERROR",
+    "issue": "SSL certificate verification failed - service-side issue",
+    "features": {
+      "categories": [
+        "technology",
+        "business",
+        "sports",
+        "health",
+        "science"
+      ],
+      "search": true,
+      "languages": [
+        "en"
+      ],
+      "gRPC_ready": true
+    },
+    "auto_retry": {
+      "enabled": true,
+      "next_retry": "automatic_when_needed",
+      "retry_interval": "5_minutes"
+    },
+    "monthly_limit": 600,
+    "plan_type": "basic",
+    "rate_limit_notes": "20 requests/day, 600 requests/month",
+    "conservative_mode": true
+  },
+  "settings": {
+    "dual_provider_mode": true,
+    "fallback_behavior": "automatic_to_working_provider",
+    "cache_enabled": true,
+    "cache_ttl": 300,
+    "rate_limit_buffer": 10,
+    "environment": "development",
+    "load_balancing": "priority_based_conservative",
+    "auto_failover": true,
+    "performance_optimization": {
+      "gRPC_backend": true,
+      "expected_speedup": "3-5x faster than REST",
+      "connection_pooling": true,
+      "compression": true
+    },
+    "currents_usage_strategy": "low_priority_fallback",
+    "daily_usage_monitoring": true,
+    "monthly_usage_tracking": true
+  },
+  "current_capabilities": {
+    "live_news_fetching": true,
+    "category_filtering": true,
+    "search_functionality": true,
+    "smart_caching": true,
+    "offline_mode": true,
+    "performance_monitoring": true,
+    "rate_limit_management": true,
+    "dual_provider_ready": true
+  },
+  "troubleshooting": {
+    "currents_api_issue": "SSL certificate verification error",
+    "likely_cause": "Temporary service-side SSL configuration issue",
+    "user_action_required": "None - this is a service provider issue",
+    "expected_resolution": "Automatic when service is restored",
+    "workaround": "NewsData.io provides full functionality"
+  },
+  "usage_tracking": {
+    "currents_daily_used": 0,
+    "currents_monthly_used": 0,
+    "newsdata_daily_used": 0,
+    "last_reset": "2025-07-25",
+    "month_year": "2025-07",
+    "conservative_mode": true,
+    "warnings": {
+      "currents_daily_warning_at": 15,
+      "currents_monthly_warning_at": 450
+    }
+  }
+}

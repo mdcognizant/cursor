@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 20px 0; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        pre { background: #f8f9fa; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 API Debug Test</h1>
+    <p>Testing NewsData.io API to identify exact issues</p>
+    
+    <button onclick="testAPI()">Test NewsData.io API</button>
+    <button onclick="testCurrentsAPI()">Test Currents API</button>
+    <button onclick="testWithProxy()">Test with CORS Proxy</button>
+    <button onclick="testBothAPIs()">Test Both APIs</button>
+    <button onclick="testCORSIssues()">Test CORS Issues</button>
+    <button onclick="clearResults()">Clear Results</button>
+    
+    <div id="results"></div>
+
+    <script>
+        function addResult(content, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = content;
+            document.getElementById('results').appendChild(div);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testAPI() {
+            addResult('🔄 Testing NewsData.io API...', 'info');
+            
+            const apiKey = 'pub_05c05ef3d5044b3fa7a3ab3b04d479e4';
+            const url = `https://newsdata.io/api/1/latest?apikey=${apiKey}&language=en&category=top&size=5`;
+            
+            addResult(`📍 API URL: ${url}`, 'info');
+            addResult(`🌐 Protocol: ${window.location.protocol}`, 'info');
+            
+            try {
+                console.log('Making API request to:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                addResult(`📊 Response Status: ${response.status} ${response.statusText}`, 
+                         response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    addResult(`❌ Error Response:<pre>${errorText}</pre>`, 'error');
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                addResult(`✅ API Success!<br>
+                          Articles received: ${data.results ? data.results.length : 0}<br>
+                          Status: ${data.status}<br>
+                          Total results: ${data.totalResults || 'N/A'}`, 'success');
+                
+                if (data.results && data.results.length > 0) {
+                    addResult(`📰 Sample Article:<pre>${JSON.stringify(data.results[0], null, 2)}</pre>`, 'info');
+                }
+                
+            } catch (error) {
+                console.error('API Test Error:', error);
+                addResult(`❌ API Test Failed:<br>
+                          Error: ${error.message}<br>
+                          Type: ${error.name}<br>
+                          Stack: <pre>${error.stack}</pre>`, 'error');
+                
+                // Check for specific error types
+                if (error.message.includes('CORS')) {
+                    addResult(`🚫 CORS Issue Detected:<br>
+                              This is likely because the HTML file is opened with file:// protocol.<br>
+                              Browser security prevents external API calls from local files.`, 'error');
+                }
+                
+                if (error.message.includes('Failed to fetch')) {
+                    addResult(`🌐 Network Issue:<br>
+                              Could be CORS, network restrictions, or API unavailability.`, 'error');
+                }
+            }
+        }
+
+        async function testCORSIssues() {
+            addResult('🔍 Testing CORS and Protocol Issues...', 'info');
+            
+            addResult(`Current Protocol: ${window.location.protocol}<br>
+                      Current Origin: ${window.location.origin}<br>
+                      User Agent: ${navigator.userAgent}`, 'info');
+            
+            // Test a simple CORS request
+            try {
+                const testResponse = await fetch('https://httpbin.org/json', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                if (testResponse.ok) {
+                    addResult('✅ Basic CORS test passed - external requests are possible', 'success');
+                } else {
+                    addResult(`⚠️ CORS test failed with status: ${testResponse.status}`, 'error');
+                }
+                
+            } catch (corsError) {
+                addResult(`❌ CORS Test Failed:<br>
+                          Error: ${corsError.message}<br>
+                          This confirms CORS restrictions are blocking external API calls.`, 'error');
+                
+                addResult(`💡 Solutions:<br>
+                          1. Use HTTP server instead of file:// protocol<br>
+                          2. Use a CORS proxy service<br>
+                          3. Implement server-side API calls`, 'info');
+            }
+        }
+
+        async function testWithProxy() {
+            addResult('🔄 Testing NewsData.io API with CORS Proxy...', 'info');
+            
+            const apiKey = 'pub_05c05ef3d5044b3fa7a3ab3b04d479e4';
+            const baseUrl = `https://newsdata.io/api/1/latest?apikey=${apiKey}&language=en&category=top&size=5`;
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(baseUrl)}`;
+            
+            addResult(`📍 Original API URL: ${baseUrl}`, 'info');
+            addResult(`🌐 Proxy URL: ${proxyUrl}`, 'info');
+            addResult(`🔧 Protocol: ${window.location.protocol}`, 'info');
+            
+            try {
+                console.log('Making proxied API request to:', proxyUrl);
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                addResult(`📊 Proxy Response Status: ${response.status} ${response.statusText}`, 
+                         response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    addResult(`❌ Proxy Error Response:<pre>${errorText}</pre>`, 'error');
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                addResult(`✅ CORS Proxy Success!<br>
+                          Articles received: ${data.results ? data.results.length : 0}<br>
+                          Status: ${data.status}<br>
+                          Total results: ${data.totalResults || 'N/A'}<br>
+                          🎉 This solution works for file:// protocol!`, 'success');
+                
+                if (data.results && data.results.length > 0) {
+                    addResult(`📰 Sample Proxied Article:<pre>${JSON.stringify(data.results[0], null, 2)}</pre>`, 'info');
+                }
+                
+            } catch (error) {
+                console.error('Proxy API Test Error:', error);
+                addResult(`❌ CORS Proxy Test Failed:<br>
+                          Error: ${error.message}<br>
+                          Type: ${error.name}<br>
+                          
+                          💡 This suggests either:<br>
+                          • The proxy service is down<br>
+                          • Network connectivity issues<br>
+                          • The original API is not responding`, 'error');
+            }
+        }
+
+        async function testCurrentsAPI() {
+            addResult('🔄 Testing Currents API...', 'info');
+            
+            const apiKey = 'YOUR_CURRENTS_API_KEY'; // User needs to replace this
+            const url = `https://api.currentsapi.services/v1/latest-news?apiKey=${apiKey}&language=en&country=US`;
+            
+            addResult(`📍 API URL: ${url}`, 'info');
+            addResult(`🌐 Protocol: ${window.location.protocol}`, 'info');
+            addResult(`⚠️ Note: You need a valid Currents API key`, 'info');
+            
+            try {
+                console.log('Making Currents API request to:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                addResult(`📊 Response Status: ${response.status} ${response.statusText}`, 
+                         response.ok ? 'success' : 'error');
+                
+                if (response.status === 401) {
+                    addResult(`🔑 API Key Required:<br>
+                              Status 401 means the API is working but needs a valid key.<br>
+                              Get a free key at: <a href="https://currentsapi.services/" target="_blank">currentsapi.services</a>`, 'info');
+                    return;
+                }
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    addResult(`❌ Error Response:<pre>${errorText}</pre>`, 'error');
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                addResult(`✅ Currents API Success!<br>
+                          Articles received: ${data.news ? data.news.length : 0}<br>
+                          Status: ${data.status || 'N/A'}`, 'success');
+                
+                if (data.news && data.news.length > 0) {
+                    addResult(`📰 Sample Article:<pre>${JSON.stringify(data.news[0], null, 2)}</pre>`, 'info');
+                }
+                
+            } catch (error) {
+                console.error('Currents API Test Error:', error);
+                addResult(`❌ Currents API Test Failed:<br>
+                          Error: ${error.message}<br>
+                          Type: ${error.name}`, 'error');
+                
+                // Check for SSL certificate errors
+                if (error.message.includes('certificate') || error.message.includes('SSL')) {
+                    addResult(`🔒 SSL Certificate Issue Detected:<br>
+                              This is common in corporate environments.<br>
+                              The API is working but SSL certificates need attention.<br>
+                              The V2 platform handles this gracefully with fallbacks.`, 'error');
+                }
+            }
+        }
+
+        async function testBothAPIs() {
+            addResult('🔄 Testing Both APIs Simultaneously...', 'info');
+            clearResults();
+            
+            addResult('📊 Starting comprehensive API test...', 'info');
+            
+            // Test both APIs in parallel
+            const promises = [
+                testAPI(),
+                testCurrentsAPI()
+            ];
+            
+            try {
+                await Promise.allSettled(promises);
+                addResult('✅ Both API tests completed! Check results above.', 'success');
+            } catch (error) {
+                addResult(`❌ Error during parallel testing: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run tests when page loads
+        window.addEventListener('load', () => {
+            addResult('🚀 API Debug Test Page Loaded', 'info');
+            addResult('Click "Test NewsData.io API" to check API connectivity', 'info');
+        });
+    </script>
+</body>
+</html> 

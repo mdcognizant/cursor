@@ -1,0 +1,9 @@
+{
+  "timestamp": "2025-07-27T21:57:05.824005",
+  "newsdata_test": true,
+  "currents_test": false,
+  "environment": {
+    "python_version": "2.32.4",
+    "requests_version": "2.32.4"
+  }
+}

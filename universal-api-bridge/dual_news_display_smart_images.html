@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal API Bridge - Smart Image News Display</title>
+    <style>
+        /* Enhanced CNN-Style Layout with Smart Image Fetching */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'CNN Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f6f6f6;
+            color: #262626;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #cc0000, #8b0000);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            letter-spacing: -1px;
+        }
+
+        .smart-indicator {
+            background: rgba(34, 197, 94, 0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .controls-section {
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 15px 0;
+        }
+
+        .controls-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .refresh-btn {
+            background: #cc0000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .refresh-btn:hover {
+            background: #a00000;
+            transform: translateY(-1px);
+        }
+
+        .refresh-btn:disabled {
+            background: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 0.85em;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #cc0000;
+        }
+
+        .news-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .hero-article {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .hero-article:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-article:hover .hero-image img {
+            transform: scale(1.05);
+        }
+
+        .article-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 30px 20px 20px;
+        }
+
+        .article-category {
+            background: #cc0000;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .hero-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            line-height: 1.3;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .hero-summary {
+            font-size: 0.95em;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .trending-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #cc0000;
+            color: #262626;
+        }
+
+        .trending-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .trending-item:hover {
+            background: #f8f8f8;
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+
+        .trending-number {
+            background: #cc0000;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .trending-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #262626;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .news-card:hover .news-image img {
+            transform: scale(1.05);
+        }
+
+        .smart-image-indicator {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.6em;
+            font-weight: bold;
+        }
+
+        .provider-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .provider-badge.newsdata { background: rgba(249, 115, 22, 0.9); }
+        .provider-badge.currents { background: rgba(34, 197, 94, 0.9); }
+
+        .image-loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-category {
+            background: #f0f0f0;
+            color: #666;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .news-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            color: #262626;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-summary {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8em;
+            color: #999;
+        }
+
+        .news-time {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .news-source {
+            font-weight: 600;
+            color: #cc0000;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #cc0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #262626;
+        }
+
+        .clickable-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(204, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .news-card:hover .clickable-overlay,
+        .hero-article:hover .clickable-overlay {
+            opacity: 1;
+        }
+
+        /* Smart Image Features */
+        .smart-image-stats {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .smart-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .logo {
+                font-size: 2em;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .hero-title {
+                font-size: 1.4em;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .controls-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .stats-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🚀 NewsCenter Pro</div>
+            <div class="smart-indicator">
+                🎨 Smart Images: <span id="smartImageCount">0</span> Generated
+            </div>
+        </div>
+    </header>
+
+    <!-- Controls Section -->
+    <section class="controls-section">
+        <div class="controls-content">
+            <button class="refresh-btn" id="refreshBtn" onclick="refreshNews()">
+                🔄 Refresh News
+            </button>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span>📰 Articles:</span>
+                    <span class="stat-value" id="articleCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>🖼️ Images:</span>
+                    <span class="stat-value" id="imageCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>🎨 Smart:</span>
+                    <span class="stat-value" id="smartImages">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>⚡ Response:</span>
+                    <span class="stat-value" id="responseTime">-</span>
+                </div>
+                <div class="stat-item">
+                    <span>🔄 API:</span>
+                    <span class="stat-value" id="apiCalls">0</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Smart Image Stats -->
+    <section class="controls-section">
+        <div class="controls-content">
+            <div class="smart-image-stats">
+                <span>🎨 Smart Image Engine:</span>
+                <div class="smart-stat">
+                    <span>🖼️ Generated:</span>
+                    <strong id="generatedCount">0</strong>
+                </div>
+                <div class="smart-stat">
+                    <span>📸 Original:</span>
+                    <strong id="originalCount">0</strong>
+                </div>
+                <div class="smart-stat">
+                    <span>🔄 Fallback:</span>
+                    <strong id="fallbackCount">0</strong>
+                </div>
+                <div class="smart-stat">
+                    <span>⚡ Success Rate:</span>
+                    <strong id="successRate">100%</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="news-container">
+        <div id="newsContent">
+            <!-- Empty state initially -->
+            <div class="empty-state">
+                <h3>📰 Welcome to NewsCenter Pro</h3>
+                <p>Click "Refresh News" to load latest articles with smart image generation</p>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #999;">
+                    ✨ Features intelligent image fetching for missing article images
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div>Loading news with smart images...</div>
+        </div>
+    </div>
+
+    <script>
+        class SmartImageNewsApp {
+            constructor() {
+                this.apiKeys = {
+                    newsdata: 'pub_05c05ef3d5044b3fa7a3ab3b04d479e4',
+                    currents: 'zWhKbzWClaobXOpN0VDGF62kNkBh6Kbgdx-ki2AUIEoAGnah'
+                };
+                
+                this.apiEndpoints = {
+                    newsdata: 'https://newsdata.io/api/1/latest',
+                    currents: 'https://api.currentsapi.services/v1/latest-news'
+                };
+
+                // Free image APIs (no API key required)
+                this.imageAPIs = [
+                    {
+                        name: 'Lorem Picsum',
+                        url: 'https://picsum.photos/400/240',
+                        getUrl: (keywords, width = 400, height = 240) => 
+                            `https://picsum.photos/${width}/${height}?random=${Date.now()}`
+                    },
+                    {
+                        name: 'Placeholder',
+                        url: 'https://via.placeholder.com/400x240',
+                        getUrl: (keywords, width = 400, height = 240) => 
+                            `https://via.placeholder.com/${width}x${height}/f0f0f0/666666?text=${encodeURIComponent(keywords.slice(0, 20))}`
+                    }
+                ];
+
+                this.stats = {
+                    articles: 0,
+                    images: 0,
+                    smartImages: 0,
+                    apiCalls: 0,
+                    responseTime: 0
+                };
+
+                this.imageStats = {
+                    generated: 0,
+                    original: 0,
+                    fallback: 0
+                };
+
+                this.isLoading = false;
+                
+                // Initialize
+                this.init();
+            }
+
+            async init() {
+                console.log('🚀 Initializing Smart Image News App...');
+                this.updateStats();
+                this.updateImageStats();
+                console.log('✅ App initialized with smart image capabilities');
+            }
+
+            showLoading() {
+                this.isLoading = true;
+                document.getElementById('loadingOverlay').classList.add('show');
+                const btn = document.getElementById('refreshBtn');
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Loading...';
+            }
+
+            hideLoading() {
+                this.isLoading = false;
+                document.getElementById('loadingOverlay').classList.remove('show');
+                const btn = document.getElementById('refreshBtn');
+                btn.disabled = false;
+                btn.innerHTML = '🔄 Refresh News';
+            }
+
+            extractKeywords(title, content = '') {
+                // Extract meaningful keywords from article title and content
+                const text = `${title} ${content}`.toLowerCase();
+                const stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'will', 'would', 'could', 'should'];
+                
+                const words = text.match(/\b\w{3,}\b/g) || [];
+                const keywords = words
+                    .filter(word => !stopWords.includes(word))
+                    .slice(0, 3) // Take first 3 meaningful words
+                    .join(' ');
+                
+                return keywords || 'news';
+            }
+
+            async generateSmartImage(article, targetWidth = 400, targetHeight = 240) {
+                try {
+                    const keywords = this.extractKeywords(article.title, article.description || article.content);
+                    console.log(`🎨 Generating smart image for: "${keywords}"`);
+
+                    // Try different image APIs
+                    for (const api of this.imageAPIs) {
+                        try {
+                            const imageUrl = api.getUrl(keywords, targetWidth, targetHeight);
+                            
+                            // Test if image loads successfully
+                            await this.testImageLoad(imageUrl);
+                            
+                            console.log(`✅ Smart image generated from ${api.name}: ${imageUrl}`);
+                            this.imageStats.generated++;
+                            this.stats.smartImages++;
+                            return {
+                                url: imageUrl,
+                                source: api.name,
+                                keywords: keywords,
+                                isSmartGenerated: true
+                            };
+                        } catch (e) {
+                            console.log(`❌ ${api.name} failed, trying next...`);
+                            continue;
+                        }
+                    }
+
+                    // Fallback to simple pattern
+                    this.imageStats.fallback++;
+                    return {
+                        url: `https://via.placeholder.com/${targetWidth}x${targetHeight}/cc0000/ffffff?text=📰+NEWS`,
+                        source: 'Fallback',
+                        keywords: keywords,
+                        isSmartGenerated: true
+                    };
+
+                } catch (error) {
+                    console.error('❌ Smart image generation failed:', error);
+                    this.imageStats.fallback++;
+                    return {
+                        url: `https://via.placeholder.com/${targetWidth}x${targetHeight}/f0f0f0/666666?text=📰`,
+                        source: 'Error Fallback',
+                        keywords: 'news',
+                        isSmartGenerated: true
+                    };
+                }
+            }
+
+            async testImageLoad(imageUrl) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(true);
+                    img.onerror = () => reject(false);
+                    img.src = imageUrl;
+                    
+                    // Timeout after 3 seconds
+                    setTimeout(() => reject(false), 3000);
+                });
+            }
+
+            async fetchFromNewsData() {
+                try {
+                    console.log('🔄 Fetching from NewsData.io...');
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(`${this.apiEndpoints.newsdata}?apikey=${this.apiKeys.newsdata}&language=en&size=12`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`NewsData.io API error: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    const endTime = performance.now();
+                    
+                    const articles = await Promise.all(data.results.map(async (article) => {
+                        let imageInfo = null;
+                        
+                        if (article.image_url) {
+                            try {
+                                await this.testImageLoad(article.image_url);
+                                imageInfo = {
+                                    url: article.image_url,
+                                    source: 'Original',
+                                    isSmartGenerated: false
+                                };
+                                this.imageStats.original++;
+                            } catch (e) {
+                                // Original image failed, generate smart image
+                                imageInfo = await this.generateSmartImage(article, 400, 240);
+                            }
+                        } else {
+                            // No image provided, generate smart image
+                            imageInfo = await this.generateSmartImage(article, 400, 240);
+                        }
+                        
+                        return {
+                            ...article,
+                            source_provider: 'newsdata',
+                            fetch_time: new Date().toISOString(),
+                            response_time: endTime - startTime,
+                            link: article.link || article.url || '#',
+                            smart_image: imageInfo
+                        };
+                    }));
+
+                    this.stats.apiCalls++;
+                    
+                    console.log(`✅ NewsData.io: ${articles.length} articles with smart images`);
+                    
+                    return {
+                        success: true,
+                        articles: articles,
+                        responseTime: endTime - startTime,
+                        provider: 'newsdata',
+                        source: 'live'
+                    };
+                } catch (error) {
+                    console.error('❌ NewsData.io error:', error);
+                    return {
+                        success: false,
+                        error: error.message,
+                        articles: [],
+                        provider: 'newsdata'
+                    };
+                }
+            }
+
+            async fetchFromCurrents() {
+                try {
+                    console.log('🔄 Fetching from Currents API...');
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(`${this.apiEndpoints.currents}?apiKey=${this.apiKeys.currents}&language=en&limit=8`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Currents API error: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    const endTime = performance.now();
+                    
+                    const articles = await Promise.all(data.news.map(async (article) => {
+                        let imageInfo = null;
+                        
+                        if (article.image) {
+                            try {
+                                await this.testImageLoad(article.image);
+                                imageInfo = {
+                                    url: article.image,
+                                    source: 'Original',
+                                    isSmartGenerated: false
+                                };
+                                this.imageStats.original++;
+                            } catch (e) {
+                                // Original image failed, generate smart image
+                                imageInfo = await this.generateSmartImage(article, 400, 240);
+                            }
+                        } else {
+                            // No image provided, generate smart image
+                            imageInfo = await this.generateSmartImage(article, 400, 240);
+                        }
+                        
+                        return {
+                            ...article,
+                            source_provider: 'currents',
+                            fetch_time: new Date().toISOString(),
+                            response_time: endTime - startTime,
+                            link: article.url || article.link || '#',
+                            smart_image: imageInfo
+                        };
+                    }));
+
+                    this.stats.apiCalls++;
+                    
+                    console.log(`✅ Currents API: ${articles.length} articles with smart images`);
+                    
+                    return {
+                        success: true,
+                        articles: articles,
+                        responseTime: endTime - startTime,
+                        provider: 'currents',
+                        source: 'live'
+                    };
+                } catch (error) {
+                    console.error('❌ Currents API error:', error);
+                    return {
+                        success: false,
+                        error: error.message,
+                        articles: [],
+                        provider: 'currents'
+                    };
+                }
+            }
+
+            async refreshNews() {
+                if (this.isLoading) return;
+
+                this.showLoading();
+                const overallStartTime = performance.now();
+
+                try {
+                    console.log('🚀 Starting smart image news fetch...');
+                    
+                    const [newsdataResult, currentsResult] = await Promise.all([
+                        this.fetchFromNewsData(),
+                        this.fetchFromCurrents()
+                    ]);
+
+                    const overallEndTime = performance.now();
+                    this.stats.responseTime = overallEndTime - overallStartTime;
+
+                    let allArticles = [];
+                    
+                    if (newsdataResult.success) {
+                        allArticles = [...allArticles, ...newsdataResult.articles];
+                    }
+                    
+                    if (currentsResult.success) {
+                        allArticles = [...allArticles, ...currentsResult.articles];
+                    }
+
+                    if (allArticles.length > 0) {
+                        this.displaySmartImageNews(allArticles);
+                        this.showSuccessMessage(allArticles.length);
+                    } else {
+                        this.showError('No articles available from APIs.');
+                    }
+
+                } catch (error) {
+                    console.error('❌ News fetch error:', error);
+                    this.showError(`Failed to fetch news: ${error.message}`);
+                } finally {
+                    this.hideLoading();
+                    this.updateStats();
+                    this.updateImageStats();
+                }
+            }
+
+            displaySmartImageNews(articles) {
+                const container = document.getElementById('newsContent');
+                if (!articles || articles.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>📭 No News Available</h3>
+                            <p>No articles found. Try refreshing to fetch new content.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort articles by publish date
+                articles.sort((a, b) => {
+                    const dateA = new Date(a.pubDate || a.published || a.publishedAt || Date.now());
+                    const dateB = new Date(b.pubDate || b.published || b.publishedAt || Date.now());
+                    return dateB - dateA;
+                });
+
+                const heroArticle = articles[0];
+                const trendingArticles = articles.slice(1, 6);
+                const gridArticles = articles.slice(6);
+
+                const smartLayout = `
+                    <div class="main-content">
+                        <!-- Hero Article -->
+                        <article class="hero-article" onclick="openArticle('${heroArticle.link}')">
+                            <div class="hero-image">
+                                ${this.createSmartImageElement(heroArticle.smart_image, 'hero')}
+                            </div>
+                            <div class="article-overlay">
+                                <span class="article-category">${this.getCategory(heroArticle)}</span>
+                                <h1 class="hero-title">${this.sanitizeText(heroArticle.title || 'Breaking News')}</h1>
+                                <p class="hero-summary">${this.sanitizeText(heroArticle.description || heroArticle.content || '')}</p>
+                            </div>
+                            <div class="clickable-overlay">🔗 Click to read full article</div>
+                            ${this.getProviderBadge(heroArticle)}
+                        </article>
+
+                        <!-- Sidebar -->
+                        <aside class="sidebar">
+                            <div class="trending-section">
+                                <h2 class="section-title">🔥 Trending Now</h2>
+                                ${trendingArticles.map((article, index) => `
+                                    <div class="trending-item" onclick="openArticle('${article.link}')">
+                                        <div class="trending-number">${index + 1}</div>
+                                        <div class="trending-title">${this.sanitizeText(article.title || 'News Update')}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </aside>
+                    </div>
+
+                    <!-- News Grid -->
+                    <div class="news-grid">
+                        ${gridArticles.map(article => this.createSmartNewsCard(article)).join('')}
+                    </div>
+                `;
+
+                container.innerHTML = smartLayout;
+                this.stats.articles = articles.length;
+                this.stats.images = articles.length; // All articles now have images
+            }
+
+            createSmartImageElement(imageInfo, articleId) {
+                if (!imageInfo || !imageInfo.url) {
+                    return '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">📰 Loading Image...</div>';
+                }
+
+                const smartIndicator = imageInfo.isSmartGenerated ? 
+                    `<div class="smart-image-indicator">🎨 Smart: ${imageInfo.source}</div>` : '';
+
+                return `
+                    <img src="${imageInfo.url}" alt="News image" 
+                         onload="this.style.display='block'" 
+                         onerror="app.handleImageError(this, '${articleId}')">
+                    ${smartIndicator}
+                `;
+            }
+
+            createSmartNewsCard(article) {
+                const articleId = `article_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                
+                return `
+                    <article class="news-card" onclick="openArticle('${article.link}')">
+                        <div class="news-image">
+                            ${this.createSmartImageElement(article.smart_image, articleId)}
+                        </div>
+                        <div class="news-content">
+                            <span class="news-category">${this.getCategory(article)}</span>
+                            <h3 class="news-title">${this.sanitizeText(article.title || 'News Update')}</h3>
+                            <p class="news-summary">${this.sanitizeText(article.description || article.content || '')}</p>
+                            <div class="news-meta">
+                                <div class="news-time">
+                                    ⏰ ${this.formatTime(article.pubDate || article.published || article.publishedAt)}
+                                </div>
+                                <div class="news-source">${this.getSourceName(article)}</div>
+                            </div>
+                        </div>
+                        <div class="clickable-overlay">🔗 Read Full Story</div>
+                        ${this.getProviderBadge(article)}
+                    </article>
+                `;
+            }
+
+            getProviderBadge(article) {
+                const provider = article.source_provider;
+                return `<div class="provider-badge ${provider}">${provider?.toUpperCase() || 'NEWS'}</div>`;
+            }
+
+            getCategory(article) {
+                return article.category || 'NEWS';
+            }
+
+            getSourceName(article) {
+                return article.source_id || article.source_provider || 'NewsCenter';
+            }
+
+            formatTime(dateString) {
+                if (!dateString) return 'Recently';
+                const date = new Date(dateString);
+                const now = new Date();
+                const diff = now - date;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                
+                if (hours < 1) return 'Just now';
+                if (hours < 24) return `${hours}h ago`;
+                return date.toLocaleDateString();
+            }
+
+            sanitizeText(text) {
+                if (typeof text !== 'string') return '';
+                return text.replace(/[<>]/g, '').trim().substring(0, 200);
+            }
+
+            handleImageError(img, articleId) {
+                console.log(`🔄 Image failed, attempting smart generation for ${articleId}`);
+                // Could implement additional fallback logic here
+                img.style.display = 'none';
+                img.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">📰 Image Unavailable</div>';
+            }
+
+            updateStats() {
+                document.getElementById('articleCount').textContent = this.stats.articles;
+                document.getElementById('imageCount').textContent = this.stats.images;
+                document.getElementById('smartImages').textContent = this.stats.smartImages;
+                document.getElementById('responseTime').textContent = 
+                    this.stats.responseTime > 0 ? `${this.stats.responseTime.toFixed(0)}ms` : '-';
+                document.getElementById('apiCalls').textContent = this.stats.apiCalls;
+                document.getElementById('smartImageCount').textContent = this.stats.smartImages;
+            }
+
+            updateImageStats() {
+                const total = this.imageStats.generated + this.imageStats.original + this.imageStats.fallback;
+                const successRate = total > 0 ? Math.round(((this.imageStats.generated + this.imageStats.original) / total) * 100) : 100;
+                
+                document.getElementById('generatedCount').textContent = this.imageStats.generated;
+                document.getElementById('originalCount').textContent = this.imageStats.original;
+                document.getElementById('fallbackCount').textContent = this.imageStats.fallback;
+                document.getElementById('successRate').textContent = `${successRate}%`;
+            }
+
+            showSuccessMessage(totalArticles) {
+                console.log(`✅ Successfully loaded ${totalArticles} articles with smart images`);
+            }
+
+            showError(message) {
+                const container = document.getElementById('newsContent');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>❌ Error Loading News</h3>
+                        <p>${this.sanitizeText(message)}</p>
+                        <button onclick="app.refreshNews()" class="refresh-btn" style="margin-top: 15px;">
+                            🔄 Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Global functions
+        let app;
+
+        function refreshNews() {
+            if (app) {
+                app.refreshNews();
+            }
+        }
+
+        function openArticle(url) {
+            if (url && url !== '#') {
+                window.open(url, '_blank', 'noopener,noreferrer');
+                console.log(`🔗 Opened article: ${url}`);
+            }
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            app = new SmartImageNewsApp();
+            console.log('🚀 Smart Image News App initialized');
+        });
+
+        // Error handling
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+        });
+    </script>
+</body>
+</html> 

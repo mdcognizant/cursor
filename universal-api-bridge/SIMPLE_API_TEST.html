@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple API Test</title>
+</head>
+<body>
+    <h1>Simple API Test Results</h1>
+    <div id="results"></div>
+    <div id="details" style="margin-top: 20px; font-family: monospace; font-size: 12px; background: #f5f5f5; padding: 10px; border-radius: 5px;"></div>
+
+    <script>
+        const corsProxies = [
+            'https://cors-anywhere.herokuapp.com/',
+            'https://api.allorigins.win/raw?url=',
+            'https://thingproxy.freeboard.io/fetch/',
+            'https://proxy.cors.sh/',
+            'https://cors.eu.org/'
+        ];
+
+        function getProxyUrl(targetUrl, proxyIndex = 0) {
+            const proxy = corsProxies[proxyIndex];
+            
+            // Different proxy URL formats
+            if (proxy.includes('allorigins.win')) {
+                return `${proxy}${encodeURIComponent(targetUrl)}`;
+            } else if (proxy.includes('cors.sh') || proxy.includes('cors.eu.org')) {
+                return `${proxy}${targetUrl}`;
+            } else {
+                // For cors-anywhere and thingproxy style
+                return `${proxy}${targetUrl}`;
+            }
+        }
+
+        async function testAPI() {
+            const results = document.getElementById('results');
+            const details = document.getElementById('details');
+            
+            results.innerHTML = '<p>Testing NewsData.io API with multiple CORS proxies...</p>';
+            details.innerHTML = '';
+            
+            try {
+                // Your exact API key
+                const apiKey = 'pub_05c05ef3d5044b3fa7a3ab3b04d479e4';
+                const baseUrl = `https://newsdata.io/api/1/latest?apikey=${apiKey}&language=en&size=5`;
+                
+                // Try each CORS proxy
+                for (let i = 0; i < corsProxies.length; i++) {
+                    try {
+                        const proxyUrl = getProxyUrl(baseUrl, i);
+                        details.innerHTML += `<br>🔄 Testing proxy ${i + 1}/${corsProxies.length}: ${corsProxies[i]}<br>`;
+                        details.innerHTML += `URL: ${proxyUrl.substring(0, 100)}...<br>`;
+                        
+                        console.log(`Testing proxy ${i + 1}:`, proxyUrl);
+                        
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 8000);
+                        
+                        const response = await fetch(proxyUrl, { signal: controller.signal });
+                        clearTimeout(timeoutId);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.status === 'success' && data.results) {
+                            results.innerHTML = `
+                                <h3 style="color: green;">✅ SUCCESS!</h3>
+                                <p><strong>Working Proxy:</strong> ${corsProxies[i]}</p>
+                                <p><strong>Status:</strong> ${data.status}</p>
+                                <p><strong>Articles received:</strong> ${data.results?.length || 0}</p>
+                                <p><strong>First article:</strong> ${data.results?.[0]?.title || 'N/A'}</p>
+                                <p><strong>API Key is working!</strong></p>
+                            `;
+                            details.innerHTML += `<br><span style="color: green;">✅ SUCCESS with proxy ${i + 1}</span><br>`;
+                            return; // Success, stop trying
+                        } else {
+                            throw new Error('Invalid API response format');
+                        }
+                        
+                    } catch (error) {
+                        console.error(`Proxy ${i + 1} failed:`, error);
+                        details.innerHTML += `<span style="color: red;">❌ Failed: ${error.message}</span><br>`;
+                        
+                        // If this is the last proxy, show final failure
+                        if (i === corsProxies.length - 1) {
+                            results.innerHTML = `
+                                <h3 style="color: red;">❌ ALL PROXIES FAILED</h3>
+                                <p><strong>Tested ${corsProxies.length} CORS proxies</strong></p>
+                                <p><strong>Last error:</strong> ${error.message}</p>
+                                <p>Check the details below and browser console for more info.</p>
+                                <p><strong>Possible solutions:</strong></p>
+                                <ul>
+                                    <li>Wait a few minutes and try again</li>
+                                    <li>Check if your internet connection is working</li>
+                                    <li>Try from a different network</li>
+                                    <li>Some CORS proxies may be temporarily down</li>
+                                </ul>
+                            `;
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('API Test Error:', error);
+                results.innerHTML = `
+                    <h3 style="color: red;">❌ FAILED</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Check console for details.</p>
+                `;
+            }
+        }
+        
+        // Run test immediately
+        testAPI();
+    </script>
+</body>
+</html> 

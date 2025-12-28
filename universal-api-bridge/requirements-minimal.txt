@@ -1,0 +1,31 @@
+# Minimal requirements for Windows testing
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Core dependencies that are already installed
+aiohttp
+httpx
+asyncio
+redis
+python-consul
+etcd3
+kubernetes
+opentelemetry-api
+opentelemetry-sdk
+cryptography
+pyjwt
+geoip2
+maxminddb
+
+# Testing
+pytest>=7.0.0
+pytest-asyncio>=0.20.0
+
+# Configuration
+python-dotenv
+click
+
+# JSON handling (use built-in json instead of orjson for now)
+# orjson  # Skip for now due to Rust compilation issues 

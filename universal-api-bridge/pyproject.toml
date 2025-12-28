@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "universal-api-bridge"
+version = "1.0.0"
+description = "Enterprise-grade Universal REST-to-gRPC API Bridge for massive scale (100k+ APIs)"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Universal API Bridge Team", email = "team@universal-api-bridge.com"}
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.20.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "click>=8.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.20.0",
+    "pytest-mock>=3.0.0",
+    "pytest-cov>=4.0.0",
+]
+security = [
+    "cryptography>=40.0.0",
+    "pyjwt[crypto]>=2.8.0",
+    "geoip2>=4.7.0",
+]
+distributed = [
+    "python-consul>=1.1.0",
+    "etcd3>=0.12.0",
+    "kubernetes>=28.0.0",
+]
+monitoring = [
+    "opentelemetry-api>=1.20.0",
+    "opentelemetry-sdk>=1.20.0",
+    "prometheus-client>=0.19.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[project.scripts]
+universal-bridge = "universal_api_bridge.cli:main"
+
+[project.urls]
+"Homepage" = "https://github.com/universal-api-bridge/universal-api-bridge"
+"Bug Reports" = "https://github.com/universal-api-bridge/universal-api-bridge/issues"
+"Source" = "https://github.com/universal-api-bridge/universal-api-bridge" 

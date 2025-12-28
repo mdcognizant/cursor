@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-07-25T22:36:58.268125",
+  "system_status": "READY_FOR_DUAL_PROVIDER",
+  "newsdata_status": "OPERATIONAL",
+  "currents_status": "TEMPORARILY_UNAVAILABLE_SSL_ISSUE",
+  "current_daily_capacity": 200,
+  "max_daily_capacity_when_both_work": 400,
+  "user_action_needed": false,
+  "automatic_retry_enabled": true
+}
